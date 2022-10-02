@@ -723,13 +723,27 @@ def dnRule (form : Expr) : TacticM ruleType := do
 
 elab "double_neg" f:(colonTerm)? l:(oneLoc)? : tactic => doEquivTac f l `double_neg dnRule
 
--- Get label from "with" clause, or default label.  Used by several tactics
+-- Give error if any ident in i is already in use.  Is this right thing to do in call cases?
+partial def checkIdUsed (tac : Name) (i : Syntax) : TacticM Unit := do
+  match i with
+    | .missing => return ()
+    | .node _ _ as => for a in as do checkIdUsed tac a
+    | .atom _ _ => return ()
+    | .ident _ _ v _ => 
+        let d := (← getLCtx).findFromUserName? v
+        match d with
+          | some _ => myFail tac ("identifier " ++ (toString i.getId) ++ " already in use")
+          | none => return ()
+
+/- Old version -- only handled Ident
 def checkIdUsed (tac : Name) (i : Syntax) : TacticM Unit := do
-  let d :=(← getLCtx).findFromUserName? i.getId
+  let d := (← getLCtx).findFromUserName? i.getId
   match d with
     | some _ => myFail tac ("identifier " ++ (toString i.getId) ++ " already in use")
     | none => return ()
+-/
 
+-- Get label from "with" clause, or default label.  Used by several tactics
 def getLabel (tac : Name) (w : Option WithId) (dflt : Ident := mkIdent `this) : TacticM Ident := do
   match w with
     | some h => 
@@ -1015,10 +1029,10 @@ def parseId?Type (tac : Name) (it : Id?Type) : TacticM (Ident × (Option Term)) 
   checkIdUsed tac res.1.raw
   return res
 
-def doIntroOption (i : Ident) (t : Option Term) : TacticM Unit := do
+def doIntroOption (i : Term) (t : Option Term) : TacticM Unit := do
   match t with
     | some tt => evalTactic (← `(tactic| intro ($i : $tt)))
-    | none => evalTactic (← `(tactic| intro $i:ident))
+    | none => evalTactic (← `(tactic| intro $i:term))
 
 /- Not used anymore
 def doIntro (it : Id?Type) : TacticM Unit := do
@@ -1075,7 +1089,7 @@ def doAssume (w : Ident) (t : Option Term) : TacticM Unit :=
       --| PropForm.not _ => doIntroOption w t  --Not necessary--whnf will have changed to implies
       | _ => myFail `assume "goal is not a conditional statement"
 
-def doFix (w : Ident) (t : Option Term) : TacticM Unit :=
+def doFix (w : Term) (t : Option Term) : TacticM Unit :=
   withMainContext do
     checkIdUsed `fix w
     match (← getPropForm (← Meta.whnf (← getMainTarget))) with
@@ -1084,8 +1098,8 @@ def doFix (w : Ident) (t : Option Term) : TacticM Unit :=
 
 elab "assume" w:ident : tactic => doAssume w none
 elab "assume" w:ident " : " t:term : tactic => doAssume w (some t)
-elab "fix" w:ident : tactic => doFix w none
-elab "fix" w:ident " : " t:term : tactic => doFix w (some t)
+elab "fix" w:term : tactic => doFix w none
+elab "fix" w:term " : " t:term : tactic => doFix w (some t)
 
 /- show tactic: allow either "from" or ":="  Probably best to stick to "from" -/
 macro "show " c:term " from " p:term : tactic => `(tactic| show $c; exact $p)
