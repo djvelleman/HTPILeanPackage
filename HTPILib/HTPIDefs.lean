@@ -32,155 +32,13 @@ def Iff.rtl {p q : Prop} (h : p ↔ q) := h.mpr
 def Pred (t : Type u) : Type u := t → Prop
 def Relation (t : Type u) : Type u := t → t → Prop
 
---open Classical   --Don't seem to need this.
--- If put it back in, look out for possible ambiguity of not_not
-
---Some theorems that should be in library
-/-
-theorem not_not {a : Prop} : ¬ ¬ a ↔ a := by
-  apply Iff.intro
-  intro h1
-  have h2 := em a
-  cases h2 with
-    | inl h3 => exact h3
-    | inr h3 => exact absurd h3 h1
-  intro h1 h2
-  exact h2 h1
-
-theorem not_imp_not {a b : Prop} : ¬ a → ¬ b ↔ b → a := by
-  apply Iff.intro
-  intro h1 h2
-  have h3 := em a
-  cases h3 with
-    | inl h4 => exact h4
-    | inr h4 => exact absurd h2 (h1 h4)
-  intro h1 h2 h3
-  exact h2 (h1 h3)
-
-theorem not_imp_comm {a b : Prop} : ¬ a → b ↔ ¬ b → a := by
-  rw [← @not_imp_not a (¬ b), not_not]
-  apply Iff.refl
-
-theorem imp_not_comm {a b : Prop} : a → ¬ b ↔ b → ¬ a := by
-  rw [← @not_imp_not (¬ a) b, not_not]
-  apply Iff.refl
-
-theorem not_and_distrib {a b : Prop} : ¬(a ∧ b) ↔ (¬ a ∨ ¬ b) := by
-  apply Iff.intro
-  intro h1
-  have h2 := em a
-  cases h2 with
-    | inl h3 =>
-        apply Or.inr
-        intro h4
-        exact h1 (And.intro h3 h4)
-    | inr h3 => exact Or.inl h3
-  intro h1 h2
-  cases h1 with
-    | inl h3 => exact h3 h2.left
-    | inr h3 => exact h3 h2.right
-
-theorem not_or_distrib {a b : Prop} : ¬(a ∨ b) ↔ (¬ a ∧ ¬ b) := by
-  apply Iff.intro
-  intro h1
-  have h2 : ¬ a := by
-    intro h3
-    exact h1 (Or.inl h3)
-  have h3 : ¬ b := by
-    intro h3
-    exact h1 (Or.inr h3)
-  exact And.intro h2 h3
-  intro h1 h2
-  cases h2 with
-    | inl h3 => exact h1.left h3
-    | inr h3 => exact h1.right h3
-  
-theorem or_iff_not_and_not {a b : Prop} : a ∨ b ↔ ¬(¬ a ∧ ¬ b) := by
-  rw [not_and_distrib, not_not, not_not]
-  apply Iff.refl
-  
-theorem and_iff_not_or_not {a b : Prop} : a ∧ b ↔ ¬(¬ a ∨ ¬ b) := by
-  rw [not_or_distrib, not_not, not_not]
-  apply Iff.refl
-
-theorem not_forall {α : Sort u_1} {p : α → Prop} : (¬ ∀ (x : α), p x) ↔ ∃ (x : α), ¬ p x := by
-  apply Iff.intro
-  intro h1
-  apply byContradiction
-  intro h2
-  apply h1
-  intro x
-  apply byContradiction
-  intro h3
-  apply h2
-  exact Exists.intro x h3
-  intro h1 h2
-  cases h1 with
-    | intro x h3 => exact h3 (h2 x)
-
-theorem not_exists {α : Sort u_1} {p : α → Prop} : (¬ ∃ (x : α), p x) ↔ ∀ (x : α), ¬ p x := by
-  apply Iff.intro
-  intro h1 x h2
-  apply h1
-  exact Exists.intro x h2
-  intro h1 h2
-  cases h2 with
-    | intro x h3 => exact (h1 x) h3
--/
-
+--Some theorems not in library
 theorem not_forall_not {α : Sort u_1} {p : α → Prop} : (¬ ∀ (x : α), ¬ p x) ↔ ∃ (x : α), p x := by
   rw [← not_exists, Classical.not_not]
 
 theorem not_exists_not {α : Sort u_1} {p : α → Prop} : (¬ ∃ (x : α), ¬ p x) ↔ ∀ (x : α), p x := by
   rw [← not_forall, Classical.not_not]
 
-/-
-theorem not_imp {a b : Prop} : ¬ (a → b) ↔ a ∧ ¬ b := by
-  apply Iff.intro
-  intro h1
-  apply And.intro
-  have h2 := em a
-  cases h2 with
-    | inl h3 => exact h3
-    | inr h3 =>
-      have h4 : a → b := by
-        intro h5
-        exact absurd h5 h3
-      exact absurd h4 h1
-  intro h3
-  apply h1
-  intro _
-  exact h3
-  intro h1 h2
-  exact h1.right (h2 h1.left)
-
-theorem imp_iff_not_or {a b : Prop} : a → b ↔ ¬ a ∨ b := by
-  apply Iff.intro
-  intro h1
-  have h2 := em a
-  cases h2 with
-    | inl h3 => exact Or.inr (h1 h3)
-    | inr h3 => exact Or.inl h3
-  intro h1
-  intro h2
-  cases h1 with
-    | inl h3 => exact absurd h2 h3
-    | inr h3 => exact h3
--/
-
-/- Not needed anymore
-theorem and.swap {a b : Prop} : a ∧ b → b ∧ a := by
-  intro h
-  exact And.intro h.right h.left
-
-theorem or.swap {a b : Prop} : a ∨ b → b ∨ a := by
-  intro h
-  cases h with
-    | inl h2 => exact Or.inr h2
-    | inr h2 => exact Or.inl h2
--/
-
---Some theorems not in library
 theorem not_not_and_distrib {p q : Prop} : ¬(¬ p ∧ q) ↔ (p ∨ ¬ q) := by
   rw [not_and_distrib, Classical.not_not]
 
@@ -198,12 +56,6 @@ theorem not_imp_not_iff_and {p q : Prop} : ¬ (p → ¬ q) ↔ p ∧ q := by
 
 theorem not_imp_iff_or {p q : Prop} : ¬ p → q ↔ p ∨ q := by
   rw [imp_iff_not_or, Classical.not_not]
-
-/- Not needed anymore
-theorem imp_iff_or_not {p q : Prop} : q → p ↔ p ∨ ¬ q := by
-  rw [imp_iff_not_or]
-  exact Or.comm
--/
 
 theorem not_imp_iff_not_and {p q : Prop} : ¬ (q → p) ↔ ¬ p ∧ q := by
   rw [not_imp]
@@ -349,10 +201,8 @@ def findNegPropList (c : Name) (ls : List Level) (args : List Expr) : PropForm :
     | none => PropForm.none
 
 /- Method 2:  Try to unfold definition, and if result is negative, return PropForm.not
-Note:  Uses constants but not fvars with let declarations.  Could add check for them?
-Could multiple unfoldings be necessary to get negative result?  Maybe, but might only
-want to recognize cases of only one unfolding--only want expressions that are immediately
-recognized as negative.
+Note:  Uses constants but not fvars with let declarations.  Also, only unfolds once.
+This might be best--only detect expressions immediately recognized as negative by def.
 -/
 def findNegPropAll (e : Expr) : TacticM PropForm := do
   match (← Meta.unfoldDefinition? (consumeMData e)) with
@@ -362,6 +212,8 @@ def findNegPropAll (e : Expr) : TacticM PropForm := do
         | _ => return PropForm.none
     | none => return PropForm.none
 
+--Apply a function to data for an existential.  Existentials usually apply to a
+--lambda expression, but allow for others
 def applyToExData {α : Type} (f : Level → Name → Expr → Expr → BinderInfo → α)
   (lev : Level) (l r : Expr) : α :=
   let r' := consumeMData r
@@ -385,9 +237,7 @@ def getPropForm (e : Expr) : TacticM PropForm := do
         | (``Iff, _, [r, l]) => return PropForm.iff l r
         | (``Exists, [lev], [r, l]) => return applyToExData PropForm.ex lev l r
         | (``ExistsUnique, [lev], [r, l]) => return applyToExData PropForm.exun lev l r
-        | _ => -- Do one of two methods to check for a constant that represents a negative:
-          --return findNegPropList c levs args   -- see if negative from list
-          findNegPropAll e               -- or see if negative from definition
+        | _ => findNegPropAll e     --or:  return findNegPropList c levs args
     | forallE v t b bi =>
       if (b.hasLooseBVars || !(← exprIsProp t)) then
         return PropForm.all v t b bi
@@ -399,7 +249,7 @@ def getPropForm (e : Expr) : TacticM PropForm := do
 def mkIff (l r : Expr) : Expr :=
   mkApp2 (mkConst ``Iff) l r
 
---Need to supply level.  Could write version that infers level, but would require MetaM
+--Need to supply level--I always have it, so easiest to use it.
 def mkExists (l : Level) (x : Name) (bi : BinderInfo) (t : Expr) (b : Expr) : Expr :=
   mkApp2 (mkConst ``Exists [l]) t (mkLambda x bi t b)
 
@@ -416,52 +266,18 @@ def addSuffixAux (suff : String) (v : Name) : Name :=
 def addSuffixToVar (suff : String) (v : Name) : Name :=
   Name.modifyBase v (addSuffixAux suff)
 
+--Unfold ExistsUnique; default version doesn't do a good job of naming variables
 def unfoldExUn (lev : Level) (v : Name) (t b : Expr) (_ : BinderInfo) : Expr :=
   let v1 := addSuffixToVar "1" v
   let eqn := mkApp3 (mkConst ``Eq [lev]) t (bvar 1) (bvar 2)
   let body := mkAnd b (mkForall v1 BinderInfo.default t (mkForall `x BinderInfo.default b eqn))
   mkExists lev v BinderInfo.default t body
 
--- Unfold head in current context--must set local context before call.
--- If exun = true, then unfold ExistsUnique using my def; else don't unfold it
-/- Old version
-partial def unfoldHead (e : Expr) (tac : Name) (exun : Bool) : TacticM Expr := do
-  let e' := consumeMData e
-  let (h, args) := getHeadData e'
-  try
-    match h with
-      | const c levs => 
-        match (c, levs, args) with
-          | (``Not, _, [l]) => return mkNot (← unfoldHead l tac exun)
-          | (``ExistsUnique, [lev], [r, l]) => 
-              if exun then
-                return applyToExData unfoldExUn lev l r
-              else
-                throwError "don't unfold ExistsUnique"
-          | _ => Meta.unfoldDefinition e'
-      | fvar fvarId => do
-        let decl ← fvarId.getDecl
-        match decl with
-          | .cdecl .. => Meta.unfoldDefinition e'    -- Will this ever succeed?  Probably not
-          | .ldecl (value := val) .. => do
-            return mkAppList val args
-      | lam _ _ _ _ => 
-        let er ← Core.betaReduce e'
-        if er == e' then
-          throwError "beta reduction failed"
-        else
-          return er
-      | proj _ i c =>
-        match (← Meta.project? c i) with
-          | some ep => return mkAppList ep args
-          | none => Meta.unfoldDefinition e'   -- Probably won't succeed
-      | _ => Meta.unfoldDefinition e'
-  catch _ =>
-    myFail tac "failed to unfold definition"
+/- Unfold head in current context--must set local context before call.
+If exun = true, then unfold ExistsUnique using my def; else don't unfold it
+Let whnfCore handle everything except unfolding of constants.
+Do all normalization up to first unfolding of a definition; on next call do that unfolding
 -/
-
--- Let whnfCore handle everything except unfolding of constants.
--- Do all normalization up to first unfolding of a definition; on next call do that unfolding
 partial def unfoldHead (e : Expr) (tac : Name) (exun : Bool) : TacticM Expr := do
   let e' := consumeMData e
   let (h, args) := getHeadData e'
@@ -550,7 +366,7 @@ def doSwap : TacticM Unit := do
     | _ => g
   setGoals ng
 
-/- Functions for all equivalence tactics: contrapos, demorgan, quantneg, condl, doubleneg -/
+/- Functions for all equivalence tactics: contrapos, demorgan, quant_neg, conditional, double_neg -/
 def ruleType := Name × Expr
 
 def equivMakeRule (f : Expr)
@@ -735,14 +551,6 @@ partial def checkIdUsed (tac : Name) (i : Syntax) : TacticM Unit := do
           | some _ => myFail tac ("identifier " ++ (toString i.getId) ++ " already in use")
           | none => return ()
 
-/- Old version -- only handled Ident
-def checkIdUsed (tac : Name) (i : Syntax) : TacticM Unit := do
-  let d := (← getLCtx).findFromUserName? i.getId
-  match d with
-    | some _ => myFail tac ("identifier " ++ (toString i.getId) ++ " already in use")
-    | none => return ()
--/
-
 -- Get label from "with" clause, or default label.  Used by several tactics
 def getLabel (tac : Name) (w : Option WithId) (dflt : Ident := mkIdent `this) : TacticM Ident := do
   match w with
@@ -834,27 +642,16 @@ elab "disj_syll" d:ident n:ident w:(withId)? : tactic =>
     setUserName newGoal goalName
 
 /- contradict tactic -/
-def ensureContra (tac : Name) (w : Option WithId) : TacticM Unit :=
+def ensureContra (w : Option WithId) : TacticM Unit :=
   withMainContext do
-    let label ← getLabel tac w
+    let label ← getLabel `contradict w
     let t ← getMainTarget
     match (← getPropForm t) with
       | PropForm.f => return ()
       | _ => evalTactic (← `(tactic| by_contra $label))
-      /- This was more complicated -- not nec
-      | PropForm.not _ =>
-        evalTactic (← `(tactic| intro $label:ident))
-      | _ =>
-        doSuffices (mkNot (mkNot t)) (← `(Classical.not_not.mp))
-        evalTactic (← `(tactic| intro $label:ident))
-      -/
-
-/- Standard by_contra just as good (although doesn't check identifier in use).
-elab "bycontra" w:(withId)? : tactic => ensureContra `bycontra w
--/
  
 elab "contradict" h:ident w:(withId)? : tactic => do
-  ensureContra `contradict w
+  ensureContra w
   withMainContext do
     let tocon ← formFromIdent h.raw
     match (← getPropForm tocon) with
@@ -863,7 +660,9 @@ elab "contradict" h:ident w:(withId)? : tactic => do
       | _ =>
         doSuffices (mkNot tocon) (← `(fun x => x $h:ident))
 
-/- define and whnf tactics -/
+/- define and whnf tactics 
+Probably want to use define, but include whnf to be able to compare
+-/
 def unfoldOrWhnf (e : Expr) (w : Bool) : TacticM Expr := do
   if w then
     match (← getPropForm e) with
@@ -894,7 +693,6 @@ def unfoldOrWhnfAt (l : Option OneLoc) (w : Bool) : TacticM Unit := do
         replaceMainGoal [newgoal]
 
 elab "define" l:(oneLoc)? : tactic => unfoldOrWhnfAt l false
---Probably prefer defn, but should test whnf
 elab "whnf" l:(oneLoc)? : tactic => unfoldOrWhnfAt l true
 
 /- define and define! tactics -/
@@ -920,7 +718,6 @@ partial def doDefineRep (label : Name) (e e1 : Expr) (prop : Bool) (rule : Ident
   let e' ← unfoldHead e1 `definition (firstNum == 1)
   let res ← mkRel e e' prop
   doHave (addSuffixToVar ("_" ++ (toString firstNum)) label) res (← `($rule _))
-  --doHave (Name.mkStr label ("_" ++ (toString firstNum))) res (← `($rule _))
   try
     withMainContext (doDefineRep label e e' prop rule (firstNum + 1))  -- Context changes each time through
   catch _ =>
@@ -931,9 +728,6 @@ def doDefinition (all : Bool) (f : Option ColonTerm) (l : Option OneLoc) (wid : 
     let (e, deflabel) ← getDefineFormLabel f l
     let label ← getLabel `definition wid (mkIdent deflabel)
     let labeln := label.getId
-    --let label := match wid with
-    --  | some i => i.raw[1].getId
-    --  | none => deflabel
     let (prop, rule) := if (← exprIsProp e) then
         (true, mkIdent ``Iff.refl)
       else
@@ -972,17 +766,6 @@ def finishCases (orid label1 label2 : Ident) : TacticM Unit := do
   evalTactic (← `(tactic| apply Or.elim $orid:ident))
   fixCase orid label1
   fixCase orid label2
-
-/- Standard by_cases just as good?
-elab "bycases" t:colonTerm wids:(with2Ids)? : tactic =>
-  withMainContext do
-    let e ← elabTerm t.raw[1] none
-    if !(← exprIsProp e) then myFail `bycases "cases specifier is not a proposition"
-    let (label1, label2) ← getCaseLabels (mkIdent `this) wids
-    let emn ← mkFreshUserName `p
-    doHave emn (mkOr e (mkNot e)) (← `(em _))
-    finishCases (mkIdent emn) label1 label2
--/
 
 elab "by_cases" "on" l:ident wids:(with2Ids)? : tactic =>
   withMainContext do
@@ -1033,12 +816,6 @@ def doIntroOption (i : Term) (t : Option Term) : TacticM Unit := do
   match t with
     | some tt => evalTactic (← `(tactic| intro ($i : $tt)))
     | none => evalTactic (← `(tactic| intro $i:term))
-
-/- Not used anymore
-def doIntro (it : Id?Type) : TacticM Unit := do
-  let (h, t) := parseId?Type it
-  doIntroOption h t
--/
 
 def doObtain (itw ith : Id?Type) (l : Ident) : TacticM Unit :=
   withMainContext do
@@ -1104,7 +881,5 @@ elab "fix" w:term " : " t:term : tactic => doFix w (some t)
 /- show tactic: allow either "from" or ":="  Probably best to stick to "from" -/
 macro "show " c:term " from " p:term : tactic => `(tactic| show $c; exact $p)
 macro "show " c:term " := " p:term : tactic => `(tactic| show $c; exact $p)
---No point in below; just use `show c` and then continue in tactic mode
---macro "show " c:term " by " t:tacticSeq : tactic => `(tactic| show $c; exact by $t)
 
 end tactic_defs
