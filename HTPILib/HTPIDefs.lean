@@ -257,6 +257,7 @@ def myFail {α} (tac : Name) (msg : String) : TacticM α := do
   Meta.throwTacticEx tac (← getMainGoal) msg
 
 /- Functions for unfolding head -/
+/- replace with Name.appendIndexAfter
 def addSuffixAux (suff : String) (v : Name) : Name :=
   match v with
     | .str p s => Name.mkStr p (s ++ suff)
@@ -265,10 +266,11 @@ def addSuffixAux (suff : String) (v : Name) : Name :=
   
 def addSuffixToVar (suff : String) (v : Name) : Name :=
   Name.modifyBase v (addSuffixAux suff)
+-/
 
 --Unfold ExistsUnique; default version doesn't do a good job of naming variables
 def unfoldExUn (lev : Level) (v : Name) (t b : Expr) (_ : BinderInfo) : Expr :=
-  let v1 := addSuffixToVar "1" v
+  let v1 := Name.appendIndexAfter v 1
   let eqn := mkApp3 (mkConst ``Eq [lev]) t (bvar 1) (bvar 2)
   let body := mkAnd b (mkForall v1 BinderInfo.default t (mkForall `x BinderInfo.default b eqn))
   mkExists lev v BinderInfo.default t body
@@ -717,7 +719,7 @@ def mkRel (e1 e2 : Expr) (prop : Bool) : TacticM Expr :=
 partial def doDefineRep (label : Name) (e e1 : Expr) (prop : Bool) (rule : Ident) (firstNum : Nat) : TacticM Unit := do
   let e' ← unfoldHead e1 `definition (firstNum == 1)
   let res ← mkRel e e' prop
-  doHave (addSuffixToVar ("_" ++ (toString firstNum)) label) res (← `($rule _))
+  doHave (Name.appendIndexAfter label firstNum) res (← `($rule _))
   try
     withMainContext (doDefineRep label e e' prop rule (firstNum + 1))  -- Context changes each time through
   catch _ =>
@@ -784,8 +786,8 @@ elab "exists_unique" : tactic =>
     let tar ← getMainTarget
     match (← getPropForm tar) with
       | PropForm.exun lev v t b _ =>
-        let v1 := addSuffixToVar "1" v
-        let v2 := addSuffixToVar "2" v
+        let v1 := Name.appendIndexAfter v 1
+        let v2 := Name.appendIndexAfter v 2
         let f1 := mkLambda v1 BinderInfo.default t b
         let f2 := mkLambda v2 BinderInfo.default t b
         let un ← Meta.lambdaTelescope f1 fun fv1 e1 => 
@@ -841,7 +843,7 @@ def doObtainExUn (itw ith1 ith2 : Id?Type) (l : Ident) : TacticM Unit :=
         let (wi, wt) ← parseId?Type `obtain itw
         let (h1i, h1t) ← parseId?Type `obtain ith1
         let (h2i, h2t) ← parseId?Type `obtain ith2
-        let v1 := addSuffixToVar "1" v
+        let v1 := Name.appendIndexAfter v 1
         let tar ← getMainTarget
         let eqn := mkApp3 (mkConst ``Eq [lev]) t (bvar 1) (bvar 3)
         let un := mkForall v1 BinderInfo.default t (← mkArrow b eqn)
