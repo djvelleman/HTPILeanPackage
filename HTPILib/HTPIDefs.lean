@@ -578,7 +578,7 @@ def orstrat (tac : Name) (w : Option WithId) (left : Bool) : TacticM Unit :=
           let emn ← mkFreshUserName `h
           let emi := mkIdent emn
           doHave emn (mkOr form (mkNot form)) (← `(em _))
-          evalTactic (← `(tactic|apply Or.elim $emi:ident))
+          evalTactic (← `(tactic|refine Or.elim $emi:ident ?_ ?_))
           if neg then doSwap
           let (rule1, rule2) :=
             if left then
@@ -586,7 +586,7 @@ def orstrat (tac : Name) (w : Option WithId) (left : Bool) : TacticM Unit :=
             else
               (mkIdent ``Or.inl, mkIdent ``Or.inr)
           evalTactic (← `(tactic| exact fun x => $rule1:ident x))
-          evalTactic (← `(tactic| intro $label:ident; apply $rule2:ident; clear $emi:ident))
+          evalTactic (← `(tactic| intro $label:ident; refine $rule2:ident ?_; clear $emi:ident))
           let newGoal ← getMainGoal
           setUserName newGoal goalName
       | _ => myFail tac "goal is not a disjunction"
@@ -630,7 +630,7 @@ elab "disj_syll" d:ident n:ident w:(withId)? : tactic =>
     let neg ← formFromIdent n.raw
     let (conright, disjneg) ← DisjSyllData disj neg
     let goalName := (← getMainDecl).userName
-    evalTactic (← `(tactic| apply Or.elim $d:ident))
+    evalTactic (← `(tactic| refine Or.elim $d:ident ?_ ?_))
     if conright then doSwap
     if disjneg then
       evalTactic (← `(tactic| exact fun x => absurd $n:ident x))
@@ -758,14 +758,16 @@ def getCaseLabels (deflabel : Ident) (wids : Option With2Ids) : TacticM (Ident �
         | none => return ⟨id1, id1⟩
     | none => return ⟨deflabel, deflabel⟩
 
-def fixCase (orid label : Ident) : TacticM Unit := do
+def fixCase (orid label : Ident) (g : Name) (c : String) : TacticM Unit := do
   evalTactic (← `(tactic| clear $orid:ident; intro $label:ident))
+  setUserName (← getMainGoal) (Name.modifyBase g (fun x => Name.mkStr x c))
   doSwap
-
+ 
 def finishCases (orid label1 label2 : Ident) : TacticM Unit := do
-  evalTactic (← `(tactic| apply Or.elim $orid:ident))
-  fixCase orid label1
-  fixCase orid label2
+  let goalname :=  (← getMainDecl).userName
+  evalTactic (← `(tactic| refine Or.elim $orid:ident ?_ ?_))
+  fixCase orid label1 goalname "Case_1"
+  fixCase orid label2 goalname "Case_2"
 
 elab "by_cases" "on" l:ident wids:(with2Ids)? : tactic =>
   withMainContext do
@@ -794,12 +796,14 @@ elab "exists_unique" : tactic =>
         let ex := mkExists lev v BinderInfo.default t b
         let h ← mkFreshUserName `h
         let hid := mkIdent h
-        let hex := (mkForall `Existence BinderInfo.default ex
-          (mkForall `Uniqueness BinderInfo.default un tar))
+        let hex := (mkForall `a BinderInfo.default ex
+          (mkForall `b BinderInfo.default un tar))
         doHave h hex (← `(exists_unique_of_exists_of_unique))
-        evalTactic (← `(tactic| apply $hid; clear $hid))
+        evalTactic (← `(tactic| refine $hid ?_ ?_; clear $hid))
+        setUserName (← getMainGoal) `Existence
         doSwap
         evalTactic (← `(tactic| clear $hid))
+        setUserName (← getMainGoal) `Uniqueness
         doSwap
       | _ => myFail `exists_unique "goal is not a unique existence statement"
 
@@ -819,12 +823,12 @@ def doIntroOption (i : Term) (t : Option Term) : TacticM Unit := do
 
 def doObtain (itw ith : Id?Type) (l : Ident) : TacticM Unit :=
   withMainContext do
-    let e ← Meta.whnf (← formFromIdent l.raw)
+    let e ← whnfNotExUn (← formFromIdent l.raw)
     match (← getPropForm e) with
       | PropForm.ex _ _ _ _ _ =>
         let (wi, wt) ← parseId?Type `obtain itw
         let (hi, ht) ← parseId?Type `obtain ith
-        evalTactic (← `(tactic| apply Exists.elim $l))
+        evalTactic (← `(tactic| refine Exists.elim $l ?_))
         doIntroOption wi wt
         doIntroOption hi ht
       | _ => myFail `obtain "hypothesis is not an existence statement"
@@ -845,7 +849,7 @@ def doObtainExUn (itw ith1 ith2 : Id?Type) (l : Ident) : TacticM Unit :=
         let h ← mkFreshUserName `h
         let hid := mkIdent h
         doHave h (← mkArrow exun tar) (← `(ExistsUnique.elim $l))
-        evalTactic (← `(tactic| apply $hid; clear $hid))
+        evalTactic (← `(tactic| refine $hid ?_; clear $hid))
         doIntroOption wi wt
         doIntroOption h1i h1t
         doIntroOption h2i h2t
