@@ -687,7 +687,7 @@ def unfoldOrWhnfAt (l : Option OneLoc) (w : Bool) : TacticM Unit := do
         let newgoal ← replaceLocalDeclDefEq goal hdec.fvarId e'
         replaceMainGoal [newgoal]
       | none => do
-        let e ← getMainTarget
+        let e ← instantiateMVars (← getType goal)
         let e' ← unfoldOrWhnf e w
         if !(← Meta.isExprDefEq e e') then
           Meta.throwTacticEx `define goal "got definition wrong"
@@ -760,16 +760,13 @@ def getCaseLabels (deflabel : Ident) (wids : Option With2Ids) : TacticM (Ident �
         | none => return ⟨id1, id1⟩
     | none => return ⟨deflabel, deflabel⟩
 
+def addToName (n : Name) (s : String) : Name :=
+  Name.modifyBase n (fun x => Name.mkStr x s)
+
 def fixCase (orid label : Ident) (g : Name) (c : String) : TacticM Unit := do
   evalTactic (← `(tactic| clear $orid:ident; intro $label:ident))
-  setUserName (← getMainGoal) (Name.modifyBase g (fun x => Name.mkStr x c))
+  setUserName (← getMainGoal) (addToName g c)
   doSwap
- 
-def finishCases (orid label1 label2 : Ident) : TacticM Unit := do
-  let goalname :=  (← getMainDecl).userName
-  evalTactic (← `(tactic| refine Or.elim $orid:ident ?_ ?_))
-  fixCase orid label1 goalname "Case_1"
-  fixCase orid label2 goalname "Case_2"
 
 elab "by_cases" "on" l:ident wids:(with2Ids)? : tactic =>
   withMainContext do
@@ -777,13 +774,19 @@ elab "by_cases" "on" l:ident wids:(with2Ids)? : tactic =>
     match (← getPropForm e) with
       | PropForm.or _ _ =>
         let (label1, label2) ← getCaseLabels l wids
-        finishCases l label1 label2
+        let goalname :=  (← getMainDecl).userName
+        evalTactic (← `(tactic| refine Or.elim $l:ident ?_ ?_))
+        fixCase l label1 goalname "Case_1"
+        fixCase l label2 goalname "Case_2"
       | _ => myFail `by_cases "hypothesis is not a disjunction"
 
 /- exists_unique tactic -/
-elab "exists_unique" : tactic =>
-  withMainContext do
-    let tar ← getMainTarget
+elab "exists_unique" : tactic => do
+  let goal ← getMainGoal
+  withContext goal do
+    let d ← getDecl goal
+    let goalname := d.userName
+    let tar ← instantiateMVars d.type
     match (← getPropForm tar) with
       | PropForm.exun lev v t b _ =>
         let v1 := Name.appendIndexAfter v 1
@@ -802,10 +805,10 @@ elab "exists_unique" : tactic =>
           (mkForall `b BinderInfo.default un tar))
         doHave h hex (← `(exists_unique_of_exists_of_unique))
         evalTactic (← `(tactic| refine $hid ?_ ?_; clear $hid))
-        setUserName (← getMainGoal) `Existence
+        setUserName (← getMainGoal) (addToName goalname "Existence")
         doSwap
         evalTactic (← `(tactic| clear $hid))
-        setUserName (← getMainGoal) `Uniqueness
+        setUserName (← getMainGoal) (addToName goalname "Uniqueness")
         doSwap
       | _ => myFail `exists_unique "goal is not a unique existence statement"
 
