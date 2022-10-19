@@ -650,7 +650,7 @@ def ensureContra (w : Option WithId) : TacticM Unit :=
     let t ← getMainTarget
     match (← getPropForm t) with
       | PropForm.f => return ()
-      | _ => evalTactic (← `(tactic| by_contra $label))
+      | _ => evalTactic (← `(tactic| by_contra $label:ident))
  
 elab "contradict" h:ident w:(withId)? : tactic => do
   ensureContra w
