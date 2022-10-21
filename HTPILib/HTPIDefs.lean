@@ -30,7 +30,16 @@ macro_rules
 def Iff.ltr {p q : Prop} (h : p ↔ q) := h.mp
 def Iff.rtl {p q : Prop} (h : p ↔ q) := h.mpr
 def Pred (t : Type u) : Type u := t → Prop
-def Relation (t : Type u) : Type u := t → t → Prop
+def Rel (s t : Type u) : Type u := s → t → Prop
+def BinRel (t : Type u) : Type u := t → t → Prop
+
+--Copying similar defs for sUnion in Mathlib.Init.Set.  Why isn't sInter defined there??
+@[reducible]
+def sInter {U : Type} (F : Set (Set U)) : Set U := {x | ∀ A : Set U, A ∈ F → x ∈ A}
+prefix:110 "⋂₀" => sInter
+
+def symmDiff {U : Type} (A B : Set U) : Set U := (A \ B) ∪ (B \ A)
+infix:70 " △ " => symmDiff
 
 --Some theorems not in library
 theorem not_forall_not {α : Sort u_1} {p : α → Prop} : (¬ ∀ (x : α), ¬ p x) ↔ ∃ (x : α), p x := by
@@ -665,37 +674,41 @@ elab "contradict" h:ident w:(withId)? : tactic => do
 /- define and whnf tactics 
 Probably want to use define, but include whnf to be able to compare
 -/
-def unfoldOrWhnf (e : Expr) (w : Bool) : TacticM Expr := do
+def unfoldOrWhnf (tac: Name) (e : Expr) (w : Bool) (rep : Bool) : TacticM Expr := do
   if w then
     match (← getPropForm e) with
       | PropForm.exun lev v t b bi => return unfoldExUn lev v t b bi
       | _ => whnfNotExUn e
   else
-    unfoldHeadRep e `define true
+    if rep then
+      unfoldHeadRep e tac true
+    else
+      unfoldHead e tac true
 
 --Unfold head repeatedly or whnf at a location
-def unfoldOrWhnfAt (l : Option OneLoc) (w : Bool) : TacticM Unit := do
+def unfoldOrWhnfAt (tac : Name) (l : Option OneLoc) (w : Bool) (rep: Bool) : TacticM Unit := do
   let goal ← getMainGoal
   withContext goal do
     match l with
       | some h => do
         let hdec ← Meta.getLocalDeclFromUserName h.raw[1].getId
         let e ← instantiateMVars hdec.type
-        let e' ← unfoldOrWhnf e w
+        let e' ← unfoldOrWhnf tac e w rep
         if !(← Meta.isExprDefEq e e') then   --Just to be sure we didn't make a mistake
-          Meta.throwTacticEx `define goal "got definition wrong"
+          Meta.throwTacticEx tac goal "got definition wrong"
         let newgoal ← replaceLocalDeclDefEq goal hdec.fvarId e'
         replaceMainGoal [newgoal]
       | none => do
         let e ← instantiateMVars (← getType goal)
-        let e' ← unfoldOrWhnf e w
+        let e' ← unfoldOrWhnf tac e w rep
         if !(← Meta.isExprDefEq e e') then
-          Meta.throwTacticEx `define goal "got definition wrong"
+          Meta.throwTacticEx tac goal "got definition wrong"
         let newgoal ← replaceTargetDefEq goal e'
         replaceMainGoal [newgoal]
 
-elab "define" l:(oneLoc)? : tactic => unfoldOrWhnfAt l false
-elab "whnf" l:(oneLoc)? : tactic => unfoldOrWhnfAt l true
+elab "define" l:(oneLoc)? : tactic => unfoldOrWhnfAt `define l false true
+elab "whnf" l:(oneLoc)? : tactic => unfoldOrWhnfAt `whnf l true true
+elab "def_step" l:(oneLoc)? : tactic => unfoldOrWhnfAt `def_step l false false
 
 /- define and define! tactics -/
 --Context set in doDefine, which calls these functions
@@ -892,7 +905,7 @@ elab "fix" w:term : tactic => doFix w none
 elab "fix" w:term " : " t:term : tactic => doFix w (some t)
 
 /- show tactic: allow either "from" or ":="  Probably best to stick to "from" -/
-macro "show " c:term " from " p:term : tactic => `(tactic| show $c; exact $p)
-macro "show " c:term " := " p:term : tactic => `(tactic| show $c; exact $p)
+macro "show " c:term " from " p:term : tactic => `(tactic| {show $c; exact $p})
+macro "show " c:term " := " p:term : tactic => `(tactic| {show $c; exact $p})
 
 end tactic_defs
