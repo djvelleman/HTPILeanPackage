@@ -79,7 +79,7 @@ syntax oneLoc := " at " ident
 syntax colonTerm := " : " term
 syntax withId := " with " ident
 syntax with2Ids := " with " ident (", " ident)?
-syntax id?Type := ident <|> ("(" term " : " term ")")
+syntax id?Type := ident <|> ("(" term (" : " term)? ")")
 
 abbrev OneLoc := TSyntax `oneLoc
 abbrev ColonTerm := TSyntax `colonTerm
@@ -906,7 +906,9 @@ def parseId?Type (tac : Name) (it : Id?Type) : TacticM (Term × (Option Term)) :
   let s := it.raw[0]
   let res := match s with
     | .ident .. => (⟨s⟩, none)
-    | _ => (⟨s[1]⟩, some ⟨s[3]⟩)
+    | _ => match s[2].getArgs[1]? with
+      | some t => (⟨s[1]⟩, some ⟨t⟩)
+      | none => (⟨s[1]⟩, none)
   checkIdUsed tac res.1.raw
   return res
 
