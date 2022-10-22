@@ -78,7 +78,7 @@ open Lean Elab Tactic Expr MVarId
 syntax oneLoc := " at " ident
 syntax colonTerm := " : " term
 syntax withId := " with " ident
-syntax with2Ids := " with " ident (ident)?
+syntax with2Ids := " with " ident (", " ident)?
 syntax id?Type := ident <|> ("(" term " : " term ")")
 
 abbrev OneLoc := TSyntax `oneLoc
@@ -324,6 +324,15 @@ partial def unfoldHeadRep (e : Expr) (tac : Name) (exun : Bool) : TacticM Expr :
 def whnfNotExUn (e : Expr) : TacticM Expr :=
   Meta.whnfHeadPred e (fun x => return !(x.isAppOf ``ExistsUnique))
 
+-- w = 0 : no whnf, w = 1 : whnfNotExun, w = 2 : full whnf
+def exprFromTerm (t : Term) (w : Nat) : TacticM Expr := do
+  let p ← elabTerm t none
+  let e ← instantiateMVars (← Meta.inferType p)
+  match w with
+    | 0 => return e
+    | 1 => whnfNotExUn e
+    | _ => Meta.whnf e
+
 --Add new hypothesis with name n, asserting form, proven by pfstx.
 def doHave (n : Name) (form : Expr) (pfstx : Syntax) : TacticM Unit := do
   let goal ← getMainGoal
@@ -559,7 +568,7 @@ partial def checkIdUsed (tac : Name) (i : Syntax) : TacticM Unit := do
     | .ident _ _ v _ => 
         let d := (← getLCtx).findFromUserName? v
         match d with
-          | some _ => myFail tac ("identifier " ++ (toString i.getId) ++ " already in use")
+          | some _ => myFail tac ("identifier " ++ (toString v) ++ " already in use")
           | none => return ()
 
 -- Get label from "with" clause, or default label.  Used by several tactics
@@ -634,6 +643,7 @@ def DisjSyllData (disj neg : Expr) : TacticM (Bool × Bool) := do
           myFail `disj_syll "disjunctive syllogism rule doesn't apply"
     | _ => myFail `disj_syll "disjunctive syllogism rule doesn't apply"
 
+/- Old version with idents
 elab "disj_syll" d:ident n:ident w:(withId)? : tactic =>
   withMainContext do
     let label ← getLabel `disj_syll w d
@@ -651,6 +661,31 @@ elab "disj_syll" d:ident n:ident w:(withId)? : tactic =>
     evalTactic (← `(tactic| intro $label:ident))
     let newGoal ← getMainGoal
     setUserName newGoal goalName
+    -/
+
+elab "disj_syll" d:term ", " n:term w:(withId)? : tactic =>
+  withMainContext do
+    let disj ← exprFromTerm d 2
+    let neg ← exprFromTerm n 0
+    let (dId, deflabel) :=
+      if d.raw.isIdent then
+        (true, ⟨d.raw⟩)
+      else
+        (false, mkIdent `this)
+    let label ← getLabel `disj_syll w deflabel
+    let (conright, disjneg) ← DisjSyllData disj neg
+    let goalName := (← getMainDecl).userName
+    evalTactic (← `(tactic| refine Or.elim $d ?_ ?_))
+    if conright then doSwap
+    if disjneg then
+      evalTactic (← `(tactic| exact fun x => absurd $n x))
+    else
+      evalTactic (← `(tactic| exact fun x => absurd x $n))
+    if (dId && (w == none)) then evalTactic (← `(tactic| clear $deflabel:ident))
+    evalTactic (← `(tactic| intro $label:ident))
+    let newGoal ← getMainGoal
+    setUserName newGoal goalName
+
 
 /- contradict tactic -/
 def ensureContra (w : Option WithId) : TacticM Unit :=
@@ -671,7 +706,7 @@ elab "contradict" h:ident w:(withId)? : tactic => do
       | _ =>
         doSuffices (mkNot tocon) (← `(fun x => x $h:ident))
 
-/- define and whnf tactics 
+/- define, def_step, and whnf tactics 
 Probably want to use define, but include whnf to be able to compare
 -/
 def unfoldOrWhnf (tac: Name) (e : Expr) (w : Bool) (rep : Bool) : TacticM Expr := do
@@ -710,7 +745,7 @@ elab "define" l:(oneLoc)? : tactic => unfoldOrWhnfAt `define l false true
 elab "whnf" l:(oneLoc)? : tactic => unfoldOrWhnfAt `whnf l true true
 elab "def_step" l:(oneLoc)? : tactic => unfoldOrWhnfAt `def_step l false false
 
-/- define and define! tactics -/
+/- definition and definition! tactics -/
 --Context set in doDefine, which calls these functions
 def getDefineFormLabel (f : Option ColonTerm) (l : Option OneLoc) : TacticM (Expr × Name) := do
   match f with
@@ -759,7 +794,11 @@ elab "definition" l:(oneLoc)? wid:(withId)? : tactic => doDefinition false none 
 elab "definition!" f:(colonTerm) wid:(withId)? : tactic => doDefinition true (some f) none wid
 elab "definition!" l:(oneLoc)? wid:(withId)? : tactic => doDefinition true none l wid
 
+def addToName (n : Name) (s : String) : Name :=
+  Name.modifyBase n (fun x => Name.mkStr x s)
+
 /- by_cases on tactic -/
+/- Old version takes ident not term
 def getCaseLabels (deflabel : Ident) (wids : Option With2Ids) : TacticM (Ident × Ident) := do
   match wids with
     | some ids =>
@@ -772,9 +811,6 @@ def getCaseLabels (deflabel : Ident) (wids : Option With2Ids) : TacticM (Ident �
           return (id1, ⟨id2⟩)
         | none => return ⟨id1, id1⟩
     | none => return ⟨deflabel, deflabel⟩
-
-def addToName (n : Name) (s : String) : Name :=
-  Name.modifyBase n (fun x => Name.mkStr x s)
 
 def fixCase (orid label : Ident) (g : Name) (c : String) : TacticM Unit := do
   evalTactic (← `(tactic| clear $orid:ident; intro $label:ident))
@@ -791,6 +827,46 @@ elab "by_cases" "on" l:ident wids:(with2Ids)? : tactic =>
         evalTactic (← `(tactic| refine Or.elim $l:ident ?_ ?_))
         fixCase l label1 goalname "Case_1"
         fixCase l label2 goalname "Case_2"
+      | _ => myFail `by_cases "hypothesis is not a disjunction"
+-/
+
+--Bool is whether or not to clear "or" given; Idents for two cases
+def setUpCases (t : Term) (wids : Option With2Ids) : TacticM (Bool × Ident × Ident) := do
+  match wids with
+    | some ids =>
+      let id1s := ids.raw[1]
+      checkIdUsed `by_cases id1s
+      let id1 : Ident := ⟨id1s⟩
+      match ids.raw[2].getArgs[1]? with
+        | some id2 =>
+          checkIdUsed `by_cases id2
+          return (false, id1, ⟨id2⟩)
+        | none => return (false, id1, id1)
+    | none =>
+      if t.raw.isIdent then
+        let tid : Ident := ⟨t.raw⟩
+        return (true, tid, tid)
+      else
+        let thisId := mkIdent `this
+        return (false, thisId, thisId)
+
+def fixCase (clear : Bool) (label : Ident) (g : Name) (c : String) : TacticM Unit := do
+  if clear then
+    evalTactic (← `(tactic| clear $label))
+  evalTactic (← `(tactic| intro $label:ident))
+  setUserName (← getMainGoal) (addToName g c)
+  doSwap
+
+elab "by_cases" "on" t:term wids:(with2Ids)? : tactic =>
+  withMainContext do
+    let e ← exprFromTerm t 2
+    match (← getPropForm e) with
+      | PropForm.or _ _ =>
+        let (clear, label1, label2) ← setUpCases t wids
+        let goalname :=  (← getMainDecl).userName
+        evalTactic (← `(tactic| refine Or.elim $t ?_ ?_))
+        fixCase clear label1 goalname "Case_1"
+        fixCase clear label2 goalname "Case_2"
       | _ => myFail `by_cases "hypothesis is not a disjunction"
 
 /- exists_unique tactic -/
@@ -842,8 +918,7 @@ def doIntroOption (i : Term) (t : Option Term) : TacticM Unit := do
 def doObtain (itw ith : Id?Type) (tm : Term) : TacticM Unit :=
   withMainContext do
     --let e ← whnfNotExUn (← formFromIdent l.raw)
-    let p ← elabTerm tm none
-    let e ← whnfNotExUn (← instantiateMVars (← Meta.inferType p))
+    let e ← exprFromTerm tm 1
     match (← getPropForm e) with
       | PropForm.ex _ _ _ _ _ =>
         let (wi, wt) ← parseId?Type `obtain itw
@@ -856,8 +931,7 @@ def doObtain (itw ith : Id?Type) (tm : Term) : TacticM Unit :=
 def doObtainExUn (itw ith1 ith2 : Id?Type) (tm : Term) : TacticM Unit :=
   withMainContext do
     --let e ← whnfNotExUn (← formFromIdent l.raw)
-    let p ← elabTerm tm none
-    let e ← whnfNotExUn (← instantiateMVars (← Meta.inferType p))
+    let e ← exprFromTerm tm 1
     match (← getPropForm e) with
       | PropForm.exun lev v t b _ =>
         let (wi, wt) ← parseId?Type `obtain itw
@@ -884,7 +958,7 @@ elab "obtain" itw:id?Type ith1:id?Type ith2:id?Type " from " t:term : tactic =>
   doObtainExUn itw ith1 ith2 t
 
 /- assume and fix tactics -/
-def doAssume (w : Ident) (t : Option Term) : TacticM Unit :=
+def doAssume (w : Term) (t : Option Term) : TacticM Unit :=
   withMainContext do
     checkIdUsed `assume w
     match (← getPropForm (← Meta.whnf (← getMainTarget))) with
@@ -899,8 +973,8 @@ def doFix (w : Term) (t : Option Term) : TacticM Unit :=
       | PropForm.all _ _ _ _ => doIntroOption w t
       | _ => myFail `fix "goal is not a universally quantified statement"
 
-elab "assume" w:ident : tactic => doAssume w none
-elab "assume" w:ident " : " t:term : tactic => doAssume w (some t)
+elab "assume" w:term : tactic => doAssume w none
+elab "assume" w:term " : " t:term : tactic => doAssume w (some t)
 elab "fix" w:term : tactic => doFix w none
 elab "fix" w:term " : " t:term : tactic => doFix w (some t)
 
