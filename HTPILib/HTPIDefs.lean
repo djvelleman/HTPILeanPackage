@@ -34,7 +34,7 @@ def Rel (s t : Type u) : Type u := s → t → Prop
 def BinRel (t : Type u) : Type u := t → t → Prop
 
 --Copying similar defs for sUnion in Mathlib.Init.Set.  Why isn't sInter defined there??
-@[reducible]
+@[reducible]  --?
 def sInter {U : Type} (F : Set (Set U)) : Set U := {x | ∀ A : Set U, A ∈ F → x ∈ A}
 prefix:110 "⋂₀" => sInter
 
@@ -696,15 +696,16 @@ def ensureContra (w : Option WithId) : TacticM Unit :=
       | PropForm.f => return ()
       | _ => evalTactic (← `(tactic| by_contra $label:ident))
  
-elab "contradict" h:ident w:(withId)? : tactic => do
+elab "contradict" h:term w:(withId)? : tactic => do
   ensureContra w
   withMainContext do
-    let tocon ← formFromIdent h.raw
+    --let tocon ← formFromIdent h.raw
+    let tocon ← exprFromTerm h 0
     match (← getPropForm tocon) with
       | PropForm.not p =>
-        doSuffices p (← `(fun x => $h:ident x))
+        doSuffices p (← `(fun x => $h x))
       | _ =>
-        doSuffices (mkNot tocon) (← `(fun x => x $h:ident))
+        doSuffices (mkNot tocon) (← `(fun x => x $h))
 
 /- define, def_step, and whnf tactics 
 Probably want to use define, but include whnf to be able to compare
