@@ -681,7 +681,7 @@ elab "disj_syll" d:term ", " n:term w:(withId)? : tactic =>
       evalTactic (← `(tactic| exact fun x => absurd $n x))
     else
       evalTactic (← `(tactic| exact fun x => absurd x $n))
-    if (dId && (w == none)) then evalTactic (← `(tactic| clear $deflabel:ident))
+    if (dId && (w == none)) then evalTactic (← `(tactic| clear $label:ident))
     evalTactic (← `(tactic| intro $label:ident))
     let newGoal ← getMainGoal
     setUserName newGoal goalName
