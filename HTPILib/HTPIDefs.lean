@@ -35,11 +35,13 @@ def BinRel (t : Type u) : Type u := t → t → Prop
 
 --Copying similar defs for sUnion in Mathlib.Init.Set.  Why isn't sInter defined there??
 @[reducible]  --?
-def sInter {U : Type} (F : Set (Set U)) : Set U := {x | ∀ A : Set U, A ∈ F → x ∈ A}
+def sInter {U : Type u} (F : Set (Set U)) : Set U := {x | ∀ A : Set U, A ∈ F → x ∈ A}
 prefix:110 "⋂₀" => sInter
 
-def symmDiff {U : Type} (A B : Set U) : Set U := (A \ B) ∪ (B \ A)
+def symmDiff {U : Type u} (A B : Set U) : Set U := (A \ B) ∪ (B \ A)
 infix:70 " △ " => symmDiff
+
+def isEmpty {U : Type u} (A : Set U) := ¬∃ (x : U), x ∈ A
 
 --Some theorems not in library
 theorem not_forall_not {α : Sort u_1} {p : α → Prop} : (¬ ∀ (x : α), ¬ p x) ↔ ∃ (x : α), p x := by
