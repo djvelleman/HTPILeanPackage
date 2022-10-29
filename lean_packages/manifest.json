@@ -1,10 +1,10 @@
 {"version": 2,
  "packages":
  [{"url": "https://github.com/leanprover-community/mathlib4.git",
-   "rev": "668271147667bc7a499a1748cfc66a2855697d73",
+   "rev": "760faf55e6ffa8857c070e0f48a236fe03b07698",
    "name": "mathlib"},
   {"url": "https://github.com/leanprover/std4",
-   "rev": "68c404a3bc72a44559fb58ae9ab74196abf9853d",
+   "rev": "439263f585961c94df05c181616b1561063d8f3f",
    "name": "std",
    "inputRev": "main"},
   {"url": "https://github.com/gebner/quote4",
