@@ -44,12 +44,6 @@ infix:70 " △ " => symmDiff
 def isEmpty {U : Type u} (A : Set U) := ¬∃ (x : U), x ∈ A
 
 --Some theorems not in library
---theorem not_forall_not {α : Sort u_1} {p : α → Prop} : (¬ ∀ (x : α), ¬ p x) ↔ ∃ (x : α), p x := by
---  rw [← not_exists, Classical.not_not]
-
---theorem not_exists_not {α : Sort u_1} {p : α → Prop} : (¬ ∃ (x : α), ¬ p x) ↔ ∀ (x : α), p x := by
---  rw [← not_forall, Classical.not_not]
-
 theorem not_not_and_distrib {p q : Prop} : ¬(¬ p ∧ q) ↔ (p ∨ ¬ q) := by
   rw [not_and_or, Classical.not_not]
 
@@ -65,12 +59,12 @@ theorem not_or_not_distrib {p q : Prop} : ¬(p ∨ ¬ q) ↔ (¬ p ∧ q) := by
 theorem not_imp_not_iff_and {p q : Prop} : ¬ (p → ¬ q) ↔ p ∧ q := by
   rw [not_imp, Classical.not_not]
 
-theorem not_imp_iff_or {p q : Prop} : ¬ p → q ↔ p ∨ q := by
-  rw [imp_iff_not_or, Classical.not_not]
-
 theorem not_imp_iff_not_and {p q : Prop} : ¬ (q → p) ↔ ¬ p ∧ q := by
   rw [not_imp]
   exact And.comm
+
+theorem not_not_iff {p q : Prop} : ¬(¬p ↔ q) ↔ (p ↔ q) := by
+  rw [not_iff, Classical.not_not]
 
 --Definitions of tactics
 section tactic_defs
@@ -398,6 +392,17 @@ def equivMakeRule (f : Expr)
 
 def equivRuleFromForm (p : Expr)
   (ruleFunc : Expr → TacticM ruleType) : TacticM ruleType := do
+    try
+      equivMakeRule p ruleFunc
+    catch ex =>
+      match (← getPropForm p) with
+        | PropForm.iff l r =>
+          try
+            equivMakeRule l ruleFunc
+          catch _ =>
+            equivMakeRule r ruleFunc
+        | _ => throw ex
+/- Old version
     match (← getPropForm p) with
       | PropForm.iff l r =>
           try
@@ -405,6 +410,7 @@ def equivRuleFromForm (p : Expr)
           catch _ =>
             equivMakeRule r ruleFunc
       | _ => equivMakeRule p ruleFunc
+-/
 
 def equivRule (f : Option ColonTerm) (l : Option OneLoc)
   (ruleFunc : Expr → TacticM ruleType) : TacticM ruleType := do
@@ -535,7 +541,7 @@ def cdlRule (form : Expr) : TacticM ruleType := do
         | _ => return (`not_imp, mkAnd l (mkNot r))
       | _ => myFail `conditional "conditional laws don't apply"
     | PropForm.implies l r => match (← getPropForm l) with
-      | PropForm.not nl => return (`not_imp_iff_or, mkOr nl r)
+      | PropForm.not nl => return (`or_iff_not_imp_left.symm, mkOr nl r)
       | _ => return (`imp_iff_not_or, mkOr (mkNot l) r)
     | PropForm.and l r => match (← getPropForm r) with
       | PropForm.not nr => return (`not_imp.symm, mkNot (← mkArrow l nr))
@@ -546,7 +552,7 @@ def cdlRule (form : Expr) : TacticM ruleType := do
       | PropForm.not nl => return (`imp_iff_not_or.symm, (← mkArrow nl r))
       | _ => match (← getPropForm r) with
         | PropForm.not nr => return (`imp_iff_or_not.symm, (← mkArrow nr l))
-        | _ => return (`not_imp_iff_or.symm, (← mkArrow (mkNot l) r))
+        | _ => return (`or_iff_not_imp_left, (← mkArrow (mkNot l) r))
     | _ => myFail `conditional "conditional laws don't apply"
 
 elab "conditional" f:(colonTerm)? l:(oneLoc)? : tactic => doEquivTac f l `conditional cdlRule
@@ -560,6 +566,23 @@ def dnRule (form : Expr) : TacticM ruleType := do
     | _ => myFail `double_neg "double negation law doesn't apply"
 
 elab "double_neg" f:(colonTerm)? l:(oneLoc)? : tactic => doEquivTac f l `double_neg dnRule
+
+/- bicond_neg tactic
+Note converts P ↔ Q to ¬(¬P ↔ Q), but must use ":" to specify expression
+to be converted explicitly; otherwise tries to apply it to either P or Q -/
+def binegRule (form : Expr) : TacticM ruleType := do
+  match (← getPropForm form) with
+    | PropForm.not p => match (← getPropForm p) with
+      | PropForm.iff l r => match (← getPropForm l) with
+        | PropForm.not nl => return (`not_not_iff, mkIff nl r)
+        | _ => return (`not_iff, mkIff (mkNot l) r)
+      | _ => myFail `bicond_neg "biconditional negation law doesn't apply"
+    | PropForm.iff l r => match (← getPropForm l) with
+      | PropForm.not nl => return (`not_iff.symm, mkNot (mkIff nl r))
+      | _ => return (`not_not_iff.symm, mkNot (mkIff (mkNot l) r))
+    | _ => myFail `bicond_neg "biconditional negation law doesn't apply"
+
+elab "bicond_neg" f:(colonTerm)? l:(oneLoc)? : tactic => doEquivTac f l `bicond_neg binegRule
 
 -- Give error if any ident in i is already in use.  Is this right thing to do in call cases?
 partial def checkIdUsed (tac : Name) (i : Syntax) : TacticM Unit := do
