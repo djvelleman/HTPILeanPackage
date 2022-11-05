@@ -896,6 +896,17 @@ elab "by_cases" "on" t:term wids:(with2Ids)? : tactic =>
       | _ => myFail `by_cases "hypothesis is not a disjunction"
 
 /- exists_unique tactic -/
+def mkUn (lev: Level) (v : Name) (t b : Expr) : TacticM Expr := do
+  let v1 := Name.appendIndexAfter v 1
+  let v2 := Name.appendIndexAfter v 2
+  let f1 := mkLambda v1 BinderInfo.default t b
+  let f2 := mkLambda v2 BinderInfo.default t b
+  Meta.lambdaTelescope f1 fun fv1 e1 => 
+    Meta.lambdaTelescope f2 fun fv2 e2 => do
+      let body ← mkArrow e1 (← mkArrow e2
+        (mkApp3 (const ``Eq [lev]) t fv1[0]! fv2[0]!))
+      Meta.mkForallFVars (fv1.push fv2[0]!) body
+
 elab "exists_unique" : tactic => do
   let goal ← getMainGoal
   withContext goal do
@@ -904,15 +915,7 @@ elab "exists_unique" : tactic => do
     let tar ← instantiateMVars d.type
     match (← getPropForm tar) with
       | PropForm.exun lev v t b _ =>
-        let v1 := Name.appendIndexAfter v 1
-        let v2 := Name.appendIndexAfter v 2
-        let f1 := mkLambda v1 BinderInfo.default t b
-        let f2 := mkLambda v2 BinderInfo.default t b
-        let un ← Meta.lambdaTelescope f1 fun fv1 e1 => 
-          Meta.lambdaTelescope f2 fun fv2 e2 => do
-            let body ← mkArrow e1 (← mkArrow e2
-              (mkApp3 (const ``Eq [lev]) t fv1[0]! fv2[0]!))
-            Meta.mkForallFVars (fv1.push fv2[0]!) body
+        let un ← mkUn lev v t b
         let ex := mkExists lev v BinderInfo.default t b
         let h ← mkFreshUserName `h
         let hid := mkIdent h
@@ -956,6 +959,22 @@ def doObtain (itw ith : Id?Type) (tm : Term) : TacticM Unit :=
         doIntroOption hi ht
       | _ => myFail `obtain "hypothesis is not an existence statement"
 
+/- Not used
+theorem exun_unique {α : Sort u_1} {p : α → Prop} :
+(∃! x, p x) → ∀ (y1 y2 : α), p y1 → p y2 → y1 = y2 := by
+  intro h y1 y2; exact ExistsUnique.unique h
+  -/
+
+theorem exun_elim {α : Sort u} {p : α → Prop} {b : Prop}
+    (h2 : ∃! x, p x) (h1 : ∀ x, p x → (∀ y z, p y → p z → y = z) → b) : b := by
+      apply ExistsUnique.elim h2
+      intro x h3 h4
+      apply h1 x h3
+      intro y z h5 h6
+      have h7 := h4 y h5
+      have h8 := h4 z h6
+      rw [h7,h8]
+
 def doObtainExUn (itw ith1 ith2 : Id?Type) (tm : Term) : TacticM Unit :=
   withMainContext do
     --let e ← whnfNotExUn (← formFromIdent l.raw)
@@ -965,6 +984,28 @@ def doObtainExUn (itw ith1 ith2 : Id?Type) (tm : Term) : TacticM Unit :=
         let (wi, wt) ← parseId?Type `obtain itw
         let (h1i, h1t) ← parseId?Type `obtain ith1
         let (h2i, h2t) ← parseId?Type `obtain ith2
+        let tar ← getMainTarget
+        let un ← mkUn lev v t b
+        let exun := mkForall v BinderInfo.default t (← mkArrow b (← mkArrow un tar))
+        let h ← mkFreshUserName `h
+        let hid := mkIdent h
+        doHave h (← mkArrow exun tar) (← `(exun_elim $tm))
+        evalTactic (← `(tactic| refine $hid ?_; clear $hid))
+        doIntroOption wi wt
+        doIntroOption h1i h1t
+        doIntroOption h2i h2t
+        /- Second try
+        evalTactic (← `(tactic| refine Exists.elim (ExistsUnique.exists $tm) ?_))
+        doIntroOption wi wt
+        doIntroOption h1i h1t
+        let h ← mkFreshUserName `h
+        let un ← mkUn lev v t b
+        let pf ← elabTermEnsuringType (← `(exun_unique $tm)) un
+        let mvarIdNew ← assert (← getMainGoal) h un pf
+        replaceMainGoal [mvarIdNew]
+        doIntroOption h2i h2t
+        -/
+        /- Old version
         let v1 := Name.appendIndexAfter v 1
         let tar ← getMainTarget
         let eqn := mkApp3 (mkConst ``Eq [lev]) t (bvar 1) (bvar 3)
@@ -977,6 +1018,7 @@ def doObtainExUn (itw ith1 ith2 : Id?Type) (tm : Term) : TacticM Unit :=
         doIntroOption wi wt
         doIntroOption h1i h1t
         doIntroOption h2i h2t
+        -/
       | _ => myFail `obtain "hypothesis is not a unique existence statement"
 
 --Make 1 assertion for existential, 2 for unique existential
