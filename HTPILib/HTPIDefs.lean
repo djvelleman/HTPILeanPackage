@@ -75,13 +75,15 @@ syntax oneLoc := " at " ident
 syntax colonTerm := " : " term
 syntax withId := " with " ident
 syntax with2Ids := " with " ident (", " ident)?
-syntax id?Type := ident <|> ("(" term (" : " term)? ")")
+syntax idOrTerm := ident <|> ("(" term ")")
+syntax idOrTerm?Type := ident <|> ("(" term (" : " term)? ")")
 
 abbrev OneLoc := TSyntax `oneLoc
 abbrev ColonTerm := TSyntax `colonTerm
 abbrev WithId := TSyntax `withId
 abbrev With2Ids := TSyntax `with2Ids
-abbrev Id?Type := TSyntax `id?Type
+abbrev IdOrTerm := TSyntax `idOrTerm
+abbrev IdOrTerm?Type := TSyntax `idOrTerm?Type
 
 --Get formula from identifier
 def formFromIdent (h : Syntax) : TacticM Expr := do
@@ -688,8 +690,16 @@ elab "disj_syll" d:ident n:ident w:(withId)? : tactic =>
     setUserName newGoal goalName
     -/
 
-elab "disj_syll" d:term ", " n:term w:(withId)? : tactic =>
+def parseIdOrTerm (it : IdOrTerm) : Term :=
+  let s := it.raw[0]
+  match s with
+    | .ident .. => ⟨s⟩
+    | _ => ⟨s[1]⟩
+
+elab "disj_syll" dIOrT:idOrTerm nIOrT:idOrTerm w:(withId)? : tactic =>
   withMainContext do
+    let d := parseIdOrTerm dIOrT
+    let n := parseIdOrTerm nIOrT
     let disj ← exprFromTerm d 2
     let neg ← exprFromTerm n 0
     let (dId, deflabel) :=
@@ -931,7 +941,7 @@ elab "exists_unique" : tactic => do
       | _ => myFail `exists_unique "goal is not a unique existence statement"
 
 /- obtain tactic -/
-def parseId?Type (tac : Name) (it : Id?Type) : TacticM (Term × (Option Term)) := do
+def parseIdOrTerm?Type (tac : Name) (it : IdOrTerm?Type) : TacticM (Term × (Option Term)) := do
   let s := it.raw[0]
   let res := match s with
     | .ident .. => (⟨s⟩, none)
@@ -946,14 +956,14 @@ def doIntroOption (i : Term) (t : Option Term) : TacticM Unit := do
     | some tt => evalTactic (← `(tactic| intro ($i : $tt)))
     | none => evalTactic (← `(tactic| intro $i:term))
 
-def doObtain (itw ith : Id?Type) (tm : Term) : TacticM Unit :=
+def doObtain (itw ith : IdOrTerm?Type) (tm : Term) : TacticM Unit :=
   withMainContext do
     --let e ← whnfNotExUn (← formFromIdent l.raw)
     let e ← exprFromTerm tm 1
     match (← getPropForm e) with
       | PropForm.ex _ _ _ _ _ =>
-        let (wi, wt) ← parseId?Type `obtain itw
-        let (hi, ht) ← parseId?Type `obtain ith
+        let (wi, wt) ← parseIdOrTerm?Type `obtain itw
+        let (hi, ht) ← parseIdOrTerm?Type `obtain ith
         evalTactic (← `(tactic| refine Exists.elim $tm ?_))
         doIntroOption wi wt
         doIntroOption hi ht
@@ -975,15 +985,15 @@ theorem exun_elim {α : Sort u} {p : α → Prop} {b : Prop}
       have h8 := h4 z h6
       rw [h7,h8]
 
-def doObtainExUn (itw ith1 ith2 : Id?Type) (tm : Term) : TacticM Unit :=
+def doObtainExUn (itw ith1 ith2 : IdOrTerm?Type) (tm : Term) : TacticM Unit :=
   withMainContext do
     --let e ← whnfNotExUn (← formFromIdent l.raw)
     let e ← exprFromTerm tm 1
     match (← getPropForm e) with
       | PropForm.exun lev v t b _ =>
-        let (wi, wt) ← parseId?Type `obtain itw
-        let (h1i, h1t) ← parseId?Type `obtain ith1
-        let (h2i, h2t) ← parseId?Type `obtain ith2
+        let (wi, wt) ← parseIdOrTerm?Type `obtain itw
+        let (h1i, h1t) ← parseIdOrTerm?Type `obtain ith1
+        let (h2i, h2t) ← parseIdOrTerm?Type `obtain ith2
         let tar ← getMainTarget
         let un ← mkUn lev v t b
         let exun := mkForall v BinderInfo.default t (← mkArrow b (← mkArrow un tar))
@@ -1022,9 +1032,9 @@ def doObtainExUn (itw ith1 ith2 : Id?Type) (tm : Term) : TacticM Unit :=
       | _ => myFail `obtain "hypothesis is not a unique existence statement"
 
 --Make 1 assertion for existential, 2 for unique existential
-elab "obtain" itw:id?Type ith:id?Type " from " t:term : tactic =>
+elab "obtain" itw:idOrTerm?Type ith:idOrTerm?Type " from " t:term : tactic =>
   doObtain itw ith t
-elab "obtain" itw:id?Type ith1:id?Type ith2:id?Type " from " t:term : tactic =>
+elab "obtain" itw:idOrTerm?Type ith1:idOrTerm?Type ith2:idOrTerm?Type " from " t:term : tactic =>
   doObtainExUn itw ith1 ith2 t
 
 /- assume and fix tactics -/
