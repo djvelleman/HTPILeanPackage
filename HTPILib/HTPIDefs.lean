@@ -568,8 +568,8 @@ def dnRule (form : Expr) : TacticM ruleType := do
 elab "double_neg" f:(colonTerm)? l:(oneLoc)? : tactic => doEquivTac f l `double_neg dnRule
 
 /- bicond_neg tactic
-Note converts P ↔ Q to ¬(¬P ↔ Q), but must use ":" to specify expression
-to be converted explicitly; otherwise tries to apply it to either P or Q -/
+Note converts P ↔ Q to ¬(¬P ↔ Q).
+So to convert only one side of ↔, must use : -/
 def binegRule (form : Expr) : TacticM ruleType := do
   match (← getPropForm form) with
     | PropForm.not p => match (← getPropForm p) with
