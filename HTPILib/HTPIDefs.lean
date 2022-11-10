@@ -420,10 +420,24 @@ def equivRule (f : Option ColonTerm) (l : Option OneLoc)
     | some fs => equivMakeRule (← elabTerm fs.raw[1] none) ruleFunc
     | none => equivRuleFromForm (← formFromLoc l) ruleFunc
 
+def doReplace (tac : Name) (l : Option OneLoc) (res : Expr) (pf : Syntax) : TacticM Unit := do
+    let hn ← mkFreshUserName `h
+    doHave hn res pf
+    let h := mkIdent hn
+    let ht : Term := ⟨h.raw⟩
+    try
+      doRewrite false ht l
+      evalTactic (← `(tactic| clear $h:ident)) -- Could also do: (try apply Iff.refl); try assumption
+    catch _ =>
+      evalTactic (← `(tactic| clear $h:ident))
+      myFail tac  "target expression not found"
+
 def doEquivTac (f : Option ColonTerm) (l : Option OneLoc)
   (tac : Name) (ruleFunc : Expr → TacticM ruleType) : TacticM Unit :=
   withMainContext do
     let (rule, res) ← equivRule f l ruleFunc
+    doReplace tac l res (mkIdent rule)
+  /- Moved to doReplace
     let hn ← mkFreshUserName `h
     doHave hn res (mkIdent rule)
     let h := mkIdent hn
@@ -434,6 +448,7 @@ def doEquivTac (f : Option ColonTerm) (l : Option OneLoc)
     catch _ =>
       evalTactic (← `(tactic| clear $h:ident))
       myFail tac  "target expression not found"
+  -/
 
 /- contrapos tactic -/
 def cpRule (form : Expr) : TacticM ruleType := do
@@ -756,8 +771,9 @@ def unfoldOrWhnf (tac: Name) (e : Expr) (w : Bool) (rep : Bool) : TacticM Expr :
     else
       unfoldHead e tac true
 
+/- Not needed anymore -- replaced with more general version
 --Unfold head repeatedly or whnf at a location
-def unfoldOrWhnfAt (tac : Name) (l : Option OneLoc) (w : Bool) (rep: Bool) : TacticM Unit := do
+def unfoldOrWhnfAt (tac : Name) (l : Option OneLoc) (w rep : Bool) : TacticM Unit := do
   let goal ← getMainGoal
   withContext goal do
     match l with
@@ -776,7 +792,33 @@ def unfoldOrWhnfAt (tac : Name) (l : Option OneLoc) (w : Bool) (rep: Bool) : Tac
           Meta.throwTacticEx tac goal "got definition wrong"
         let newgoal ← replaceTargetDefEq goal e'
         replaceMainGoal [newgoal]
+-/
 
+def doDefine (tac : Name) (f : Option ColonTerm) (l : Option OneLoc) (w rep : Bool) : TacticM Unit :=
+  withMainContext do
+    let e ← match f with
+      | some fs => elabTerm fs.raw[1] none
+      | none => formFromLoc l
+    let e' ← unfoldOrWhnf tac e w rep
+    doReplace tac l (← Meta.mkEq e e') (← `(Eq.refl _))
+  /- Replaced by doReplace
+    let h ← mkFreshUserName `h
+    let hid := mkIdent h
+    let ht : Term := ⟨hid.raw⟩
+    doHave h (← Meta.mkEq e e') (← `(Eq.refl _))
+    try
+      doRewrite false ht l
+      evalTactic (← `(tactic| clear $hid:ident))
+    catch _ =>
+      evalTactic (← `(tactic| clear $hid:ident))
+      myFail tac  "target expression not found"
+  -/
+
+elab "define" f:(colonTerm)? l:(oneLoc)? : tactic => doDefine `define f l false true
+elab "whnf" f:(colonTerm)? l:(oneLoc)? : tactic => doDefine `whnf f l true true
+elab "def_step" f:(colonTerm)? l:(oneLoc)? : tactic => doDefine `def_step f l false false
+
+/- Old versions
 elab "define" l:(oneLoc)? : tactic => unfoldOrWhnfAt `define l false true
 elab "whnf" l:(oneLoc)? : tactic => unfoldOrWhnfAt `whnf l true true
 elab "def_step" l:(oneLoc)? : tactic => unfoldOrWhnfAt `def_step l false false
@@ -798,9 +840,10 @@ def defineSubExpr (tac : Name) (f : ColonTerm) (l : Option OneLoc) (w : Bool) (r
 
 elab "define" f:colonTerm l:(oneLoc)? : tactic => defineSubExpr `define f l false true
 elab "whnf" f:colonTerm l:(oneLoc)? : tactic => defineSubExpr `whnf f l true true
+-/
 
 /- definition and definition! tactics -/
---Context set in doDefine, which calls these functions
+--Context set in doDefinition, which calls these functions
 def getDefineFormLabel (f : Option ColonTerm) (l : Option OneLoc) : TacticM (Expr × Name) := do
   match f with
     | some t => return (← elabTerm t.raw[1] none, `this)
@@ -818,12 +861,12 @@ def mkRel (e1 e2 : Expr) (prop : Bool) : TacticM Expr :=
     Meta.mkEq e1 e2
 
 -- repeatedly assert definition equivalences or equations, numbering steps
-partial def doDefineRep (label : Name) (e e1 : Expr) (prop : Bool) (rule : Ident) (firstNum : Nat) : TacticM Unit := do
+partial def doDefinitionRep (label : Name) (e e1 : Expr) (prop : Bool) (rule : Ident) (firstNum : Nat) : TacticM Unit := do
   let e' ← unfoldHead e1 `definition (firstNum == 1)
   let res ← mkRel e e' prop
   doHave (Name.appendIndexAfter label firstNum) res (← `($rule _))
   try
-    withMainContext (doDefineRep label e e' prop rule (firstNum + 1))  -- Context changes each time through
+    withMainContext (doDefinitionRep label e e' prop rule (firstNum + 1))  -- Context changes each time through
   catch _ =>
     return ()
 
@@ -837,7 +880,7 @@ def doDefinition (all : Bool) (f : Option ColonTerm) (l : Option OneLoc) (wid : 
       else
         (false, mkIdent ``Eq.refl)
     if all then
-      doDefineRep labeln e e prop rule 1
+      doDefinitionRep labeln e e prop rule 1
     else
       let e' ← unfoldHeadRep e `definition true
       let res ← mkRel e e' prop
