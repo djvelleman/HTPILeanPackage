@@ -781,6 +781,24 @@ elab "define" l:(oneLoc)? : tactic => unfoldOrWhnfAt `define l false true
 elab "whnf" l:(oneLoc)? : tactic => unfoldOrWhnfAt `whnf l true true
 elab "def_step" l:(oneLoc)? : tactic => unfoldOrWhnfAt `def_step l false false
 
+def defineSubExpr (tac : Name) (f : ColonTerm) (l : Option OneLoc) (w : Bool) (rep : Bool) : TacticM Unit :=
+  withMainContext do
+    let e ← elabTerm f.raw[1] none
+    let e' ← unfoldOrWhnf tac e w rep
+    let h ← mkFreshUserName `h
+    let hid := mkIdent h
+    let ht : Term := ⟨hid.raw⟩
+    doHave h (← Meta.mkEq e e') (← `(Eq.refl _))
+    try
+      doRewrite false ht l
+      evalTactic (← `(tactic| clear $hid:ident))
+    catch _ =>
+      evalTactic (← `(tactic| clear $hid:ident))
+      myFail tac  "target expression not found"
+
+elab "define" f:colonTerm l:(oneLoc)? : tactic => defineSubExpr `define f l false true
+elab "whnf" f:colonTerm l:(oneLoc)? : tactic => defineSubExpr `whnf f l true true
+
 /- definition and definition! tactics -/
 --Context set in doDefine, which calls these functions
 def getDefineFormLabel (f : Option ColonTerm) (l : Option OneLoc) : TacticM (Expr × Name) := do
