@@ -323,7 +323,7 @@ def whnfNotExUn (e : Expr) : TacticM Expr :=
   Meta.whnfHeadPred e (fun x => return !(x.isAppOf ``ExistsUnique))
 
 -- w = 0 : no whnf, w = 1 : whnfNotExun, w = 2 : full whnf
-def exprFromTerm (t : Term) (w : Nat) : TacticM Expr := do
+def exprFromPf (t : Term) (w : Nat) : TacticM Expr := do
   let p ← elabTerm t none
   let e ← instantiateMVars (← Meta.inferType p)
   match w with
@@ -715,8 +715,8 @@ elab "disj_syll" dIOrT:idOrTerm nIOrT:idOrTerm w:(withId)? : tactic =>
   withMainContext do
     let d := parseIdOrTerm dIOrT
     let n := parseIdOrTerm nIOrT
-    let disj ← exprFromTerm d 2
-    let neg ← exprFromTerm n 0
+    let disj ← exprFromPf d 2
+    let neg ← exprFromPf n 0
     let (dId, deflabel) :=
       if d.raw.isIdent then
         (true, ⟨d.raw⟩)
@@ -750,7 +750,7 @@ elab "contradict" h:term w:(withId)? : tactic => do
   ensureContra w
   withMainContext do
     --let tocon ← formFromIdent h.raw
-    let tocon ← exprFromTerm h 0
+    let tocon ← exprFromPf h 0
     match (← getPropForm tocon) with
       | PropForm.not p =>
         doSuffices p (← `(fun x => $h x))
@@ -956,7 +956,7 @@ def fixCase (clear : Bool) (label : Ident) (g : Name) (c : String) : TacticM Uni
 
 elab "by_cases" "on" t:term wids:(with2Ids)? : tactic =>
   withMainContext do
-    let e ← exprFromTerm t 2
+    let e ← exprFromPf t 2
     match (← getPropForm e) with
       | PropForm.or _ _ =>
         let (clear, label1, label2) ← setUpCases t wids
@@ -1020,7 +1020,7 @@ def doIntroOption (i : Term) (t : Option Term) : TacticM Unit := do
 def doObtain (itw ith : IdOrTerm?Type) (tm : Term) : TacticM Unit :=
   withMainContext do
     --let e ← whnfNotExUn (← formFromIdent l.raw)
-    let e ← exprFromTerm tm 1
+    let e ← exprFromPf tm 1
     match (← getPropForm e) with
       | PropForm.ex _ _ _ _ _ =>
         let (wi, wt) ← parseIdOrTerm?Type `obtain itw
@@ -1049,7 +1049,7 @@ theorem exun_elim {α : Sort u} {p : α → Prop} {b : Prop}
 def doObtainExUn (itw ith1 ith2 : IdOrTerm?Type) (tm : Term) : TacticM Unit :=
   withMainContext do
     --let e ← whnfNotExUn (← formFromIdent l.raw)
-    let e ← exprFromTerm tm 1
+    let e ← exprFromPf tm 1
     match (← getPropForm e) with
       | PropForm.exun lev v t b _ =>
         let (wi, wt) ← parseIdOrTerm?Type `obtain itw
