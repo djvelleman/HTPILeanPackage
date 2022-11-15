@@ -264,16 +264,6 @@ def myFail {α} (tac : Name) (msg : String) : TacticM α := do
   Meta.throwTacticEx tac (← getMainGoal) msg
 
 /- Functions for unfolding head -/
-/- replace with Name.appendIndexAfter
-def addSuffixAux (suff : String) (v : Name) : Name :=
-  match v with
-    | .str p s => Name.mkStr p (s ++ suff)
-    | .num p i => Name.mkNum (addSuffixAux suff p) i
-    | .anonymous => Name.mkSimple ("a" ++ suff)
-  
-def addSuffixToVar (suff : String) (v : Name) : Name :=
-  Name.modifyBase v (addSuffixAux suff)
--/
 
 --Unfold ExistsUnique; default version doesn't do a good job of naming variables
 def unfoldExUn (lev : Level) (v : Name) (t b : Expr) (_ : BinderInfo) : Expr :=
@@ -404,15 +394,6 @@ def equivRuleFromForm (p : Expr)
           catch _ =>
             equivMakeRule r ruleFunc
         | _ => throw ex
-/- Old version
-    match (← getPropForm p) with
-      | PropForm.iff l r =>
-          try
-            commitIfNoEx (equivMakeRule l ruleFunc)
-          catch _ =>
-            equivMakeRule r ruleFunc
-      | _ => equivMakeRule p ruleFunc
--/
 
 def equivRule (f : Option ColonTerm) (l : Option OneLoc)
   (ruleFunc : Expr → TacticM ruleType) : TacticM ruleType := do
@@ -437,18 +418,6 @@ def doEquivTac (f : Option ColonTerm) (l : Option OneLoc)
   withMainContext do
     let (rule, res) ← equivRule f l ruleFunc
     doReplace tac l res (mkIdent rule)
-  /- Moved to doReplace
-    let hn ← mkFreshUserName `h
-    doHave hn res (mkIdent rule)
-    let h := mkIdent hn
-    let ht : Term := ⟨h.raw⟩
-    try
-      doRewrite false ht l
-      evalTactic (← `(tactic| clear $h:ident)) -- Could also do: (try apply Iff.refl); try assumption
-    catch _ =>
-      evalTactic (← `(tactic| clear $h:ident))
-      myFail tac  "target expression not found"
-  -/
 
 /- contrapos tactic -/
 def cpRule (form : Expr) : TacticM ruleType := do
@@ -586,7 +555,7 @@ elab "double_neg" f:(colonTerm)? l:(oneLoc)? : tactic => doEquivTac f l `double_
 
 /- bicond_neg tactic
 Note converts P ↔ Q to ¬(¬P ↔ Q).
-So to convert only one side of ↔, must use : -/
+So to convert only one side of ↔, must use : [term to convert] -/
 def binegRule (form : Expr) : TacticM ruleType := do
   match (← getPropForm form) with
     | PropForm.not p => match (← getPropForm p) with
@@ -685,26 +654,6 @@ def DisjSyllData (disj neg : Expr) : TacticM (Bool × Bool) := do
           myFail `disj_syll "disjunctive syllogism rule doesn't apply"
     | _ => myFail `disj_syll "disjunctive syllogism rule doesn't apply"
 
-/- Old version with idents
-elab "disj_syll" d:ident n:ident w:(withId)? : tactic =>
-  withMainContext do
-    let label ← getLabel `disj_syll w d
-    let disj ← Meta.whnf (← formFromIdent d.raw)
-    let neg ← formFromIdent n.raw
-    let (conright, disjneg) ← DisjSyllData disj neg
-    let goalName := (← getMainDecl).userName
-    evalTactic (← `(tactic| refine Or.elim $d:ident ?_ ?_))
-    if conright then doSwap
-    if disjneg then
-      evalTactic (← `(tactic| exact fun x => absurd $n:ident x))
-    else
-      evalTactic (← `(tactic| exact fun x => absurd x $n:ident))
-    if (w == none) then evalTactic (← `(tactic| clear $d:ident))
-    evalTactic (← `(tactic| intro $label:ident))
-    let newGoal ← getMainGoal
-    setUserName newGoal goalName
-    -/
-
 def parseIdOrTerm (it : IdOrTerm) : Term :=
   let s := it.raw[0]
   match s with
@@ -736,7 +685,6 @@ elab "disj_syll" dIOrT:idOrTerm nIOrT:idOrTerm w:(withId)? : tactic =>
     let newGoal ← getMainGoal
     setUserName newGoal goalName
 
-
 /- contradict tactic -/
 def ensureContra (w : Option WithId) : TacticM Unit :=
   withMainContext do
@@ -760,7 +708,7 @@ elab "contradict" h:term w:(withId)? : tactic => do
 /- define, def_step, and whnf tactics 
 Probably want to use define, but include whnf to be able to compare
 -/
-def unfoldOrWhnf (tac: Name) (e : Expr) (w : Bool) (rep : Bool) : TacticM Expr := do
+def unfoldOrWhnf (tac: Name) (e : Expr) (w rep : Bool) : TacticM Expr := do
   if w then
     match (← getPropForm e) with
       | PropForm.exun lev v t b bi => return unfoldExUn lev v t b bi
@@ -771,29 +719,6 @@ def unfoldOrWhnf (tac: Name) (e : Expr) (w : Bool) (rep : Bool) : TacticM Expr :
     else
       unfoldHead e tac true
 
-/- Not needed anymore -- replaced with more general version
---Unfold head repeatedly or whnf at a location
-def unfoldOrWhnfAt (tac : Name) (l : Option OneLoc) (w rep : Bool) : TacticM Unit := do
-  let goal ← getMainGoal
-  withContext goal do
-    match l with
-      | some h => do
-        let hdec ← Meta.getLocalDeclFromUserName h.raw[1].getId
-        let e ← instantiateMVars hdec.type
-        let e' ← unfoldOrWhnf tac e w rep
-        if !(← Meta.isExprDefEq e e') then   --Just to be sure we didn't make a mistake
-          Meta.throwTacticEx tac goal "got definition wrong"
-        let newgoal ← replaceLocalDeclDefEq goal hdec.fvarId e'
-        replaceMainGoal [newgoal]
-      | none => do
-        let e ← instantiateMVars (← getType goal)
-        let e' ← unfoldOrWhnf tac e w rep
-        if !(← Meta.isExprDefEq e e') then
-          Meta.throwTacticEx tac goal "got definition wrong"
-        let newgoal ← replaceTargetDefEq goal e'
-        replaceMainGoal [newgoal]
--/
-
 def doDefine (tac : Name) (f : Option ColonTerm) (l : Option OneLoc) (w rep : Bool) : TacticM Unit :=
   withMainContext do
     let e ← match f with
@@ -801,46 +726,10 @@ def doDefine (tac : Name) (f : Option ColonTerm) (l : Option OneLoc) (w rep : Bo
       | none => formFromLoc l
     let e' ← unfoldOrWhnf tac e w rep
     doReplace tac l (← Meta.mkEq e e') (← `(Eq.refl _))
-  /- Replaced by doReplace
-    let h ← mkFreshUserName `h
-    let hid := mkIdent h
-    let ht : Term := ⟨hid.raw⟩
-    doHave h (← Meta.mkEq e e') (← `(Eq.refl _))
-    try
-      doRewrite false ht l
-      evalTactic (← `(tactic| clear $hid:ident))
-    catch _ =>
-      evalTactic (← `(tactic| clear $hid:ident))
-      myFail tac  "target expression not found"
-  -/
 
 elab "define" f:(colonTerm)? l:(oneLoc)? : tactic => doDefine `define f l false true
 elab "whnf" f:(colonTerm)? l:(oneLoc)? : tactic => doDefine `whnf f l true true
 elab "def_step" f:(colonTerm)? l:(oneLoc)? : tactic => doDefine `def_step f l false false
-
-/- Old versions
-elab "define" l:(oneLoc)? : tactic => unfoldOrWhnfAt `define l false true
-elab "whnf" l:(oneLoc)? : tactic => unfoldOrWhnfAt `whnf l true true
-elab "def_step" l:(oneLoc)? : tactic => unfoldOrWhnfAt `def_step l false false
-
-def defineSubExpr (tac : Name) (f : ColonTerm) (l : Option OneLoc) (w : Bool) (rep : Bool) : TacticM Unit :=
-  withMainContext do
-    let e ← elabTerm f.raw[1] none
-    let e' ← unfoldOrWhnf tac e w rep
-    let h ← mkFreshUserName `h
-    let hid := mkIdent h
-    let ht : Term := ⟨hid.raw⟩
-    doHave h (← Meta.mkEq e e') (← `(Eq.refl _))
-    try
-      doRewrite false ht l
-      evalTactic (← `(tactic| clear $hid:ident))
-    catch _ =>
-      evalTactic (← `(tactic| clear $hid:ident))
-      myFail tac  "target expression not found"
-
-elab "define" f:colonTerm l:(oneLoc)? : tactic => defineSubExpr `define f l false true
-elab "whnf" f:colonTerm l:(oneLoc)? : tactic => defineSubExpr `whnf f l true true
--/
 
 /- definition and definition! tactics -/
 --Context set in doDefinition, which calls these functions
@@ -893,39 +782,6 @@ elab "definition!" l:(oneLoc)? wid:(withId)? : tactic => doDefinition true none 
 
 def addToName (n : Name) (s : String) : Name :=
   Name.modifyBase n (fun x => Name.mkStr x s)
-
-/- by_cases on tactic -/
-/- Old version takes ident not term
-def getCaseLabels (deflabel : Ident) (wids : Option With2Ids) : TacticM (Ident × Ident) := do
-  match wids with
-    | some ids =>
-      let id1s := ids.raw[1]
-      checkIdUsed `by_cases id1s
-      let id1 : Ident := ⟨id1s⟩
-      match ids.raw[2].getArgs[0]? with
-        | some id2 =>
-          checkIdUsed `by_cases id2
-          return (id1, ⟨id2⟩)
-        | none => return ⟨id1, id1⟩
-    | none => return ⟨deflabel, deflabel⟩
-
-def fixCase (orid label : Ident) (g : Name) (c : String) : TacticM Unit := do
-  evalTactic (← `(tactic| clear $orid:ident; intro $label:ident))
-  setUserName (← getMainGoal) (addToName g c)
-  doSwap
-
-elab "by_cases" "on" l:ident wids:(with2Ids)? : tactic =>
-  withMainContext do
-    let e ← Meta.whnf (← formFromIdent l.raw)
-    match (← getPropForm e) with
-      | PropForm.or _ _ =>
-        let (label1, label2) ← getCaseLabels l wids
-        let goalname :=  (← getMainDecl).userName
-        evalTactic (← `(tactic| refine Or.elim $l:ident ?_ ?_))
-        fixCase l label1 goalname "Case_1"
-        fixCase l label2 goalname "Case_2"
-      | _ => myFail `by_cases "hypothesis is not a disjunction"
--/
 
 --Bool is whether or not to clear "or" given; Idents for two cases
 def setUpCases (t : Term) (wids : Option With2Ids) : TacticM (Bool × Ident × Ident) := do
@@ -1048,7 +904,6 @@ theorem exun_elim {α : Sort u} {p : α → Prop} {b : Prop}
 
 def doObtainExUn (itw ith1 ith2 : IdOrTerm?Type) (tm : Term) : TacticM Unit :=
   withMainContext do
-    --let e ← whnfNotExUn (← formFromIdent l.raw)
     let e ← exprFromPf tm 1
     match (← getPropForm e) with
       | PropForm.exun lev v t b _ =>
@@ -1065,31 +920,6 @@ def doObtainExUn (itw ith1 ith2 : IdOrTerm?Type) (tm : Term) : TacticM Unit :=
         doIntroOption wi wt
         doIntroOption h1i h1t
         doIntroOption h2i h2t
-        /- Second try
-        evalTactic (← `(tactic| refine Exists.elim (ExistsUnique.exists $tm) ?_))
-        doIntroOption wi wt
-        doIntroOption h1i h1t
-        let h ← mkFreshUserName `h
-        let un ← mkUn lev v t b
-        let pf ← elabTermEnsuringType (← `(exun_unique $tm)) un
-        let mvarIdNew ← assert (← getMainGoal) h un pf
-        replaceMainGoal [mvarIdNew]
-        doIntroOption h2i h2t
-        -/
-        /- Old version
-        let v1 := Name.appendIndexAfter v 1
-        let tar ← getMainTarget
-        let eqn := mkApp3 (mkConst ``Eq [lev]) t (bvar 1) (bvar 3)
-        let un := mkForall v1 BinderInfo.default t (← mkArrow b eqn)
-        let exun := mkForall v BinderInfo.default t (← mkArrow b (← mkArrow un tar))
-        let h ← mkFreshUserName `h
-        let hid := mkIdent h
-        doHave h (← mkArrow exun tar) (← `(ExistsUnique.elim $tm))
-        evalTactic (← `(tactic| refine $hid ?_; clear $hid))
-        doIntroOption wi wt
-        doIntroOption h1i h1t
-        doIntroOption h2i h2t
-        -/
       | _ => myFail `obtain "hypothesis is not a unique existence statement"
 
 --Make 1 assertion for existential, 2 for unique existential
