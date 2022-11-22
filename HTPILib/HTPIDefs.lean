@@ -31,11 +31,27 @@ def Iff.ltr {p q : Prop} (h : p ↔ q) := h.mp
 def Iff.rtl {p q : Prop} (h : p ↔ q) := h.mpr
 def Pred (t : Type u) : Type u := t → Prop
 def Rel (s t : Type u) : Type u := s → t → Prop
-def BinRel (t : Type u) : Type u := t → t → Prop
+def BinRel (t : Type u) : Type u := Rel t t
+
+--New set theory notation.  Good idea?  Maybe not, unless add to unexpander as well.
+/-
+elab "{ " pat:term " : " t:term " | " p:term " }" : term => do
+  if pat.raw.isIdent then
+    Lean.Elab.throwUnsupportedSyntax
+  else
+    Lean.Elab.Term.elabTerm (← `(setOf fun x : $t => match x with | $pat => $p)) none
+-/
+/- This causes problems for {x [pred] | ...}  
+elab "{ " pat:term " | " p:term " }" : term => do
+  if pat.raw.isIdent then
+    Lean.Elab.throwUnsupportedSyntax
+  else
+    Lean.Elab.Term.elabTerm (← `(setOf fun x => match x with | $pat => $p)) none
+-/
 
 --Copying similar defs for sUnion in Mathlib.Init.Set.  Why isn't sInter defined there??
 @[reducible]  --?
-def sInter {U : Type u} (F : Set (Set U)) : Set U := {x | ∀ A : Set U, A ∈ F → x ∈ A}
+def sInter {U : Type u} (F : Set (Set U)) : Set U := {x : U | ∀ A : Set U, A ∈ F → x ∈ A}
 prefix:110 "⋂₀" => sInter
 
 def symmDiff {U : Type u} (A B : Set U) : Set U := (A \ B) ∪ (B \ A)
