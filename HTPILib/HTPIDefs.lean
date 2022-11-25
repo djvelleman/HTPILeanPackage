@@ -33,23 +33,49 @@ def Pred (t : Type u) : Type u := t → Prop
 def Rel (s t : Type u) : Type u := s → t → Prop
 def BinRel (t : Type u) : Type u := Rel t t
 
---New set theory notation.  Good idea?  Maybe not, unless add to unexpander as well.
-/-
+--New set theory notation.  Good idea?
+--Lower priority than all other set theory notation
+macro (priority := low-1) "{ " pat:term " : " t:term " | " p:term " }" : term =>
+  `(setOf fun x : $t => match x with | $pat => $p)
+
+macro (priority := low-1) "{ " pat:term " | " p:term " }" : term =>
+  `(setOf fun x => match x with | $pat => $p)
+
+@[app_unexpander setOf]
+def setOf.unexpander : Lean.PrettyPrinter.Unexpander
+  | `($_ fun $_:ident =>
+        match $_:ident with
+        | $pat => $p) => `({ $pat:term | $p:term })
+  | _ => throw ()
+
+/- Old versions
+open Lean.Elab in
 elab "{ " pat:term " : " t:term " | " p:term " }" : term => do
   if pat.raw.isIdent then
-    Lean.Elab.throwUnsupportedSyntax
+    throwUnsupportedSyntax  --To avoid creating ambiguity with existing set notation
   else
-    Lean.Elab.Term.elabTerm (← `(setOf fun x : $t => match x with | $pat => $p)) none
--/
-/- This causes problems for {x [pred] | ...}  
-elab "{ " pat:term " | " p:term " }" : term => do
-  if pat.raw.isIdent then
-    Lean.Elab.throwUnsupportedSyntax
-  else
-    Lean.Elab.Term.elabTerm (← `(setOf fun x => match x with | $pat => $p)) none
+    Term.elabTerm (← `(setOf fun x : $t => match x with | $pat => $p)) none
+
+syntax identBinderPred := ident binderPred
+
+--If pat is an identifier, or starts with an identifier, then tries to parse as identBinderPred and fails.
+--So probably don't need to test for kpat = `ident--will never get there
+--Won't recognize a pattern that starts with an identifier--are there any such?
+
+open Lean Elab in
+elab "{ " pat:(identBinderPred <|> term) " | " p:term " }" : term => do
+  let kpat := pat.raw.getKind
+  if (kpat = `ident) || (kpat = `identBinderPred) then
+    throwUnsupportedSyntax
+  else 
+    let patTerm : Term := ⟨pat⟩
+    Term.elabTerm (← `(setOf fun x => match x with | $patTerm => $p)) none
 -/
 
---Copying similar defs for sUnion in Mathlib.Init.Set.  Why isn't sInter defined there??
+-- Set theory notation that should be in library.  Will it be added eventually?
+-- Copying similar in:  Mathlib/Init/Set.lean, lean4/Init/Notation.lean, std4/Std/Classes/SetNotation.lean
+notation:50 a:50 " ⊈ " b:50 => ¬ (a ⊆ b)
+
 @[reducible]  --?
 def sInter {U : Type u} (F : Set (Set U)) : Set U := {x : U | ∀ A : Set U, A ∈ F → x ∈ A}
 prefix:110 "⋂₀" => sInter
@@ -162,7 +188,7 @@ elab "traceExpr" t:(colonTerm)? l:(oneLoc)? : tactic =>
         let e ← formFromLoc l
         traceThisExpr e
 
--- Get head and arg list, and recover expression from head and arg list
+-- Get head and arg list
 def getHeadData (e : Expr) : Expr × List Expr :=
   match e with
     | app f a =>
@@ -171,6 +197,7 @@ def getHeadData (e : Expr) : Expr × List Expr :=
     | mdata _ e' => getHeadData e'
     | _ => (e, [])
 
+-- Recover expression from head and arg list
 def mkAppList (h : Expr) (args : List Expr) : Expr :=
   match args with
     | a :: rest => mkApp (mkAppList h rest) a
@@ -593,10 +620,10 @@ partial def checkIdUsed (tac : Name) (i : Syntax) : TacticM Unit := do
     | .node _ _ as => for a in as do checkIdUsed tac a
     | .atom _ _ => return ()
     | .ident _ _ v _ => 
-        let d := (← getLCtx).findFromUserName? v
-        match d with
-          | some _ => myFail tac ("identifier " ++ (toString v) ++ " already in use")
-          | none => return ()
+        if (← getLCtx).usesUserName v then
+          myFail tac ("identifier " ++ (toString v) ++ " already in use")
+        else
+          return ()
 
 -- Get label from "with" clause, or default label.  Used by several tactics
 def getLabel (tac : Name) (w : Option WithId) (dflt : Ident := mkIdent `this) : TacticM Ident := do
@@ -606,6 +633,11 @@ def getLabel (tac : Name) (w : Option WithId) (dflt : Ident := mkIdent `this) : 
       checkIdUsed tac i
       return ⟨i⟩
     | none => return dflt
+
+def isLocalVar (s : Syntax) : TacticM Bool := do
+  match s with
+    | .ident _ _ v _ => return (← getLCtx).usesUserName v
+    | _ => return False
 
 /- or_left and or_right tactics -/
 def negData (e : Expr) : TacticM (Expr × Bool) := do
@@ -683,7 +715,7 @@ elab "disj_syll" dIOrT:idOrTerm nIOrT:idOrTerm w:(withId)? : tactic =>
     let disj ← exprFromPf d 2
     let neg ← exprFromPf n 0
     let (dId, deflabel) :=
-      if d.raw.isIdent then
+      if (← isLocalVar d.raw) then
         (true, ⟨d.raw⟩)
       else
         (false, mkIdent `this)
@@ -812,7 +844,7 @@ def setUpCases (t : Term) (wids : Option With2Ids) : TacticM (Bool × Ident × I
           return (false, id1, ⟨id2⟩)
         | none => return (false, id1, id1)
     | none =>
-      if t.raw.isIdent then
+      if (← isLocalVar t.raw) then
         let tid : Ident := ⟨t.raw⟩
         return (true, tid, tid)
       else
