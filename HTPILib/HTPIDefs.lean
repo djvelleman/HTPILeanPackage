@@ -36,16 +36,18 @@ def BinRel (t : Type u) : Type u := Rel t t
 --New set theory notation.  Good idea?
 --Lower priority than all other set theory notation
 macro (priority := low-1) "{ " pat:term " : " t:term " | " p:term " }" : term =>
-  `(setOf fun x : $t => match x with | $pat => $p)
+  `({ x : $t | match x with | $pat => $p })
 
 macro (priority := low-1) "{ " pat:term " | " p:term " }" : term =>
-  `(setOf fun x => match x with | $pat => $p)
+  `({ x | match x with | $pat => $p })
 
 @[app_unexpander setOf]
 def setOf.unexpander : Lean.PrettyPrinter.Unexpander
-  | `($_ fun $_:ident =>
-        match $_:ident with
-        | $pat => $p) => `({ $pat:term | $p:term })
+  | `($_ fun $x:ident => match $y:ident with | $pat => $p) =>
+      if x == y then
+        `({ $pat:term | $p:term })
+      else
+        throw ()  --Or could use `({ $x:ident | match $y:ident with | $pat => $p})
   | _ => throw ()
 
 /- Old versions
