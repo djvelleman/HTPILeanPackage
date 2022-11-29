@@ -48,8 +48,20 @@ def setOf.unexpander : Lean.PrettyPrinter.Unexpander
         `({ $pat:term | $p:term })
       else
         throw ()  --Or could use `({ $x:ident | match $y:ident with | $pat => $p})
+  --Include alternative function symbol introduced in Mathlib4
+  | `($_ fun $x:ident ↦ match $y:ident with | $pat => $p) =>
+      if x == y then
+        `({ $pat:term | $p:term })
+      else
+        throw ()  --Or could use `({ $x:ident | match $y:ident with | $pat => $p})
   | _ => throw ()
 
+--Until they fix unexpander for Exists:
+@[app_unexpander Exists] def unexpandExistsMapsto : Lean.PrettyPrinter.Unexpander
+  | `($(_) fun $x:ident ↦ ∃ $xs:binderIdent*, $b) => `(∃ $x:ident $xs:binderIdent*, $b)
+  | `($(_) fun $x:ident ↦ $b)                     => `(∃ $x:ident, $b)
+  | `($(_) fun ($x:ident : $t) ↦ $b)              => `(∃ ($x:ident : $t), $b)
+  | _                                             => throw ()
 /- Old versions
 open Lean.Elab in
 elab "{ " pat:term " : " t:term " | " p:term " }" : term => do
@@ -369,10 +381,16 @@ def exprFromPf (t : Term) (w : Nat) : TacticM Expr := do
 --Add new hypothesis with name n, asserting form, proven by pfstx.
 def doHave (n : Name) (form : Expr) (pfstx : Syntax) : TacticM Unit := do
   let goal ← getMainGoal
+  let oldtar := (← goal.getDecl).type
   let pf ← elabTermEnsuringType pfstx form
   let mvarIdNew ← assert goal n form pf
   let (_, newGoal) ← intro1P mvarIdNew    --blank is FVarId of new hyp.
-  replaceMainGoal [newGoal]
+  let newtar := (← newGoal.getDecl).type
+  if (oldtar != newtar) && (← Meta.isExprDefEq oldtar newtar) then
+    --intro1P sometimes changes goal to something def. equal.  Put it back to original
+    replaceMainGoal [← newGoal.replaceTargetDefEq oldtar]
+  else
+    replaceMainGoal [newGoal]
 
 --Add n : (Type) := val to context.
 /- **Not used
