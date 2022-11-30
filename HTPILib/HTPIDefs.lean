@@ -62,29 +62,6 @@ def setOf.unexpander : Lean.PrettyPrinter.Unexpander
   | `($(_) fun $x:ident ↦ $b)                     => `(∃ $x:ident, $b)
   | `($(_) fun ($x:ident : $t) ↦ $b)              => `(∃ ($x:ident : $t), $b)
   | _                                             => throw ()
-/- Old versions
-open Lean.Elab in
-elab "{ " pat:term " : " t:term " | " p:term " }" : term => do
-  if pat.raw.isIdent then
-    throwUnsupportedSyntax  --To avoid creating ambiguity with existing set notation
-  else
-    Term.elabTerm (← `(setOf fun x : $t => match x with | $pat => $p)) none
-
-syntax identBinderPred := ident binderPred
-
---If pat is an identifier, or starts with an identifier, then tries to parse as identBinderPred and fails.
---So probably don't need to test for kpat = `ident--will never get there
---Won't recognize a pattern that starts with an identifier--are there any such?
-
-open Lean Elab in
-elab "{ " pat:(identBinderPred <|> term) " | " p:term " }" : term => do
-  let kpat := pat.raw.getKind
-  if (kpat = `ident) || (kpat = `identBinderPred) then
-    throwUnsupportedSyntax
-  else 
-    let patTerm : Term := ⟨pat⟩
-    Term.elabTerm (← `(setOf fun x => match x with | $patTerm => $p)) none
--/
 
 -- Set theory notation that should be in library.  Will it be added eventually?
 -- Copying similar in:  Mathlib/Init/Set.lean, lean4/Init/Notation.lean, std4/Std/Classes/SetNotation.lean
