@@ -358,13 +358,13 @@ def exprFromPf (t : Term) (w : Nat) : TacticM Expr := do
 --Add new hypothesis with name n, asserting form, proven by pfstx.
 def doHave (n : Name) (form : Expr) (pfstx : Syntax) : TacticM Unit := do
   let goal ← getMainGoal
-  let oldtar := (← goal.getDecl).type
+  let oldtar ← getType goal
   let pf ← elabTermEnsuringType pfstx form
   let mvarIdNew ← assert goal n form pf
   let (_, newGoal) ← intro1P mvarIdNew    --blank is FVarId of new hyp.
-  let newtar := (← newGoal.getDecl).type
+  let newtar ← getType newGoal
   if (oldtar != newtar) && (← Meta.isExprDefEq oldtar newtar) then
-    --intro1P sometimes changes goal to something def. equal.  Put it back to original
+    --intro1P sometimes changes target to something def. equal.  Put it back to original
     replaceMainGoal [← newGoal.replaceTargetDefEq oldtar]
   else
     replaceMainGoal [newGoal]
