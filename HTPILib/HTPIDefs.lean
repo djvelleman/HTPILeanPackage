@@ -74,7 +74,7 @@ prefix:110 "⋂₀" => sInter
 def symmDiff {U : Type u} (A B : Set U) : Set U := (A \ B) ∪ (B \ A)
 infix:70 " △ " => symmDiff
 
-def isEmpty {U : Type u} (A : Set U) := ¬∃ (x : U), x ∈ A
+--def is_empty {U : Type u} (A : Set U) := ¬∃ (x : U), x ∈ A
 
 --Some theorems not in library
 theorem not_not_and_distrib {p q : Prop} : ¬(¬ p ∧ q) ↔ (p ∨ ¬ q) := by
