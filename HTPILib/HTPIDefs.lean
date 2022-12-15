@@ -63,6 +63,12 @@ def setOf.unexpander : Lean.PrettyPrinter.Unexpander
   | `($(_) fun ($x:ident : $t) ↦ $b)              => `(∃ ($x:ident : $t), $b)
   | _                                             => throw ()
 
+--Should be in Lean but isn't.
+--Do we need to unexpand `Function.comp f g` without `x`?  Apparently not.
+@[app_unexpander Function.comp] def unexpandFunctionComp : Lean.PrettyPrinter.Unexpander
+  | `($(_) $f:term $g:term $x:term) => `(($f ∘ $g) $x)
+  | _ => throw ()
+
 -- Set theory notation that should be in library.  Will it be added eventually?
 -- Copying similar in:  Mathlib/Init/Set.lean, lean4/Init/Notation.lean, std4/Std/Classes/SetNotation.lean
 notation:50 a:50 " ⊈ " b:50 => ¬ (a ⊆ b)
@@ -999,3 +1005,50 @@ macro "show " c:term " from " p:term : tactic => `(tactic| {show $c; exact $p})
 macro "show " c:term " := " p:term : tactic => `(tactic| {show $c; exact $p})
 
 end tactic_defs
+
+--Constructing a function from its graph:
+def graph {A B : Type} (f : A → B) : Set (A × B) :=
+    { (a, b) : A × B | f a = b }
+
+def is_func_graph {A B : Type} (G : Set (A × B)) : Prop :=
+    ∀ (x : A), ∃! (y : B), (x, y) ∈ G
+
+theorem func_from_graph {A B : Type} (F : Set (A × B)) :
+    (∃ (f : A → B), graph f = F) ↔ is_func_graph F := by
+  apply Iff.intro
+  assume h1
+  obtain f h2 from h1
+  define
+  fix x : A
+  rewrite [←h2]
+  exists_unique
+  apply Exists.intro (f x)
+  define
+  rfl
+  fix y1; fix y2
+  assume h3; assume h4
+  define at h3; define at h4
+  rewrite [h3] at h4
+  exact h4
+  assume h1
+  have h2 : ∀ (x : A), Nonempty { y : B // (x, y) ∈ F } := by
+    define at h1
+    fix x : A
+    obtain y h2 h3 from h1 x
+    exact ⟨⟨y, h2⟩⟩
+  let ff : (x : A) → { y : B // (x, y) ∈ F } := fun (x : A) => Classical.choice (h2 x)
+  let f : A → B := fun (x : A) => (ff x).val
+  apply Exists.intro f
+  apply Set.ext
+  fix (x, y) : A × B
+  have h3 : (x, f x) ∈ F := (ff x).property
+  apply Iff.intro
+  assume h4
+  define at h4
+  rewrite [h4] at h3
+  exact h3
+  assume h4
+  define
+  define at h1
+  obtain z h5 h6 from h1 x
+  exact h6 (f x) y h3 h4
