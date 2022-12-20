@@ -1004,6 +1004,77 @@ elab "fix" w:term " : " t:term : tactic => doFix w (some t)
 macro "show " c:term " from " p:term : tactic => `(tactic| {show $c; exact $p})
 macro "show " c:term " := " p:term : tactic => `(tactic| {show $c; exact $p})
 
+theorem str_induc (P : Nat → Prop)
+    (h : ∀ (n : Nat), (∀ n_1 < n, P n_1)→ P n) : ∀ (n : Nat), P n := by
+  have h2 : ∀ (n : Nat), ∀ k < n, P k := by
+    apply @Nat.rec
+    fix k
+    assume h2
+    contradict h2
+    exact Bool.of_decide_true rfl
+    fix n
+    assume ih
+    fix k
+    assume h2
+    by_cases h3 : k = n
+    rewrite [h3]
+    exact h n ih
+    have h4 : k < n := by
+      have h5 : k ≤ n := Nat.le_of_succ_le_succ h2
+      have h6 : k < n ∨ k = n := LE.le.lt_or_eq_dec h5
+      disj_syll h6 h3
+      exact h6
+    exact ih k h4
+  fix n
+  have h3 := h2 (n+1) n
+  apply h3
+  exact Nat.lt_succ_self n
+
+def doInduc (strong : Bool) : TacticM Unit := do
+  let goal ← getMainGoal
+  withContext goal do
+    let d ← getDecl goal
+    let tag := d.userName
+    let target ← instantiateMVars d.type
+    match (← getPropForm target) with
+      | PropForm.all v t b _ =>
+        match t with
+          | (.const ``Nat _) =>
+            let m := Expr.lam v t b BinderInfo.default  --motive
+            let vid := mkIdent v
+            if strong then
+              let v1 := Name.appendIndexAfter v 1
+              let v1id := mkIdent v1
+              let m1 := Expr.lam v1 t m BinderInfo.default
+              let newtar ← Meta.lambdaTelescope m1 fun fvs Pv => do
+                let fv1 := fvs[0]!
+                let fv := fvs[1]!
+                let Pv1 := replaceFVar Pv fv fv1
+                let v1lv ← elabTerm (← `($v1id < $vid)) none
+                let ih ← Meta.mkForallFVars #[fv1] (← mkArrow v1lv Pv1)
+                Meta.mkForallFVars #[fv] (← mkArrow ih Pv)
+              let newgoal ← Meta.mkFreshExprSyntheticOpaqueMVar newtar tag
+              assign goal (mkApp2 (Expr.const ``str_induc []) m newgoal)
+              replaceMainGoal [newgoal.mvarId!]
+            else 
+              let z := Expr.lit (.natVal 0)
+              let base := Expr.instantiate1 b z
+              let ind ← Meta.lambdaTelescope m fun fvs Pv => do
+                -- fvs.size should be 1.  Could it ever be larger?
+                let fv := fvs[0]!
+                let fvp1 ← elabTerm (← `($vid:ident + 1)) none
+                let Pvp1 := replaceFVar Pv fv fvp1
+                Meta.mkForallFVars fvs (← mkArrow Pv Pvp1)
+              let baseGoal ← Meta.mkFreshExprSyntheticOpaqueMVar base (addToName tag "Base_Case")
+              let indGoal ← Meta.mkFreshExprSyntheticOpaqueMVar ind (addToName tag "Induction_Step")
+              assign goal (mkApp3 (Expr.const ``Nat.rec [Level.zero]) m baseGoal indGoal)
+              replaceMainGoal [baseGoal.mvarId!, indGoal.mvarId!]
+          | _ => myFail `by_induc "mathematical induction doesn't apply"
+      | _ => myFail `by_induc "mathematical induction doesn't apply"
+
+elab "by_induc" : tactic => doInduc false
+elab "by_strong_induc" : tactic => doInduc true
+
 end tactic_defs
 
 --Constructing a function from its graph:
