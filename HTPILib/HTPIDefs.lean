@@ -342,11 +342,19 @@ partial def unfoldHead (e : Expr) (tac : Name) (exun : Bool) : TacticM Expr := d
 
 -- Repeatedly unfold head.  If exun is true, allow unfolding of ExistsUnique only in first step
 partial def unfoldHeadRep (e : Expr) (tac : Name) (exun : Bool) : TacticM Expr := do
-  let e' ← unfoldHead e tac exun
-  try
-    unfoldHeadRep e' tac false
-  catch _ =>
-    return e'
+  let e1 ← unfoldHead e tac exun
+  let e2 ← try
+      unfoldHeadRep e1 tac false
+    catch _ =>
+      return e1
+  match e with
+    | (app (app (app (app (app (const ``Membership.mem _) _) (app (const ``Set _) _))
+        (app (const ``Set.instMembershipSet _) _)) x) y) =>
+      if (e2 == app y x) then
+        myFail tac "failed to unfold definition"  --Don't unfold `x ∈ y` to `y x`
+      else
+        return e2
+    | _ => return e2
 
 -- whnf, but don't unfold ``ExistsUnique
 def whnfNotExUn (e : Expr) : TacticM Expr :=
