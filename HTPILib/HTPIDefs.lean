@@ -1113,7 +1113,7 @@ theorem func_from_graph {A B : Type} (F : Set (A × B)) :
   have h2 : ∀ (x : A), Nonempty { y : B // (x, y) ∈ F } := by
     define at h1
     fix x : A
-    obtain y h2 h3 from h1 x
+    obtain y h2 _h3 from h1 x
     exact ⟨⟨y, h2⟩⟩
   let ff : (x : A) → { y : B // (x, y) ∈ F } := fun (x : A) => Classical.choice (h2 x)
   let f : A → B := fun (x : A) => (ff x).val
@@ -1129,5 +1129,5 @@ theorem func_from_graph {A B : Type} (F : Set (A × B)) :
   assume h4
   define
   define at h1
-  obtain z h5 h6 from h1 x
+  obtain z _h5 h6 from h1 x
   exact h6 (f x) y h3 h4
