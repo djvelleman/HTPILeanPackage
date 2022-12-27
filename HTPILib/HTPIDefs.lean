@@ -317,6 +317,7 @@ If exun = true, then unfold ExistsUnique using my def; else don't unfold it
 Let whnfCore handle everything except unfolding of constants.
 Do all normalization up to first unfolding of a definition; on next call do that unfolding
 -/
+/- Previous version
 partial def unfoldHead (e : Expr) (tac : Name) (exun : Bool) : TacticM Expr := do
   let e' := consumeMData e
   let (h, args) := getHeadData e'
@@ -346,7 +347,7 @@ partial def unfoldHeadRep (e : Expr) (tac : Name) (exun : Bool) : TacticM Expr :
   let e2 ← try
       unfoldHeadRep e1 tac false
     catch _ =>
-      return e1
+      pure e1
   match e with
     | (app (app (app (app (app (const ``Membership.mem _) _) (app (const ``Set _) _))
         (app (const ``Set.instMembershipSet _) _)) x) y) =>
@@ -355,6 +356,79 @@ partial def unfoldHeadRep (e : Expr) (tac : Name) (exun : Bool) : TacticM Expr :
       else
         return e2
     | _ => return e2
+-/
+
+partial def unfoldHead (e : Expr) (tac : Name) (exun rep : Bool) : TacticM Expr := do
+  let e1 := consumeMData e
+  let (h, args) := getHeadData e1
+  -- First let e2 = result of one unfolding, or handle negation, or fail
+  let e2 ← match h with
+    | const c levs =>
+      match (c, levs, args) with
+        | (``Not, _, [l]) => return mkNot (← unfoldHead l tac exun rep) --Return from function call, bypassing e2
+        | (``ExistsUnique, [lev], [r, l]) =>
+          if exun then
+            pure (applyToExData unfoldExUn lev l r)
+          else
+            myFail tac "failed to unfold definition"
+        | _ => Meta.unfoldDefinition e1
+    | _ =>
+      let ew ← Meta.whnfCore e1
+      if ew == e1 then
+        myFail tac "failed to unfold definition"
+      else
+        pure ew
+  if rep then
+    let e3 ← try
+        unfoldHead e2 tac false true
+      catch _ =>
+        pure e2
+    match e1 with
+      | (app (app (app (app (app (const ``Membership.mem _) _) (app (const ``Set _) _))
+        (app (const ``Set.instMembershipSet _) _)) x) y) =>
+        if (e3 == app y x) then
+          myFail tac "failed to unfold definition"  --Don't unfold `x ∈ y` to `y x`
+        else
+          return e3
+      | _ => return e3
+  else
+    return e2
+/-
+  match (h, args) with
+    | (const ``Not _, [l]) => return mkNot (← unfoldHead l tac exun rep)
+    | _ =>
+      -- First let e2 = result of one unfolding, or fail
+      let e2 ← match h with
+        | const c levs =>
+          match (c, levs, args) with
+            | (``ExistsUnique, [lev], [r, l]) =>
+              if exun then
+                pure (applyToExData unfoldExUn lev l r)
+              else
+                myFail tac "failed to unfold definition"
+            | _ => Meta.unfoldDefinition e1
+        | _ =>
+          let ew ← Meta.whnfCore e1
+          if ew == e1 then
+            myFail tac "failed to unfold definition"
+          else
+            pure ew
+      if rep then
+        let e3 ← try
+            unfoldHead e2 tac false true
+          catch _ =>
+            pure e2
+        match e1 with
+          | (app (app (app (app (app (const ``Membership.mem _) _) (app (const ``Set _) _))
+            (app (const ``Set.instMembershipSet _) _)) x) y) =>
+            if (e3 == app y x) then
+              myFail tac "failed to unfold definition"  --Don't unfold `x ∈ y` to `y x`
+            else
+              return e3
+          | _ => return e3
+      else
+        return e2
+-/
 
 -- whnf, but don't unfold ``ExistsUnique
 def whnfNotExUn (e : Expr) : TacticM Expr :=
@@ -773,10 +847,13 @@ def unfoldOrWhnf (tac: Name) (e : Expr) (w rep : Bool) : TacticM Expr := do
       | PropForm.exun lev v t b bi => return unfoldExUn lev v t b bi
       | _ => whnfNotExUn e
   else
+  /-
     if rep then
       unfoldHeadRep e tac true
     else
       unfoldHead e tac true
+  -/
+    unfoldHead e tac true rep
 
 def doDefine (tac : Name) (f : Option ColonTerm) (l : Option OneLoc) (w rep : Bool) : TacticM Unit :=
   withMainContext do
@@ -810,7 +887,8 @@ def mkRel (e1 e2 : Expr) (prop : Bool) : TacticM Expr :=
 
 -- repeatedly assert definition equivalences or equations, numbering steps
 partial def doDefinitionRep (label : Name) (e e1 : Expr) (prop : Bool) (rule : Ident) (firstNum : Nat) : TacticM Unit := do
-  let e' ← unfoldHead e1 `definition (firstNum == 1)
+  --let e' ← unfoldHead e1 `definition (firstNum == 1)
+  let e' ← unfoldHead e1 `definition (firstNum == 1) false
   let res ← mkRel e e' prop
   doHave (Name.appendIndexAfter label firstNum) res (← `($rule _))
   try
@@ -830,7 +908,8 @@ def doDefinition (all : Bool) (f : Option ColonTerm) (l : Option OneLoc) (wid : 
     if all then
       doDefinitionRep labeln e e prop rule 1
     else
-      let e' ← unfoldHeadRep e `definition true
+      --let e' ← unfoldHeadRep e `definition true
+      let e' ← unfoldHead e `definition true true
       let res ← mkRel e e' prop
       doHave labeln res (← `($rule _))
 
