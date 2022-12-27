@@ -371,7 +371,11 @@ partial def unfoldHead (e : Expr) (tac : Name) (exun rep : Bool) : TacticM Expr 
             pure (applyToExData unfoldExUn lev l r)
           else
             myFail tac "failed to unfold definition"
-        | _ => Meta.unfoldDefinition e1
+        | _ => 
+          let edo ← Meta.unfoldDefinition? e1
+          match edo with
+            | some ed => pure ed
+            | none => myFail tac "failed to unfold definition"
     | _ =>
       let ew ← Meta.whnfCore e1
       if ew == e1 then
