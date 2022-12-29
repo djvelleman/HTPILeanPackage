@@ -167,7 +167,8 @@ match e with
   | .app a b => "(app " ++ (ExprToString a) ++ " " ++ (ExprToString b) ++ ")" -- application
   | .lam n t b bi => "(lam " ++ (toString n) ++ " " ++ (ExprToString t) ++ " " ++ (ExprToString b) ++ " " ++ (binderString bi) ++ ")"    -- lambda abstraction
   | .forallE n t b bi => "(forallE " ++ (toString n) ++ " " ++ (ExprToString t) ++ " " ++ (ExprToString b) ++ " " ++ (binderString bi) ++ ")"  -- (dependent) arrow
-  | .letE _ _ _ _ _ => "(let)" -- let expressions
+  | .letE n t v b _ => "(let " ++ (toString n) ++ " " ++ (ExprToString t) ++ " "
+        ++ (ExprToString v) ++ " " ++ (ExprToString b) ++ ")" -- let expressions
   | .lit _ => "(lit)"  -- literals
   | .mdata m e => "(mdata " ++ (toString m) ++ " " ++ (ExprToString e) ++ ")"   -- metadata
   | .proj t i c => "(proj " ++ (toString t) ++ " " ++ (toString i) ++ " " ++ (ExprToString c) ++ ")" -- projection
@@ -1121,6 +1122,38 @@ theorem str_induc (P : Nat → Prop)
   apply h3
   exact Nat.lt_succ_self n
 
+theorem induc_from (P : Nat → Prop) (k : Nat) (h1 : P k) (h2 : (∀ n ≥ k, P n → P (n+1))) :
+    ∀ n ≥ k, P n := by
+  apply @Nat.rec
+  assume h3
+  have h4 : k = 0 := Nat.eq_zero_of_le_zero h3
+  rewrite [h4] at h1
+  exact h1
+  fix n
+  assume h3
+  assume h4
+  have h5 : k < n + 1 ∨ k = n + 1 := LE.le.lt_or_eq_dec h4
+  by_cases on h5
+  have h6 : k ≤ n := Nat.le_of_lt_succ h5
+  have h7 := h3 h6
+  exact h2 n h6 h7
+  rewrite [h5] at h1
+  exact h1
+
+-- Does expression e contains free variable with id fv?
+/- Don't need this -- use containsFVar in Expr.lean
+def containsFV (e : Expr) (fv : FVarId) : Bool :=
+  match e with
+    | fvar i => i == fv
+    | app fn arg => (containsFV fn fv) || (containsFV arg fv)
+    | lam _ t b _ => (containsFV t fv) || (containsFV b fv)
+    | forallE _ t b _ => (containsFV t fv) || (containsFV b fv)
+    | letE _ t v b _ => (containsFV t fv) || (containsFV v fv) || (containsFV b fv)
+    | mdata _ e' => containsFV e' fv
+    | proj _ _ s => containsFV s fv
+    | _ => false
+-/
+/- Previous version -- always uses 0 as base
 def doInduc (strong : Bool) : TacticM Unit := do
   let goal ← getMainGoal
   withContext goal do
@@ -1159,6 +1192,67 @@ def doInduc (strong : Bool) : TacticM Unit := do
               let baseGoal ← Meta.mkFreshExprSyntheticOpaqueMVar base (addToName tag "Base_Case")
               let indGoal ← Meta.mkFreshExprSyntheticOpaqueMVar ind (addToName tag "Induction_Step")
               assign goal (mkApp3 (Expr.const ``Nat.rec [Level.zero]) m baseGoal indGoal)
+              replaceMainGoal [baseGoal.mvarId!, indGoal.mvarId!]
+          | _ => myFail `by_induc "mathematical induction doesn't apply"
+      | _ => myFail `by_induc "mathematical induction doesn't apply"
+-/
+
+-- New version:  For ordinary induction, uses a different base if appropriate
+def doInduc (strong : Bool) : TacticM Unit := do
+  let goal ← getMainGoal
+  withContext goal do
+    let d ← getDecl goal
+    let tag := d.userName
+    let target ← instantiateMVars d.type
+    match (← getPropForm target) with
+      | PropForm.all v t b _ =>
+        match t with
+          | (.const ``Nat _) =>
+            let m := Expr.lam v t b BinderInfo.default  --motive
+            let vid := mkIdent v
+            if strong then
+              let v1 := Name.appendIndexAfter v 1
+              let v1id := mkIdent v1
+              let m1 := Expr.lam v1 t m BinderInfo.default
+              let newtar ← Meta.lambdaTelescope m1 fun fvs Pv => do
+                let fv1 := fvs[0]!
+                let fv := fvs[1]!
+                let Pv1 := replaceFVar Pv fv fv1
+                let v1lv ← elabTerm (← `($v1id < $vid)) none
+                let ih ← Meta.mkForallFVars #[fv1] (← mkArrow v1lv Pv1)
+                Meta.mkForallFVars #[fv] (← mkArrow ih Pv)
+              let newgoal ← Meta.mkFreshExprSyntheticOpaqueMVar newtar tag
+              assign goal (mkApp2 (Expr.const ``str_induc []) m newgoal)
+              replaceMainGoal [newgoal.mvarId!]
+            else
+              let (base, ind, rule) ← Meta.lambdaTelescope m fun fvs Pv => do
+                -- fvs.size should be 1.  Could it ever be larger?
+                let fv := fvs[0]!
+                let PFPv ← getPropForm Pv
+                let (fr, Qv) := match PFPv with
+                  | PropForm.implies l r => match l with
+                    | (app (app (app (app (const ``GE.ge _) (const ``Nat _)) _) a) min) =>
+                      if (a == fv) && !(containsFVar min (fvarId! fv)) then
+                        (some (min, l), r)
+                      else
+                        (none, Pv)
+                    | _ => (none, Pv)
+                  | _ => (none, Pv)
+                let fvp1 ← elabTerm (← `($vid:ident + 1)) none
+                let Qimp ← mkArrow Qv (replaceFVar Qv fv fvp1)
+                match fr with
+                  | some (min, cond) =>
+                    let base := replaceFVar Qv fv min
+                    let ind ← Meta.mkForallFVars fvs (← mkArrow cond Qimp)
+                    let m' ← Meta.mkLambdaFVars fvs Qv
+                    pure (base, ind, mkApp2 (const ``induc_from []) m' min)
+                  | none =>
+                    let base := replaceFVar Qv fv (Expr.lit (.natVal 0))
+                    let ind ← Meta.mkForallFVars fvs Qimp
+                    pure (base, ind, app (const ``Nat.rec [Level.zero]) m)
+              let baseGoal ← Meta.mkFreshExprSyntheticOpaqueMVar base (addToName tag "Base_Case")
+              let indGoal ← Meta.mkFreshExprSyntheticOpaqueMVar ind (addToName tag "Induction_Step")
+              assign goal (mkApp2 rule baseGoal indGoal)
               replaceMainGoal [baseGoal.mvarId!, indGoal.mvarId!]
           | _ => myFail `by_induc "mathematical induction doesn't apply"
       | _ => myFail `by_induc "mathematical induction doesn't apply"
