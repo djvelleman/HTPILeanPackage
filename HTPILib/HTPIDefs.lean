@@ -1,32 +1,6 @@
 import Lean.Elab.Tactic
 import Mathlib
 
-/- macros for assume, fix, and obtain in term mode (doesn't include ∃!)-/
-syntax withPosition("assume " ident " : " term ("; " <|> linebreak)) term : term
-syntax withPosition("assume " ident ("; " <|> linebreak)) term : term
-syntax withPosition("fix " ident " : " term ("; " <|> linebreak)) term : term
-syntax withPosition("fix " ident ("; " <|> linebreak)) term : term
-
-macro_rules
-  | `(assume $v:ident : $t:term; $b:term) => `(fun ($v : $t) => $b)
-  | `(assume $v:ident; $b:term) => `(fun $v => $b)
-  | `(fix $v:ident : $t:term; $b:term) => `(fun ($v : $t) => $b)
-  | `(fix $v:ident; $b:term) => `(fun $v => $b)
-
-syntax withPosition("obtain " (ident <|> ("(" ident " : " term ") "))
-  (ident <|> ("(" ident " : " term ")")) " from " term
-  ("; " <|> linebreak)) term : term
-
-macro_rules
-  | `(obtain $v:ident $hv:ident from $h:term; $b:term) =>
-      `(Exists.elim $h (fun $v $hv => $b))
-  | `(obtain ($v:ident : $vt:term) $hv:ident from $h:term; $b:term) =>
-      `(Exists.elim $h (fun ($v : $vt) $hv => $b))
-  | `(obtain $v:ident ($hv:ident : $hvt:term) from $h:term; $b:term) =>
-      `(Exists.elim $h (fun $v ($hv : $hvt) => $b))
-  | `(obtain ($v:ident : $vt:term) ($hv:ident : $hvt:term) from $h:term; $b:term) =>
-      `(Exists.elim $h (fun ($v : $vt) ($hv : $hvt) => $b))
-
 def Iff.ltr {p q : Prop} (h : p ↔ q) := h.mp
 def Iff.rtl {p q : Prop} (h : p ↔ q) := h.mpr
 def Pred (t : Type u) : Type u := t → Prop
@@ -219,36 +193,7 @@ inductive PropForm where
   | t       : PropForm
   | none    : PropForm
 
-/- Two ways to see if expression whose head is a constant expands to a negative.
-Use one or the other in getPropForm to decide whether to return PropForm.not
-First uses a list of constants that denote negative of another constant.  That method
-only returns PropForm.not for constants on the list.
-Second uses Meta.unfoldDefinition? and then checks is result is a negative; returns
-PropForm.not for any constant that expands to a negative.
--/
-
-/- Method 1: -/
---List of constants for negative predicates, and the corresponding positive predicate.
---First must be definitionally equal to negation of second.
-def NegPosPairs : List (Name × Name) := [(``Ne, ``Eq)]
-
--- Given data for an expression with a negative constant as head, change to positive constant
-def makeNegPredPos (c : Name) (ls : List Level) (args : List Expr) (key : List (Name × Name)) : Option Expr :=
-  match key with
-    | (neg, pos) :: rest => 
-      if neg == c then
-        some (mkAppList (mkConst pos ls) args)
-      else
-        makeNegPredPos c ls args rest
-    | _ => none
-
--- If constant is on list, change to positive and return PropForm.not.
-def findNegPropList (c : Name) (ls : List Level) (args : List Expr) : PropForm :=
-  match makeNegPredPos c ls args NegPosPairs with
-    | some pos => PropForm.not pos
-    | none => PropForm.none
-
-/- Method 2:  Try to unfold definition, and if result is negative, return PropForm.not
+/- Try to unfold definition, and if result is negative, return PropForm.not
 Note:  Uses constants but not fvars with let declarations.  Also, only unfolds once.
 This might be best--only detect expressions immediately recognized as negative by def.
 -/
@@ -314,51 +259,11 @@ def unfoldExUn (lev : Level) (v : Name) (t b : Expr) (_ : BinderInfo) : Expr :=
   mkExists lev v BinderInfo.default t body
 
 /- Unfold head in current context--must set local context before call.
-If exun = true, then unfold ExistsUnique using my def; else don't unfold it
+If exun = true, then unfold ExistsUnique using my def; else don't unfold it.
+If rep = true, unfold repeatedly.
 Let whnfCore handle everything except unfolding of constants.
 Do all normalization up to first unfolding of a definition; on next call do that unfolding
 -/
-/- Previous version
-partial def unfoldHead (e : Expr) (tac : Name) (exun : Bool) : TacticM Expr := do
-  let e' := consumeMData e
-  let (h, args) := getHeadData e'
-  try
-    match h with
-      | const c levs => 
-        match (c, levs, args) with
-          | (``Not, _, [l]) => return mkNot (← unfoldHead l tac exun)
-          | (``ExistsUnique, [lev], [r, l]) => 
-              if exun then
-                return applyToExData unfoldExUn lev l r
-              else
-                throwError "don't unfold ExistsUnique"
-          | _ => Meta.unfoldDefinition e'
-      | _ => 
-        let ew ← Meta.whnfCore e'
-        if ew == e' then
-          throwError "whnfCore failed"
-        else
-          return ew
-  catch _ =>
-    myFail tac "failed to unfold definition"
-
--- Repeatedly unfold head.  If exun is true, allow unfolding of ExistsUnique only in first step
-partial def unfoldHeadRep (e : Expr) (tac : Name) (exun : Bool) : TacticM Expr := do
-  let e1 ← unfoldHead e tac exun
-  let e2 ← try
-      unfoldHeadRep e1 tac false
-    catch _ =>
-      pure e1
-  match e with
-    | (app (app (app (app (app (const ``Membership.mem _) _) (app (const ``Set _) _))
-        (app (const ``Set.instMembershipSet _) _)) x) y) =>
-      if (e2 == app y x) then
-        myFail tac "failed to unfold definition"  --Don't unfold `x ∈ y` to `y x`
-      else
-        return e2
-    | _ => return e2
--/
-
 partial def unfoldHead (e : Expr) (tac : Name) (exun rep : Bool) : TacticM Expr := do
   let e1 := consumeMData e
   let (h, args) := getHeadData e1
@@ -398,42 +303,6 @@ partial def unfoldHead (e : Expr) (tac : Name) (exun rep : Bool) : TacticM Expr 
       | _ => return e3
   else
     return e2
-/-
-  match (h, args) with
-    | (const ``Not _, [l]) => return mkNot (← unfoldHead l tac exun rep)
-    | _ =>
-      -- First let e2 = result of one unfolding, or fail
-      let e2 ← match h with
-        | const c levs =>
-          match (c, levs, args) with
-            | (``ExistsUnique, [lev], [r, l]) =>
-              if exun then
-                pure (applyToExData unfoldExUn lev l r)
-              else
-                myFail tac "failed to unfold definition"
-            | _ => Meta.unfoldDefinition e1
-        | _ =>
-          let ew ← Meta.whnfCore e1
-          if ew == e1 then
-            myFail tac "failed to unfold definition"
-          else
-            pure ew
-      if rep then
-        let e3 ← try
-            unfoldHead e2 tac false true
-          catch _ =>
-            pure e2
-        match e1 with
-          | (app (app (app (app (app (const ``Membership.mem _) _) (app (const ``Set _) _))
-            (app (const ``Set.instMembershipSet _) _)) x) y) =>
-            if (e3 == app y x) then
-              myFail tac "failed to unfold definition"  --Don't unfold `x ∈ y` to `y x`
-            else
-              return e3
-          | _ => return e3
-      else
-        return e2
--/
 
 -- whnf, but don't unfold ``ExistsUnique
 def whnfNotExUn (e : Expr) : TacticM Expr :=
@@ -852,12 +721,6 @@ def unfoldOrWhnf (tac: Name) (e : Expr) (w rep : Bool) : TacticM Expr := do
       | PropForm.exun lev v t b bi => return unfoldExUn lev v t b bi
       | _ => whnfNotExUn e
   else
-  /-
-    if rep then
-      unfoldHeadRep e tac true
-    else
-      unfoldHead e tac true
-  -/
     unfoldHead e tac true rep
 
 def doDefine (tac : Name) (f : Option ColonTerm) (l : Option OneLoc) (w rep : Bool) : TacticM Unit :=
@@ -1029,12 +892,6 @@ def doObtain (itw ith : IdOrTerm?Type) (tm : Term) : TacticM Unit :=
         doIntroOption hi ht
       | _ => myFail `obtain "hypothesis is not an existence statement"
 
-/- Not used
-theorem exun_unique {α : Sort u_1} {p : α → Prop} :
-(∃! x, p x) → ∀ (y1 y2 : α), p y1 → p y2 → y1 = y2 := by
-  intro h y1 y2; exact ExistsUnique.unique h
-  -/
-
 theorem exun_elim {α : Sort u} {p : α → Prop} {b : Prop}
     (h2 : ∃! x, p x) (h1 : ∀ x, p x → (∀ y z, p y → p z → y = z) → b) : b := by
       apply ExistsUnique.elim h2
@@ -1139,63 +996,6 @@ theorem induc_from (P : Nat → Prop) (k : Nat) (h1 : P k) (h2 : (∀ n ≥ k, P
   exact h2 n h6 h7
   rewrite [h5] at h1
   exact h1
-
--- Does expression e contains free variable with id fv?
-/- Don't need this -- use containsFVar in Expr.lean
-def containsFV (e : Expr) (fv : FVarId) : Bool :=
-  match e with
-    | fvar i => i == fv
-    | app fn arg => (containsFV fn fv) || (containsFV arg fv)
-    | lam _ t b _ => (containsFV t fv) || (containsFV b fv)
-    | forallE _ t b _ => (containsFV t fv) || (containsFV b fv)
-    | letE _ t v b _ => (containsFV t fv) || (containsFV v fv) || (containsFV b fv)
-    | mdata _ e' => containsFV e' fv
-    | proj _ _ s => containsFV s fv
-    | _ => false
--/
-/- Previous version -- always uses 0 as base
-def doInduc (strong : Bool) : TacticM Unit := do
-  let goal ← getMainGoal
-  withContext goal do
-    let d ← getDecl goal
-    let tag := d.userName
-    let target ← instantiateMVars d.type
-    match (← getPropForm target) with
-      | PropForm.all v t b _ =>
-        match t with
-          | (.const ``Nat _) =>
-            let m := Expr.lam v t b BinderInfo.default  --motive
-            let vid := mkIdent v
-            if strong then
-              let v1 := Name.appendIndexAfter v 1
-              let v1id := mkIdent v1
-              let m1 := Expr.lam v1 t m BinderInfo.default
-              let newtar ← Meta.lambdaTelescope m1 fun fvs Pv => do
-                let fv1 := fvs[0]!
-                let fv := fvs[1]!
-                let Pv1 := replaceFVar Pv fv fv1
-                let v1lv ← elabTerm (← `($v1id < $vid)) none
-                let ih ← Meta.mkForallFVars #[fv1] (← mkArrow v1lv Pv1)
-                Meta.mkForallFVars #[fv] (← mkArrow ih Pv)
-              let newgoal ← Meta.mkFreshExprSyntheticOpaqueMVar newtar tag
-              assign goal (mkApp2 (Expr.const ``str_induc []) m newgoal)
-              replaceMainGoal [newgoal.mvarId!]
-            else 
-              let z := Expr.lit (.natVal 0)
-              let base := Expr.instantiate1 b z
-              let ind ← Meta.lambdaTelescope m fun fvs Pv => do
-                -- fvs.size should be 1.  Could it ever be larger?
-                let fv := fvs[0]!
-                let fvp1 ← elabTerm (← `($vid:ident + 1)) none
-                let Pvp1 := replaceFVar Pv fv fvp1
-                Meta.mkForallFVars fvs (← mkArrow Pv Pvp1)
-              let baseGoal ← Meta.mkFreshExprSyntheticOpaqueMVar base (addToName tag "Base_Case")
-              let indGoal ← Meta.mkFreshExprSyntheticOpaqueMVar ind (addToName tag "Induction_Step")
-              assign goal (mkApp3 (Expr.const ``Nat.rec [Level.zero]) m baseGoal indGoal)
-              replaceMainGoal [baseGoal.mvarId!, indGoal.mvarId!]
-          | _ => myFail `by_induc "mathematical induction doesn't apply"
-      | _ => myFail `by_induc "mathematical induction doesn't apply"
--/
 
 -- New version:  For ordinary induction, uses a different base if appropriate
 def doInduc (strong : Bool) : TacticM Unit := do
