@@ -3,11 +3,8 @@ import Mathlib
 
 def Iff.ltr {p q : Prop} (h : p ↔ q) := h.mp
 def Iff.rtl {p q : Prop} (h : p ↔ q) := h.mpr
-def Pred (t : Type u) : Type u := t → Prop
-def Rel (s t : Type u) : Type u := s → t → Prop
-def BinRel (t : Type u) : Type u := Rel t t
 
---New set theory notation.  Good idea?
+--New set theory notation.
 --Lower priority than all other set theory notation
 macro (priority := low-1) "{ " pat:term " : " t:term " | " p:term " }" : term =>
   `({ x : $t | match x with | $pat => $p })
@@ -22,23 +19,25 @@ def setOf.unexpander : Lean.PrettyPrinter.Unexpander
         `({ $pat:term | $p:term })
       else
         throw ()  --Or could use `({ $x:ident | match $y:ident with | $pat => $p})
-  --Include alternative function symbol introduced in Mathlib4
+/- Don't need this anymore
   | `($_ fun $x:ident ↦ match $y:ident with | $pat => $p) =>
       if x == y then
         `({ $pat:term | $p:term })
       else
         throw ()  --Or could use `({ $x:ident | match $y:ident with | $pat => $p})
+-/
   | _ => throw ()
 
 --Until they fix unexpander for Exists:
+/- Seems to be fixed.
 @[app_unexpander Exists] def unexpandExistsMapsto : Lean.PrettyPrinter.Unexpander
   | `($(_) fun $x:ident ↦ ∃ $xs:binderIdent*, $b) => `(∃ $x:ident $xs:binderIdent*, $b)
   | `($(_) fun $x:ident ↦ $b)                     => `(∃ $x:ident, $b)
   | `($(_) fun ($x:ident : $t) ↦ $b)              => `(∃ ($x:ident : $t), $b)
   | _                                             => throw ()
+-/
 
 --Should be in Lean but isn't.
---Do we need to unexpand `Function.comp f g` without `x`?  Apparently not.
 @[app_unexpander Function.comp] def unexpandFunctionComp : Lean.PrettyPrinter.Unexpander
   | `($(_) $f:term $g:term $x:term) => `(($f ∘ $g) $x)
   | _ => throw ()
@@ -47,12 +46,16 @@ def setOf.unexpander : Lean.PrettyPrinter.Unexpander
 -- Copying similar in:  Mathlib/Init/Set.lean, lean4/Init/Notation.lean, std4/Std/Classes/SetNotation.lean
 notation:50 a:50 " ⊈ " b:50 => ¬ (a ⊆ b)
 
+/- This seems to be in Mathlib now
 @[reducible]  --?
 def sInter {U : Type u} (F : Set (Set U)) : Set U := {x : U | ∀ A : Set U, A ∈ F → x ∈ A}
 prefix:110 "⋂₀" => sInter
+-/
 
-def symmDiff {U : Type u} (A B : Set U) : Set U := (A \ B) ∪ (B \ A)
-infix:70 " △ " => symmDiff
+--def symmDiff {U : Type u} (A B : Set U) : Set U := (A \ B) ∪ (B \ A)
+infixl:100 " △ " => symmDiff
+--Note:  Mathlib.Order.SymmDiff.lean defines this with ∆ (\increment) instead of △ (\bigtriangle).
+--Switch to that??  But display of symmDiff seems to use △.
 
 --def is_empty {U : Type u} (A : Set U) := ¬∃ (x : U), x ∈ A
 
@@ -79,6 +82,11 @@ theorem not_imp_iff_not_and {p q : Prop} : ¬ (q → p) ↔ ¬ p ∧ q := by
 theorem not_not_iff {p q : Prop} : ¬(¬p ↔ q) ↔ (p ↔ q) := by
   rw [not_iff, Classical.not_not]
 
+namespace HTPI
+def Pred (t : Type u) : Type u := t → Prop
+--def Rel (s t : Type u) : Type u := s → t → Prop   --Defined in Mathlib.Data.Rel
+def BinRel (t : Type u) : Type u := Rel t t
+
 --Definitions of tactics
 section tactic_defs
 open Lean Elab Tactic Expr MVarId
@@ -91,12 +99,12 @@ syntax with2Ids := " with " ident (", " ident)?
 syntax idOrTerm := ident <|> ("(" term ")")
 syntax idOrTerm?Type := ident <|> ("(" term (" : " term)? ")")
 
-abbrev OneLoc := TSyntax `oneLoc
-abbrev ColonTerm := TSyntax `colonTerm
-abbrev WithId := TSyntax `withId
-abbrev With2Ids := TSyntax `with2Ids
-abbrev IdOrTerm := TSyntax `idOrTerm
-abbrev IdOrTerm?Type := TSyntax `idOrTerm?Type
+abbrev OneLoc := TSyntax ``oneLoc
+abbrev ColonTerm := TSyntax ``colonTerm
+abbrev WithId := TSyntax ``withId
+abbrev With2Ids := TSyntax ``with2Ids
+abbrev IdOrTerm := TSyntax ``idOrTerm
+abbrev IdOrTerm?Type := TSyntax ``idOrTerm?Type
 
 --Get formula from identifier
 def formFromIdent (h : Syntax) : TacticM Expr := do
