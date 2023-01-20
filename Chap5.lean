@@ -48,9 +48,11 @@ example {A B : Type} (f g : A → B) :
   done
 
 def square1 (n : Nat) : Nat := n^2
+
 def square2 : Nat → Nat := fun (n : Nat) => n^2
 
 example : square1 = square2 := by rfl
+
 example : square1 7 = 49 := by rfl
 
 theorem Theorem_5_1_5 {A B C : Type} (f : A → B) (g : B → C) :
@@ -93,11 +95,13 @@ example {A B C D : Type} (f : A → B) (g : B → C) (h : C → D) :
     h ∘ (g ∘ f) = (h ∘ g) ∘ f := by rfl
 
 example {A B : Type} (f : A → B) : f ∘ id = f := by rfl
+
 example {A B : Type} (f : A → B) : id ∘ f = f := by rfl
 
 -- 5.2
 def onto {A B : Type} (f : A → B) : Prop :=
   ∀ (y : B), ∃ (x : A), f x = y
+
 def one_to_one {A B : Type} (f : A → B) : Prop :=
   ∀ (x1 x2 : A), f x1 = f x2 → x1 = x2
 
@@ -134,8 +138,6 @@ theorem Theorem_5_2_5_2 {A B C : Type} (f : A → B) (g : B → C) :
   done
 
 -- 5.3
-#check @func_from_graph
-
 theorem Theorem_5_3_1 {A B : Type}
     (f : A → B) (h1 : one_to_one f) (h2 : onto f) :
     ∃ (g : B → A), graph g = inv (graph f) := by
@@ -270,19 +272,20 @@ theorem Theorem_5_4_5 {A : Type} (f : A → A) (B : Set A) :
   done
 
 def plus (m n : Int) : Int := m + n
+
 def plus' : Int → Int → Int := fun (m n : Int) => m + n
+
 def plus'' : Int → Int → Int := fun (m : Int) => (fun (n : Int) => m + n)
 
 example : plus = plus'' := by rfl
-example : plus' = plus'' := by rfl
-example : plus 3 2 = 5 := by rfl
 
-#check plus
-#check plus'
-#check plus''
+example : plus' = plus'' := by rfl
+
+example : plus 3 2 = 5 := by rfl
 
 def closed2 {A : Type} (f : A → A → A) (C : Set A) : Prop :=
     ∀ x ∈ C, ∀ y ∈ C, f x y ∈ C
+
 def closure2 {A : Type} (f : A → A → A) (B C : Set A) : Prop := 
     smallestElt (sub A) C { D : Set A | B ⊆ D ∧ closed2 f D }
 
@@ -292,11 +295,13 @@ theorem Theorem_5_4_9 {A : Type} (f : A → A → A) (B : Set A) :
 -- 5.5
 def image {A B : Type} (f : A → B) (X : Set A) : Set B :=
     { f x | x ∈ X }
+
 def inverse_image {A B : Type} (f : A → B) (Y : Set B) : Set A :=
     { a : A | f a ∈ Y }
--- The following theorems illustrate the meaning of these definitions:
+
 theorem simp_image {A B : Type} (f : A → B) (X : Set A) (b : B) :
     b ∈ image f X ↔ ∃ x ∈ X, f x = b := by rfl
+    
 theorem simp_inverse_image {A B : Type} (f : A → B) (Y : Set B) (a : A) :
     a ∈ inverse_image f Y ↔ f a ∈ Y := by rfl
 

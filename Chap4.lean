@@ -5,10 +5,13 @@ set_option pp.funBinderTypes true
 -- 4.2
 def Dom {A B : Type} (R : Set (A × B)) : Set A :=
     { a : A | ∃ (b : B), (a, b) ∈ R }
+
 def Ran {A B : Type} (R : Set (A × B)) : Set B :=
     { b : B | ∃ (a : A), (a, b) ∈ R }
+
 def inv {A B : Type} (R : Set (A × B)) : Set (B × A) :=
     { (b, a) : B × A | (a, b) ∈ R }
+
 def comp {A B C : Type} (S : Set (B × C)) (R : Set (A × B)) :
     Set (A × C) := { (a, c) : A × C | ∃ (x : B), (a, x) ∈ R ∧ (x, c) ∈ S }
 
@@ -96,8 +99,10 @@ theorem simp_ext {A B : Type} (R : Rel A B) (a : A) (b : B) :
 
 def reflexive {A : Type} (R : BinRel A) : Prop :=
     ∀ (x : A), R x x
+
 def symmetric {A : Type} (R : BinRel A) : Prop :=
     ∀ (x y : A), R x y → R y x
+    
 def transitive {A : Type} (R : BinRel A) : Prop :=
     ∀ (x y z : A)  , R x y → R y z → R x z
 
