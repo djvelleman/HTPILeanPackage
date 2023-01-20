@@ -19,25 +19,16 @@ def setOf.unexpander : Lean.PrettyPrinter.Unexpander
         `({ $pat:term | $p:term })
       else
         throw ()  --Or could use `({ $x:ident | match $y:ident with | $pat => $p})
-/- Don't need this anymore
-  | `($_ fun $x:ident ↦ match $y:ident with | $pat => $p) =>
+  | `($_ fun ($x:ident : $ty:term) => match $y:ident with | $pat => $p) =>
       if x == y then
-        `({ $pat:term | $p:term })
+        `({ $pat:term : $ty:term | $p:term })
       else
-        throw ()  --Or could use `({ $x:ident | match $y:ident with | $pat => $p})
--/
+        throw ()
+  -- Next line needed because of bug in Mathlib/Init/Set.lean
+  | `($_ fun ($x:ident : $ty:term) => $p) => `({ $x:ident : $ty:term | $p })
   | _ => throw ()
 
---Until they fix unexpander for Exists:
-/- Seems to be fixed.
-@[app_unexpander Exists] def unexpandExistsMapsto : Lean.PrettyPrinter.Unexpander
-  | `($(_) fun $x:ident ↦ ∃ $xs:binderIdent*, $b) => `(∃ $x:ident $xs:binderIdent*, $b)
-  | `($(_) fun $x:ident ↦ $b)                     => `(∃ $x:ident, $b)
-  | `($(_) fun ($x:ident : $t) ↦ $b)              => `(∃ ($x:ident : $t), $b)
-  | _                                             => throw ()
--/
-
---Should be in Lean but isn't.
+--Should be fixed in Lean soon--then can remove this.
 @[app_unexpander Function.comp] def unexpandFunctionComp : Lean.PrettyPrinter.Unexpander
   | `($(_) $f:term $g:term $x:term) => `(($f ∘ $g) $x)
   | _ => throw ()
@@ -46,18 +37,9 @@ def setOf.unexpander : Lean.PrettyPrinter.Unexpander
 -- Copying similar in:  Mathlib/Init/Set.lean, lean4/Init/Notation.lean, std4/Std/Classes/SetNotation.lean
 notation:50 a:50 " ⊈ " b:50 => ¬ (a ⊆ b)
 
-/- This seems to be in Mathlib now
-@[reducible]  --?
-def sInter {U : Type u} (F : Set (Set U)) : Set U := {x : U | ∀ A : Set U, A ∈ F → x ∈ A}
-prefix:110 "⋂₀" => sInter
--/
-
---def symmDiff {U : Type u} (A B : Set U) : Set U := (A \ B) ∪ (B \ A)
-infixl:100 " △ " => symmDiff
---Note:  Mathlib.Order.SymmDiff.lean defines this with ∆ (\increment) instead of △ (\bigtriangle).
+--Note:  Mathlib.Order.SymmDiff.lean defines this with ∆ (\increment) instead of △ (\bigtriangleup).
 --Switch to that??  But display of symmDiff seems to use △.
-
---def is_empty {U : Type u} (A : Set U) := ¬∃ (x : U), x ∈ A
+infixl:100 " △ " => symmDiff
 
 --Some theorems not in library
 theorem not_not_and_distrib {p q : Prop} : ¬(¬ p ∧ q) ↔ (p ∨ ¬ q) := by
@@ -272,20 +254,22 @@ If rep = true, unfold repeatedly.
 Let whnfCore handle everything except unfolding of constants.
 Do all normalization up to first unfolding of a definition; on next call do that unfolding
 -/
-partial def unfoldHead (e : Expr) (tac : Name) (exun rep : Bool) : TacticM Expr := do
+partial def unfoldHead (e : Expr) (tac : Name) (first rep : Bool) : TacticM Expr := do
   let e1 := consumeMData e
   let (h, args) := getHeadData e1
   -- First let e2 = result of one unfolding, or handle negation, or fail
   let e2 ← match h with
     | const c levs =>
       match (c, levs, args) with
-        | (``Not, _, [l]) => return mkNot (← unfoldHead l tac exun rep) --Return from function call, bypassing e2
+        | (``Not, _, [l]) => return mkNot (← unfoldHead l tac first rep) --Return from function call, bypassing e2
         | (``ExistsUnique, [lev], [r, l]) =>
-          if exun then
+          if first then
             pure (applyToExData unfoldExUn lev l r)
           else
             myFail tac "failed to unfold definition"
         | _ => 
+          if !first && ((c == ``ite) || (c == ``dite)) then
+            myFail tac "failed to unfold definition"
           let edo ← Meta.unfoldDefinition? e1
           match edo with
             | some ed => pure ed

@@ -1,13 +1,7 @@
-/build
-/lake-packages/*
 test.lean
 EquivTests.lean
-IntroLean.lean
-Chap3.lean
 Chap3Ex.lean
-Chap4.lean
 Chap4Ex.lean
-Chap5.lean
 Chap5Ex.lean
 Chap6.lean
 RemovedFromHTPIDefs.lean
