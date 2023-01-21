@@ -312,7 +312,7 @@ theorem Theorem_3_4_7 :
     have h6 : 6 * (j - k) = n :=
       calc 6 * (j - k)
           = 6 * j - 6 * k :=
-              mul_sub_left_distrib 6 j k
+            mul_sub_left_distrib 6 j k
         _ = 3 * (2 * j) - 2 * (3 * k) :=
             by rewrite [←mul_assoc 3 2 j, ←mul_assoc 2 3 k]; rfl
         _ = 3 * n - 2 * n := by rewrite [←h4, ←h5]; rfl
