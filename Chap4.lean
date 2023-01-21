@@ -241,13 +241,13 @@ def equivClass {A : Type} (R : BinRel A) (x : A) : Set A :=
 def mod (A : Type) (R : BinRel A) : Set (Set A) :=
   { equivClass R x | x : A }
 
-def is_empty {A : Type} (X : Set A) : Prop := ¬∃ (x : A), x ∈ X
+def empty {A : Type} (X : Set A) : Prop := ¬∃ (x : A), x ∈ X
 
 def pairwise_disjoint {A : Type} (F : Set (Set A)) : Prop :=
-  ∀ X ∈ F, ∀ Y ∈ F, X ≠ Y → is_empty (X ∩ Y)
+  ∀ X ∈ F, ∀ Y ∈ F, X ≠ Y → empty (X ∩ Y)
 
 def partition {A : Type} (F : Set (Set A)) : Prop :=
-  (∀ (x : A), x ∈ ⋃₀F) ∧ pairwise_disjoint F ∧ ∀ X ∈ F, ¬is_empty X 
+  (∀ (x : A), x ∈ ⋃₀F) ∧ pairwise_disjoint F ∧ ∀ X ∈ F, ¬empty X 
 
 lemma Lemma_4_5_5_1 {A : Type} (R : BinRel A) (h : equiv_rel R) :
     ∀ (x : A), x ∈ equivClass R x := by
@@ -310,7 +310,7 @@ lemma Theorem_4_5_4_part_2 {A : Type} (R : BinRel A) (h : equiv_rel R) :
   fix X : Set A
   assume h2 : X ∈ mod A R
   fix Y : Set A
-  assume h3 : Y ∈ mod A R           --Goal: X ≠ Y → is_empty (X ∩ Y)
+  assume h3 : Y ∈ mod A R           --Goal: X ≠ Y → empty (X ∩ Y)
   define at h2; define at h3
   obtain (x : A) (h4 : equivClass R x = X) from h2
   obtain (y : A) (h5 : equivClass R y = Y) from h3
@@ -332,9 +332,9 @@ lemma Theorem_4_5_4_part_2 {A : Type} (R : BinRel A) (h : equiv_rel R) :
   done
 
 lemma Theorem_4_5_4_part_3 {A : Type} (R : BinRel A) (h : equiv_rel R) :
-    ∀ X ∈ mod A R, ¬is_empty X := by
+    ∀ X ∈ mod A R, ¬empty X := by
   fix X : Set A
-  assume h2 : X ∈ mod A R  --Goal: ¬is_empty X
+  assume h2 : X ∈ mod A R  --Goal: ¬empty X
   define; double_neg       --Goal: ∃ (x : A), x ∈ X
   define at h2             --h2: ∃ (x : A), equivClass R x = X
   obtain (x : A) (h3 : equivClass R x = X) from h2
@@ -391,7 +391,7 @@ theorem Theorem_4_5_6 {A : Type} (F : Set (Set A)) (h: partition F) :
     done
   · -- (←)
     assume h2 : X ∈ F                 --Goal: X ∈ mod A R
-    have h3 : ¬is_empty X := h.right.right X h2
+    have h3 : ¬empty X := h.right.right X h2
     define at h3; double_neg at h3    --h3: ∃ (x : A), x ∈ X
     obtain (x : A) (h4 : x ∈ X) from h3
     define                       --Goal: ∃ (x : A), equivClass R x = X
