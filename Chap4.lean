@@ -71,9 +71,9 @@ theorem Theorem_4_2_5_5 {A B C : Type}
   apply Iff.intro
   · -- (→)
     assume h1 : (c, a) ∈ inv (comp S R)
-                              --Goal: (c, a) ∈ comp (inv R) (inv S)
-    define at h1              --h1: ∃ x, (a, x) ∈ R ∧ (x, c) ∈ S
-    define                    --Goal: ∃ x, (c, x) ∈ inv S ∧ (x, a) ∈ inv R
+                         --Goal: (c, a) ∈ comp (inv R) (inv S)
+    define at h1         --h1: ∃ (x : B), (a, x) ∈ R ∧ (x, c) ∈ S
+    define               --Goal: ∃ (x : B), (c, x) ∈ inv S ∧ (x, a) ∈ inv R
     obtain (b : B) (h2 : (a, b) ∈ R ∧ (b, c) ∈ S) from h1
     apply Exists.intro b         --Goal: (c, b) ∈ inv S ∧ (b, a) ∈ inv R
     rewrite [simp_inv, simp_inv] --Goal: (b, c) ∈ S ∧ (a, b) ∈ R
@@ -125,7 +125,7 @@ theorem Theorem_4_3_4_2 {A : Type} (R : BinRel A) :
     define                   --Goal:  ∀ (x y : A), R x y → R y x
     fix a : A; fix b : A
     assume h2 : R a b        --Goal:  R b a
-    rewrite [←simp_ext R, h1, simp_inv, simp_ext] at h2
+    rewrite [←simp_ext  R, h1, simp_inv, simp_ext] at h2
     show R b a from h2
     done
   done
@@ -198,7 +198,7 @@ theorem Theorem_4_4_6_2 {A : Type} (R : BinRel A) (B : Set A) (b : A)
 theorem Theorem_4_4_6_3 {A : Type} (R : BinRel A) (B : Set A) (b : A)
     (h1 : total_order R) (h2 : minimalElt R b B) : smallestElt R b B := by
   define at h1         --h1: partial_order R ∧ ∀ (x y : A), R x y ∨ R y x
-  define at h2         --h2: b ∈ B ∧ ¬∃ x, x ∈ B ∧ R x b ∧ x ≠ b
+  define at h2         --h2: b ∈ B ∧ ¬∃ (x : A), x ∈ B ∧ R x b ∧ x ≠ b
   define               --Goal: b ∈ B ∧ ∀ (x : A), x ∈ B → R b x
   apply And.intro h2.left  --Goal: ∀ (x : A), x ∈ B → R b x
   fix x : A
@@ -296,7 +296,7 @@ lemma Lemma_4_5_5_2 {A : Type} (R : BinRel A) (h : equiv_rel R) :
 lemma Theorem_4_5_4_part_1 {A : Type} (R : BinRel A) (h : equiv_rel R) :
     ∀ (x : A), x ∈ ⋃₀(mod A R) := by
   fix x : A
-  define        --Goal: ∃ (a : Set A), a ∈ mod A R ∧ x ∈ a
+  define        --Goal: ∃ (t : Set A), t ∈ mod A R ∧ x ∈ t
   apply Exists.intro (equivClass R x)
   apply And.intro _ (Lemma_4_5_5_1 R h x)
                 --Goal: equivClass R x ∈ mod A R
