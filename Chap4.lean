@@ -116,9 +116,9 @@ theorem Theorem_4_3_4_2 {A : Type} (R : BinRel A) :
     fix (a, b) : A × A
     show (a, b) ∈ extension R ↔ (a, b) ∈ inv (extension R) from
       calc (a, b) ∈ extension R
-        ↔ R a b := by rfl
-      _ ↔ R b a := Iff.intro (h1 a b) (h1 b a)
-      _ ↔ (a, b) ∈ inv (extension R) := by rfl
+          ↔ R a b := by rfl
+        _ ↔ R b a := Iff.intro (h1 a b) (h1 b a)
+        _ ↔ (a, b) ∈ inv (extension R) := by rfl
     done
   · -- (←)
     assume h1 : extension R = inv (extension R)
