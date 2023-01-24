@@ -100,10 +100,10 @@ example {A B : Type} (f : A → B) : id ∘ f = f := by rfl
 
 -- 5.2
 def onto {A B : Type} (f : A → B) : Prop :=
-  ∀ (y : B), ∃ (x : A), f x = y
+    ∀ (y : B), ∃ (x : A), f x = y
 
 def one_to_one {A B : Type} (f : A → B) : Prop :=
-  ∀ (x1 x2 : A), f x1 = f x2 → x1 = x2
+    ∀ (x1 x2 : A), f x1 = f x2 → x1 = x2
 
 theorem Theorem_5_2_5_1 {A B C : Type} (f : A → B) (g : B → C) :
     one_to_one f → one_to_one g → one_to_one (g ∘ f) := by

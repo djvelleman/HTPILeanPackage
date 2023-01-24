@@ -233,21 +233,21 @@ def lub {A : Type} (R : BinRel A) (a : A) (B : Set A) : Prop :=
 
 -- 4.5
 def equiv_rel {A : Type} (R : BinRel A) : Prop :=
-  reflexive R ∧ symmetric R ∧ transitive R
+    reflexive R ∧ symmetric R ∧ transitive R
 
 def equivClass {A : Type} (R : BinRel A) (x : A) : Set A :=
-  { y : A | R y x }
+    { y : A | R y x }
 
 def mod (A : Type) (R : BinRel A) : Set (Set A) :=
-  { equivClass R x | x : A }
+    { equivClass R x | x : A }
 
 def empty {A : Type} (X : Set A) : Prop := ¬∃ (x : A), x ∈ X
 
 def pairwise_disjoint {A : Type} (F : Set (Set A)) : Prop :=
-  ∀ X ∈ F, ∀ Y ∈ F, X ≠ Y → empty (X ∩ Y)
+    ∀ X ∈ F, ∀ Y ∈ F, X ≠ Y → empty (X ∩ Y)
 
 def partition {A : Type} (F : Set (Set A)) : Prop :=
-  (∀ (x : A), x ∈ ⋃₀F) ∧ pairwise_disjoint F ∧ ∀ X ∈ F, ¬empty X 
+    (∀ (x : A), x ∈ ⋃₀F) ∧ pairwise_disjoint F ∧ ∀ X ∈ F, ¬empty X 
 
 lemma Lemma_4_5_5_1 {A : Type} (R : BinRel A) (h : equiv_rel R) :
     ∀ (x : A), x ∈ equivClass R x := by
