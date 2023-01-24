@@ -19,9 +19,11 @@ static lean_object* l_term_x7b___x3a___x7c___x7d___closed__5;
 static lean_object* l_HTPI_tacticFix___x3a_____closed__2;
 lean_object* l_Lean_Expr_const___override(lean_object*, lean_object*);
 LEAN_EXPORT lean_object* l_HTPI_tacticFix___x3a__;
+static lean_object* l_HTPI_sumFromTo___closed__10;
 LEAN_EXPORT lean_object* l_HTPI_ExprToString(lean_object*);
 static lean_object* l_HTPI_tacticDefine_______closed__6;
 lean_object* lean_string_utf8_extract(lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1(lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_tacticDefinition_x21______1___closed__3;
 LEAN_EXPORT lean_object* l_HTPI_doSuffices(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 LEAN_EXPORT lean_object* l_HTPI_tacticDouble__neg____;
@@ -75,6 +77,7 @@ static lean_object* l_HTPI_myTrace___closed__5;
 static lean_object* l_HTPI_dmRule___closed__22;
 LEAN_EXPORT lean_object* l_HTPI_doSwap(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_tacticContrapos_______closed__2;
+static lean_object* l_HTPI_sumFromTo___closed__5;
 static lean_object* l_HTPI_tacticOr__right_____closed__2;
 static lean_object* l_HTPI_dmRule___closed__11;
 lean_object* lean_array_data(lean_object*);
@@ -111,6 +114,7 @@ LEAN_EXPORT lean_object* l_HTPI_tacticAssume__;
 static lean_object* l_HTPI_doInduc___lambda__3___closed__3;
 static lean_object* l_HTPI_tacticBy__strong__induc___closed__1;
 static lean_object* l_HTPI_qnRule___closed__18;
+static lean_object* l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__6;
 static lean_object* l_term_x7b___x7c___x7d___closed__4;
 lean_object* l_Lean_mkAppB(lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_dmRule___closed__30;
@@ -211,6 +215,7 @@ static lean_object* l_HTPI_tacticConditional_______closed__6;
 LEAN_EXPORT lean_object* l_HTPI___aux__HTPIDefs______elabRules__HTPI__tacticWhnf______1(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_ExprToString___closed__11;
 static lean_object* l_HTPI_tacticBy__strong__induc___closed__2;
+static lean_object* l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__2;
 static lean_object* l_HTPI_qnRule___closed__15;
 LEAN_EXPORT lean_object* l_HTPI_tacticExists__unique;
 static lean_object* l_HTPI_tacticObtain______From_____closed__4;
@@ -236,6 +241,7 @@ LEAN_EXPORT lean_object* l_HTPI_tacticAssume___x3a__;
 static lean_object* l_HTPI_doInduc___lambda__1___closed__5;
 static lean_object* l_HTPI_SyntaxToString_SyntaxListToString___closed__2;
 static lean_object* l_term___u2288_____closed__7;
+static lean_object* l_HTPI_sumFromTo___closed__6;
 static lean_object* l_HTPI_tacticObtain____From_____closed__2;
 static lean_object* l_HTPI_getPropForm___lambda__3___closed__9;
 LEAN_EXPORT lean_object* l_HTPI_tacticTraceExpr____;
@@ -279,6 +285,7 @@ static lean_object* l_HTPI_getPropForm___lambda__3___closed__5;
 static lean_object* l_term_x7b___x7c___x7d___closed__2;
 static lean_object* l___aux__HTPIDefs______macroRules__term_x7b___x3a___x7c___x7d__1___closed__31;
 static lean_object* l_term_x7b___x3a___x7c___x7d___closed__18;
+static lean_object* l_HTPI_sumFromTo___closed__4;
 static lean_object* l___aux__HTPIDefs______macroRules__term_x7b___x3a___x7c___x7d__1___closed__9;
 static lean_object* l_HTPI_doInduc___lambda__1___closed__1;
 LEAN_EXPORT lean_object* l_HTPI_doEquivTac___lambda__1(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
@@ -292,6 +299,7 @@ static lean_object* l___aux__HTPIDefs______macroRules__term_x7b___x3a___x7c___x7
 static lean_object* l_HTPI_orstrat___lambda__1___closed__15;
 LEAN_EXPORT lean_object* l_HTPI___aux__HTPIDefs______elabRules__HTPI__tacticDef__step______1(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_tacticFix___x3a_____closed__5;
+static lean_object* l_HTPI_sumFromTo___closed__11;
 LEAN_EXPORT lean_object* l_Array_forInUnsafe_loop___at_HTPI_checkIdUsed___spec__1(lean_object*, lean_object*, size_t, size_t, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI___aux__HTPIDefs______elabRules__HTPI__tacticExists__unique__1___lambda__1___closed__7;
 static lean_object* l_HTPI_doInduc___lambda__2___closed__4;
@@ -305,6 +313,7 @@ static lean_object* l_HTPI_dmRule___closed__7;
 static lean_object* l_HTPI_tacticObtain______From_____closed__3;
 static lean_object* l_HTPI_orstrat___lambda__2___closed__12;
 static lean_object* l_HTPI___aux__HTPIDefs______elabRules__HTPI__tacticQuant__neg______1___closed__1;
+static lean_object* l_HTPI_unexpandSumFromTo___closed__3;
 static lean_object* l_term___u25b3_____closed__6;
 LEAN_EXPORT lean_object* l_HTPI_cpRule(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_tacticTraceExpr_______closed__1;
@@ -336,6 +345,7 @@ static lean_object* l___aux__HTPIDefs______macroRules__term_x7b___x3a___x7c___x7
 static lean_object* l_HTPI_doInduc___lambda__1___closed__4;
 LEAN_EXPORT lean_object* l_HTPI_orstrat___lambda__1(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, uint8_t, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_tacticDefinition_x21_______closed__3;
+LEAN_EXPORT lean_object* l___private_HTPIDefs_0__HTPI_sum__less_match__1_splitter(lean_object*);
 static lean_object* l_HTPI_tacticDouble__neg_______closed__6;
 static lean_object* l_HTPI_tacticObtain____From_____closed__5;
 lean_object* l___private_Lean_Meta_Basic_0__Lean_Meta_lambdaTelescopeImp___rarg(lean_object*, uint8_t, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
@@ -357,6 +367,7 @@ static lean_object* l_HTPI_qnRuleFromInfoNoNeg___closed__1;
 LEAN_EXPORT lean_object* l_List_toString___at_HTPI_ExprToString___spec__1(lean_object*);
 static lean_object* l_HTPI_binegRule___closed__4;
 lean_object* lean_st_ref_take(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* l_HTPI_sum__from__to(lean_object*);
 static lean_object* l___aux__HTPIDefs______macroRules__term_x7b___x3a___x7c___x7d__1___closed__4;
 static lean_object* l_HTPI_dmRule___closed__8;
 static lean_object* l___aux__HTPIDefs______macroRules__term_x7b___x3a___x7c___x7d__1___closed__8;
@@ -398,12 +409,14 @@ static lean_object* l_HTPI_doInduc___lambda__3___closed__4;
 static lean_object* l___aux__HTPIDefs______macroRules__term_x7b___x3a___x7c___x7d__1___closed__11;
 static lean_object* l_HTPI_binegRule___closed__9;
 static lean_object* l___aux__HTPIDefs______macroRules__term___u25b3____1___closed__2;
+LEAN_EXPORT lean_object* l___private_HTPIDefs_0__HTPI_sum__less_match__1_splitter___rarg(lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_idOrTerm___closed__8;
 LEAN_EXPORT lean_object* l_HTPI___aux__HTPIDefs______elabRules__HTPI__tacticObtain____From____1(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l___aux__HTPIDefs______macroRules__term___u2288____1___closed__2;
 LEAN_EXPORT lean_object* l_HTPI_getDefineFormLabel(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_dmRule___closed__1;
 static lean_object* l_HTPI_qnRule___closed__2;
+static lean_object* l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__5;
 static lean_object* l_HTPI_tacticTraceExpr_______closed__5;
 static lean_object* l_term___u25b3_____closed__3;
 static lean_object* l___aux__HTPIDefs______macroRules__term_x7b___x3a___x7c___x7d__1___closed__30;
@@ -443,6 +456,7 @@ static lean_object* l_HTPI_tacticDef__step_______closed__4;
 static lean_object* l_HTPI___aux__HTPIDefs______macroRules__HTPI__tacticShow__From____1___closed__4;
 static lean_object* l_HTPI_tacticTraceExpr_______closed__9;
 LEAN_EXPORT lean_object* l_HTPI_tacticContradict____;
+LEAN_EXPORT lean_object* l_HTPI_sum__less___at_HTPI_sum__from__to___spec__1___rarg___boxed(lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_tacticTraceExpr_______closed__8;
 lean_object* l_Lean_Meta_getLevel(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_term___u25b3_____closed__2;
@@ -536,6 +550,7 @@ static lean_object* l_HTPI_tacticTraceExpr_______closed__7;
 lean_object* l_Lean_addMacroScope(lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_ExprToString___closed__4;
 static lean_object* l_HTPI_ExprToString___closed__10;
+LEAN_EXPORT lean_object* l_HTPI_sum__less___rarg___boxed(lean_object*, lean_object*, lean_object*);
 static lean_object* l___aux__HTPIDefs______macroRules__term___u2288____1___closed__3;
 lean_object* l_Lean_extractMacroScopes(lean_object*);
 static lean_object* l_HTPI_tacticQuant__neg_______closed__5;
@@ -569,10 +584,12 @@ static lean_object* l_HTPI_cpRule___closed__6;
 static lean_object* l_HTPI_doInduc___lambda__1___closed__18;
 static lean_object* l_HTPI_idOrTerm___closed__1;
 LEAN_EXPORT lean_object* l___aux__HTPIDefs______macroRules__term_x7b___x7c___x7d__1(lean_object*, lean_object*, lean_object*);
+static lean_object* l_HTPI_sumFromTo___closed__3;
 static lean_object* l___aux__HTPIDefs______macroRules__term_x7b___x3a___x7c___x7d__1___closed__23;
 lean_object* l_Lean_Syntax_getArg(lean_object*, lean_object*);
 static lean_object* l_HTPI___aux__HTPIDefs______elabRules__HTPI__tacticExists__unique__1___lambda__1___closed__6;
 static lean_object* l_HTPI_ensureContra___closed__1;
+static lean_object* l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__3;
 lean_object* l___private_Init_Util_0__mkPanicMessageWithDecl(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_dmRule___closed__38;
 static lean_object* l_HTPI_orstrat___lambda__2___closed__15;
@@ -596,6 +613,7 @@ static lean_object* l_HTPI_doRewrite___closed__7;
 LEAN_EXPORT lean_object* l_HTPI_doDefine___lambda__3(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 LEAN_EXPORT lean_object* l_HTPI_doRewrite___boxed(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_qnRule___closed__17;
+static lean_object* l_HTPI_sumFromTo___closed__15;
 LEAN_EXPORT lean_object* l_HTPI_tacticDemorgan____;
 static lean_object* l_HTPI_tacticWhnf_______closed__7;
 lean_object* lean_mk_syntax_ident(lean_object*);
@@ -604,6 +622,7 @@ static lean_object* l___aux__HTPIDefs______macroRules__term_x7b___x3a___x7c___x7
 static lean_object* l_HTPI_cpRule___closed__11;
 static lean_object* l_term___u2288_____closed__5;
 static lean_object* l_setOf_unexpander___closed__10;
+static lean_object* l_HTPI_sumFromTo___closed__2;
 static lean_object* l_HTPI_oneLoc___closed__4;
 LEAN_EXPORT lean_object* l_HTPI___aux__HTPIDefs______elabRules__HTPI__tacticAssume____1(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_tacticDefinition_x21_______closed__7;
@@ -636,9 +655,12 @@ static lean_object* l_HTPI_doInduc___lambda__3___closed__6;
 LEAN_EXPORT lean_object* l_HTPI_tacticOr__left__;
 static lean_object* l_HTPI_qnRule___closed__6;
 LEAN_EXPORT lean_object* l_term_x7b___x7c___x7d;
+LEAN_EXPORT lean_object* l___private_HTPIDefs_0__HTPI_sum__less_match__1_splitter___rarg___boxed(lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI___aux__HTPIDefs______elabRules__HTPI__tacticExists__unique__1___lambda__1___closed__10;
+LEAN_EXPORT lean_object* l_HTPI_sum__from__to___rarg(lean_object*, lean_object*, lean_object*, lean_object*);
 lean_object* l_Array_append___rarg(lean_object*, lean_object*);
 static lean_object* l_HTPI_tacticDefinition_x21_______closed__5;
+static lean_object* l_HTPI_unexpandSumFromTo___closed__1;
 LEAN_EXPORT lean_object* l_HTPI___aux__HTPIDefs______elabRules__HTPI__tacticTraceExpr______1___lambda__1___boxed(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 LEAN_EXPORT lean_object* l_HTPI_getLabel(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 LEAN_EXPORT lean_object* l_HTPI_doDefine___boxed(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
@@ -649,6 +671,8 @@ static lean_object* l_HTPI_qnRule___closed__13;
 LEAN_EXPORT lean_object* l_HTPI_equivRule(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI___aux__HTPIDefs______elabRules__HTPI__tacticDisj__syll________1___lambda__3___closed__3;
 static lean_object* l_HTPI_doRewrite___closed__11;
+static lean_object* l_HTPI_unexpandSumFromTo___closed__4;
+static lean_object* l_HTPI_sumFromTo___closed__8;
 LEAN_EXPORT lean_object* l_Lean_Meta_lambdaTelescope___at_HTPI_qnRuleFromInfoNoNeg___spec__1___rarg(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_tacticShow___x3a_x3d_____closed__6;
 LEAN_EXPORT lean_object* l_HTPI___aux__HTPIDefs______elabRules__HTPI__tacticTraceExpr______1(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
@@ -707,12 +731,14 @@ static lean_object* l_HTPI_doInduc___lambda__1___closed__3;
 static lean_object* l_HTPI_tacticOr__left_____closed__4;
 LEAN_EXPORT lean_object* l_HTPI_equivRule___boxed(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 uint8_t l_Lean_Name_hasMacroScopes(lean_object*);
+static lean_object* l_HTPI_sumFromTo___closed__12;
 uint8_t l_Lean_Expr_hasAnyFVar_visit___at_Lean_Expr_containsFVar___spec__1(lean_object*, lean_object*);
 static lean_object* l_HTPI_qnRule___closed__1;
 static lean_object* l_HTPI_tacticDefinition_______closed__3;
 static lean_object* l_HTPI_ExprToString___closed__5;
 static lean_object* l_HTPI_tacticObtain____From_____closed__1;
 static lean_object* l_term___u2288_____closed__1;
+static lean_object* l_HTPI_sumFromTo___closed__14;
 static lean_object* l_HTPI_tacticDefine_______closed__3;
 static lean_object* l_HTPI_mkExists___closed__1;
 static lean_object* l_HTPI_doRewrite___closed__15;
@@ -735,6 +761,7 @@ LEAN_EXPORT lean_object* l_HTPI_mkUn___lambda__1___boxed(lean_object*, lean_obje
 lean_object* l_Lean_Expr_app___override(lean_object*, lean_object*);
 extern uint8_t l_instDecidableFalse;
 LEAN_EXPORT lean_object* l_HTPI_isLocalVar(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+static lean_object* l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__1;
 LEAN_EXPORT lean_object* l_HTPI_unfoldHead(lean_object*, lean_object*, uint8_t, uint8_t, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_DisjSyllData___closed__1;
 static lean_object* l_term_x7b___x3a___x7c___x7d___closed__17;
@@ -767,6 +794,7 @@ static lean_object* l___aux__HTPIDefs______macroRules__term___u2288____1___close
 static lean_object* l___aux__HTPIDefs______macroRules__term_x7b___x3a___x7c___x7d__1___closed__22;
 static lean_object* l_term___u25b3_____closed__7;
 static lean_object* l_HTPI_tacticShow__From_____closed__5;
+LEAN_EXPORT lean_object* l_HTPI_sum__from__to___rarg___lambda__1(lean_object*, lean_object*, lean_object*);
 static lean_object* l_term_x7b___x7c___x7d___closed__5;
 static lean_object* l_HTPI_myTrace___closed__6;
 static lean_object* l_HTPI_oneLoc___closed__1;
@@ -778,6 +806,7 @@ static lean_object* l_HTPI_tacticBy__casesOn_______closed__2;
 lean_object* l_Lean_Name_mkStr2(lean_object*, lean_object*);
 static lean_object* l_HTPI_tacticBy__casesOn_______closed__3;
 LEAN_EXPORT lean_object* l_HTPI___aux__HTPIDefs______elabRules__HTPI__tacticOr__right____1(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* l_HTPI_sum__less(lean_object*);
 LEAN_EXPORT lean_object* l_HTPI_mkAppList(lean_object*, lean_object*);
 static lean_object* l_setOf_unexpander___closed__9;
 static lean_object* l_HTPI_ExprToString___closed__6;
@@ -838,6 +867,8 @@ static lean_object* l_term_x7b___x3a___x7c___x7d___closed__9;
 LEAN_EXPORT lean_object* l_HTPI___aux__HTPIDefs______elabRules__HTPI__tacticDemorgan______1(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_dnRule___closed__4;
 LEAN_EXPORT lean_object* l_HTPI_unfoldHead___lambda__1(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+lean_object* lean_nat_sub(lean_object*, lean_object*);
+LEAN_EXPORT lean_object* l_HTPI_sum__less___at_HTPI_sum__from__to___spec__1___rarg(lean_object*, lean_object*, lean_object*);
 static lean_object* l_term___u25b3_____closed__1;
 static lean_object* l_HTPI_dmRule___closed__31;
 static lean_object* l_HTPI_cdlRule___closed__11;
@@ -847,6 +878,7 @@ static lean_object* l_HTPI_tacticBicond__neg_______closed__4;
 LEAN_EXPORT lean_object* l_HTPI___aux__HTPIDefs______elabRules__HTPI__tacticBicond__neg______1(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 uint8_t l_Lean_Expr_isProp(lean_object*);
 LEAN_EXPORT lean_object* l_HTPI___aux__HTPIDefs______elabRules__HTPI__tacticDisj__syll________1___lambda__3(lean_object*, lean_object*, lean_object*, uint8_t, lean_object*, uint8_t, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+static lean_object* l_HTPI_sumFromTo___closed__1;
 LEAN_EXPORT lean_object* l___private_Init_Data_Option_Basic_0__beqOption____x40_Init_Data_Option_Basic___hyg_1116____at_HTPI___aux__HTPIDefs______elabRules__HTPI__tacticDisj__syll________1___spec__1___boxed(lean_object*, lean_object*);
 static lean_object* l_term_x7b___x3a___x7c___x7d___closed__15;
 static lean_object* l_HTPI_orstrat___closed__3;
@@ -868,15 +900,18 @@ static lean_object* l_HTPI_doInduc___lambda__1___closed__8;
 static lean_object* l_HTPI_doInduc___lambda__1___closed__9;
 static lean_object* l_HTPI_ExprToString___closed__12;
 LEAN_EXPORT lean_object* l___aux__HTPIDefs______macroRules__term_x7b___x3a___x7c___x7d__1(lean_object*, lean_object*, lean_object*);
+static lean_object* l_HTPI_sumFromTo___closed__9;
 static lean_object* l_HTPI_tacticConditional_______closed__5;
 static lean_object* l_HTPI_unfoldExUn___closed__2;
 static lean_object* l_HTPI_doRewrite___closed__6;
 static lean_object* l_HTPI_cdlRule___closed__18;
 static lean_object* l_HTPI_unfoldHead___closed__1;
+LEAN_EXPORT lean_object* l_HTPI_sumFromTo;
 lean_object* l_Lean_RBNode_insert___at_Lean_FVarIdSet_insert___spec__1(lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_myTrace___closed__2;
 static lean_object* l_HTPI_SyntaxToString___closed__1;
 LEAN_EXPORT lean_object* l_HTPI_exprFromPf(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+static lean_object* l_HTPI_sumFromTo___closed__13;
 static lean_object* l_HTPI_ExprToString___closed__2;
 static lean_object* l_HTPI___aux__HTPIDefs______macroRules__HTPI__tacticShow__From____1___closed__1;
 static lean_object* l_HTPI_dmRule___closed__28;
@@ -891,6 +926,7 @@ static lean_object* l_HTPI_tacticFix___x3a_____closed__1;
 LEAN_EXPORT lean_object* l_HTPI_fixCase(uint8_t, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI___aux__HTPIDefs______elabRules__HTPI__tacticExists__unique__1___lambda__1___closed__13;
 static lean_object* l_term___u25b3_____closed__5;
+static lean_object* l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__7;
 LEAN_EXPORT lean_object* l_HTPI___aux__HTPIDefs______elabRules__HTPI__tacticDefinition______1(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 uint8_t l_Lean_Syntax_structEq(lean_object*, lean_object*);
 static lean_object* l_HTPI_doInduc___lambda__1___closed__10;
@@ -916,6 +952,7 @@ LEAN_EXPORT lean_object* l_HTPI_doReplace(lean_object*, lean_object*, lean_objec
 static lean_object* l_HTPI_doObtain___lambda__1___closed__2;
 static lean_object* l_HTPI___aux__HTPIDefs______elabRules__HTPI__tacticWhnf______1___closed__1;
 static lean_object* l_HTPI_dmRule___closed__21;
+lean_object* l_Lean_Syntax_node8(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_tacticShow___x3a_x3d_____closed__2;
 extern lean_object* l_Lean_instInhabitedName;
 static lean_object* l_HTPI_dmRule___closed__29;
@@ -994,12 +1031,14 @@ uint8_t lean_usize_dec_lt(size_t, size_t);
 static lean_object* l_HTPI_tacticFix_____closed__2;
 lean_object* l_Lean_Meta_intro1Core(lean_object*, uint8_t, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_cdlRule___closed__12;
+static lean_object* l_HTPI_sumFromTo___closed__7;
 static lean_object* l_term_x7b___x3a___x7c___x7d___closed__2;
 lean_object* l_Lean_Meta_mkLambdaFVars(lean_object*, lean_object*, uint8_t, uint8_t, uint8_t, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 LEAN_EXPORT lean_object* l_HTPI_findNegPropAll___boxed(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 LEAN_EXPORT lean_object* l_HTPI_doHave(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 lean_object* l_Lean_Elab_Tactic_setGoals(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_doRewrite___closed__16;
+LEAN_EXPORT lean_object* l_HTPI_unexpandSumFromTo(lean_object*, lean_object*, lean_object*);
 lean_object* lean_nat_add(lean_object*, lean_object*);
 static lean_object* l_setOf_unexpander___closed__2;
 static lean_object* l_HTPI_tacticShow___x3a_x3d_____closed__1;
@@ -1024,7 +1063,9 @@ static lean_object* l_List_toString___at_HTPI_ExprToString___spec__1___closed__2
 static lean_object* l_HTPI_qnRule___closed__4;
 static lean_object* l_HTPI_dmRule___closed__5;
 LEAN_EXPORT lean_object* l_HTPI_tacticQuant__neg____;
+static lean_object* l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__4;
 LEAN_EXPORT lean_object* l_HTPI___aux__HTPIDefs______elabRules__HTPI__tacticDisj__syll________1___lambda__2(lean_object*, lean_object*, lean_object*, uint8_t, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* l_HTPI_sum__from__to___rarg___lambda__1___boxed(lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_doInduc___lambda__1___closed__11;
 static lean_object* l_HTPI_idOrTerm_x3fType___closed__2;
 LEAN_EXPORT lean_object* l_HTPI___aux__HTPIDefs______macroRules__HTPI__tacticShow___x3a_x3d____1(lean_object*, lean_object*, lean_object*);
@@ -1035,6 +1076,7 @@ LEAN_EXPORT lean_object* l_HTPI_doAssume___lambda__1(lean_object*, lean_object*,
 static lean_object* l_HTPI_mkIff___closed__2;
 lean_object* l_Lean_Expr_mvarId_x21(lean_object*);
 LEAN_EXPORT lean_object* l_HTPI___aux__HTPIDefs______elabRules__HTPI__tacticDouble__neg______1(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
+LEAN_EXPORT lean_object* l_HTPI_sum__less___at_HTPI_sum__from__to___spec__1(lean_object*);
 static lean_object* l_HTPI_tacticAssume_____closed__2;
 LEAN_EXPORT lean_object* l_HTPI_matchFirstNeg(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 LEAN_EXPORT lean_object* l_Array_forInUnsafe_loop___at_HTPI_checkIdUsed___spec__1___boxed(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
@@ -1046,6 +1088,7 @@ LEAN_EXPORT lean_object* l_HTPI_unfoldHead___lambda__2___boxed(lean_object*, lea
 lean_object* l_String_toSubstring_x27(lean_object*);
 static lean_object* l_HTPI_doObtain___lambda__1___closed__1;
 LEAN_EXPORT lean_object* l_HTPI_tacticShow__From__;
+static lean_object* l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__8;
 static lean_object* l_HTPI_cpRule___closed__2;
 static lean_object* l_HTPI_tacticDisj__syll_________closed__3;
 LEAN_EXPORT lean_object* l_HTPI___aux__HTPIDefs______elabRules__HTPI__tacticDefinition_x21______1(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
@@ -1054,10 +1097,12 @@ static lean_object* l_HTPI_tacticDefinition______1___closed__2;
 static lean_object* l_HTPI_tacticAssume___x3a_____closed__4;
 static lean_object* l_HTPI_tacticBicond__neg_______closed__6;
 static lean_object* l_HTPI_orstrat___lambda__2___closed__17;
+static lean_object* l_HTPI_unexpandSumFromTo___closed__2;
 LEAN_EXPORT lean_object* l_HTPI_negData(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 lean_object* l_Lean_Elab_Tactic_replaceMainGoal(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_withId___closed__2;
 static lean_object* l_HTPI_orstrat___lambda__1___closed__11;
+LEAN_EXPORT lean_object* l_HTPI_sum__less___rarg(lean_object*, lean_object*, lean_object*);
 LEAN_EXPORT lean_object* l_HTPI_unfoldHead___lambda__2(uint8_t, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_idOrTerm___closed__6;
 static lean_object* l_HTPI_getDefineFormLabel___closed__3;
@@ -34645,6 +34690,874 @@ return x_15;
 }
 }
 }
+LEAN_EXPORT lean_object* l_HTPI_sum__less___rarg(lean_object* x_1, lean_object* x_2, lean_object* x_3) {
+_start:
+{
+lean_object* x_4; uint8_t x_5; 
+x_4 = lean_unsigned_to_nat(0u);
+x_5 = lean_nat_dec_eq(x_2, x_4);
+if (x_5 == 0)
+{
+lean_object* x_6; lean_object* x_7; lean_object* x_8; lean_object* x_9; lean_object* x_10; lean_object* x_11; 
+x_6 = lean_unsigned_to_nat(1u);
+x_7 = lean_nat_sub(x_2, x_6);
+x_8 = lean_ctor_get(x_1, 1);
+lean_inc(x_8);
+lean_inc(x_3);
+x_9 = l_HTPI_sum__less___rarg(x_1, x_7, x_3);
+x_10 = lean_apply_1(x_3, x_7);
+x_11 = lean_apply_2(x_8, x_9, x_10);
+return x_11;
+}
+else
+{
+lean_object* x_12; 
+lean_dec(x_3);
+x_12 = lean_ctor_get(x_1, 0);
+lean_inc(x_12);
+lean_dec(x_1);
+return x_12;
+}
+}
+}
+LEAN_EXPORT lean_object* l_HTPI_sum__less(lean_object* x_1) {
+_start:
+{
+lean_object* x_2; 
+x_2 = lean_alloc_closure((void*)(l_HTPI_sum__less___rarg___boxed), 3, 0);
+return x_2;
+}
+}
+LEAN_EXPORT lean_object* l_HTPI_sum__less___rarg___boxed(lean_object* x_1, lean_object* x_2, lean_object* x_3) {
+_start:
+{
+lean_object* x_4; 
+x_4 = l_HTPI_sum__less___rarg(x_1, x_2, x_3);
+lean_dec(x_2);
+return x_4;
+}
+}
+LEAN_EXPORT lean_object* l_HTPI_sum__less___at_HTPI_sum__from__to___spec__1___rarg(lean_object* x_1, lean_object* x_2, lean_object* x_3) {
+_start:
+{
+lean_object* x_4; uint8_t x_5; 
+x_4 = lean_unsigned_to_nat(0u);
+x_5 = lean_nat_dec_eq(x_2, x_4);
+if (x_5 == 0)
+{
+lean_object* x_6; lean_object* x_7; lean_object* x_8; lean_object* x_9; lean_object* x_10; lean_object* x_11; 
+x_6 = lean_unsigned_to_nat(1u);
+x_7 = lean_nat_sub(x_2, x_6);
+x_8 = lean_ctor_get(x_1, 1);
+lean_inc(x_8);
+lean_inc(x_3);
+x_9 = l_HTPI_sum__less___at_HTPI_sum__from__to___spec__1___rarg(x_1, x_7, x_3);
+x_10 = lean_apply_1(x_3, x_7);
+x_11 = lean_apply_2(x_8, x_9, x_10);
+return x_11;
+}
+else
+{
+lean_object* x_12; 
+lean_dec(x_3);
+x_12 = lean_ctor_get(x_1, 0);
+lean_inc(x_12);
+lean_dec(x_1);
+return x_12;
+}
+}
+}
+LEAN_EXPORT lean_object* l_HTPI_sum__less___at_HTPI_sum__from__to___spec__1(lean_object* x_1) {
+_start:
+{
+lean_object* x_2; 
+x_2 = lean_alloc_closure((void*)(l_HTPI_sum__less___at_HTPI_sum__from__to___spec__1___rarg___boxed), 3, 0);
+return x_2;
+}
+}
+LEAN_EXPORT lean_object* l_HTPI_sum__from__to___rarg___lambda__1(lean_object* x_1, lean_object* x_2, lean_object* x_3) {
+_start:
+{
+lean_object* x_4; lean_object* x_5; 
+x_4 = lean_nat_add(x_3, x_1);
+x_5 = lean_apply_1(x_2, x_4);
+return x_5;
+}
+}
+LEAN_EXPORT lean_object* l_HTPI_sum__from__to___rarg(lean_object* x_1, lean_object* x_2, lean_object* x_3, lean_object* x_4) {
+_start:
+{
+lean_object* x_5; lean_object* x_6; lean_object* x_7; lean_object* x_8; lean_object* x_9; 
+x_5 = lean_unsigned_to_nat(1u);
+x_6 = lean_nat_add(x_3, x_5);
+lean_dec(x_3);
+x_7 = lean_nat_sub(x_6, x_2);
+lean_dec(x_6);
+x_8 = lean_alloc_closure((void*)(l_HTPI_sum__from__to___rarg___lambda__1___boxed), 3, 2);
+lean_closure_set(x_8, 0, x_2);
+lean_closure_set(x_8, 1, x_4);
+x_9 = l_HTPI_sum__less___at_HTPI_sum__from__to___spec__1___rarg(x_1, x_7, x_8);
+lean_dec(x_7);
+return x_9;
+}
+}
+LEAN_EXPORT lean_object* l_HTPI_sum__from__to(lean_object* x_1) {
+_start:
+{
+lean_object* x_2; 
+x_2 = lean_alloc_closure((void*)(l_HTPI_sum__from__to___rarg), 4, 0);
+return x_2;
+}
+}
+LEAN_EXPORT lean_object* l_HTPI_sum__less___at_HTPI_sum__from__to___spec__1___rarg___boxed(lean_object* x_1, lean_object* x_2, lean_object* x_3) {
+_start:
+{
+lean_object* x_4; 
+x_4 = l_HTPI_sum__less___at_HTPI_sum__from__to___spec__1___rarg(x_1, x_2, x_3);
+lean_dec(x_2);
+return x_4;
+}
+}
+LEAN_EXPORT lean_object* l_HTPI_sum__from__to___rarg___lambda__1___boxed(lean_object* x_1, lean_object* x_2, lean_object* x_3) {
+_start:
+{
+lean_object* x_4; 
+x_4 = l_HTPI_sum__from__to___rarg___lambda__1(x_1, x_2, x_3);
+lean_dec(x_3);
+lean_dec(x_1);
+return x_4;
+}
+}
+static lean_object* _init_l_HTPI_sumFromTo___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_from_bytes("sumFromTo", 9);
+return x_1;
+}
+}
+static lean_object* _init_l_HTPI_sumFromTo___closed__2() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l_HTPI_oneLoc___closed__1;
+x_2 = l_HTPI_sumFromTo___closed__1;
+x_3 = l_Lean_Name_mkStr2(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l_HTPI_sumFromTo___closed__3() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_from_bytes("Sum ", 4);
+return x_1;
+}
+}
+static lean_object* _init_l_HTPI_sumFromTo___closed__4() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = l_HTPI_sumFromTo___closed__3;
+x_2 = lean_alloc_ctor(5, 1, 0);
+lean_ctor_set(x_2, 0, x_1);
+return x_2;
+}
+}
+static lean_object* _init_l_HTPI_sumFromTo___closed__5() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; 
+x_1 = l_term_x7b___x3a___x7c___x7d___closed__4;
+x_2 = l_HTPI_sumFromTo___closed__4;
+x_3 = l_HTPI_oneLoc___closed__6;
+x_4 = lean_alloc_ctor(2, 3, 0);
+lean_ctor_set(x_4, 0, x_1);
+lean_ctor_set(x_4, 1, x_2);
+lean_ctor_set(x_4, 2, x_3);
+return x_4;
+}
+}
+static lean_object* _init_l_HTPI_sumFromTo___closed__6() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; 
+x_1 = l_term_x7b___x3a___x7c___x7d___closed__4;
+x_2 = l_HTPI_sumFromTo___closed__5;
+x_3 = l_HTPI_tacticObtain____From_____closed__7;
+x_4 = lean_alloc_ctor(2, 3, 0);
+lean_ctor_set(x_4, 0, x_1);
+lean_ctor_set(x_4, 1, x_2);
+lean_ctor_set(x_4, 2, x_3);
+return x_4;
+}
+}
+static lean_object* _init_l_HTPI_sumFromTo___closed__7() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; 
+x_1 = l_term_x7b___x3a___x7c___x7d___closed__4;
+x_2 = l_HTPI_sumFromTo___closed__6;
+x_3 = l_term_x7b___x3a___x7c___x7d___closed__9;
+x_4 = lean_alloc_ctor(2, 3, 0);
+lean_ctor_set(x_4, 0, x_1);
+lean_ctor_set(x_4, 1, x_2);
+lean_ctor_set(x_4, 2, x_3);
+return x_4;
+}
+}
+static lean_object* _init_l_HTPI_sumFromTo___closed__8() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_from_bytes(" to ", 4);
+return x_1;
+}
+}
+static lean_object* _init_l_HTPI_sumFromTo___closed__9() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = l_HTPI_sumFromTo___closed__8;
+x_2 = lean_alloc_ctor(5, 1, 0);
+lean_ctor_set(x_2, 0, x_1);
+return x_2;
+}
+}
+static lean_object* _init_l_HTPI_sumFromTo___closed__10() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; 
+x_1 = l_term_x7b___x3a___x7c___x7d___closed__4;
+x_2 = l_HTPI_sumFromTo___closed__7;
+x_3 = l_HTPI_sumFromTo___closed__9;
+x_4 = lean_alloc_ctor(2, 3, 0);
+lean_ctor_set(x_4, 0, x_1);
+lean_ctor_set(x_4, 1, x_2);
+lean_ctor_set(x_4, 2, x_3);
+return x_4;
+}
+}
+static lean_object* _init_l_HTPI_sumFromTo___closed__11() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; 
+x_1 = l_term_x7b___x3a___x7c___x7d___closed__4;
+x_2 = l_HTPI_sumFromTo___closed__10;
+x_3 = l_term_x7b___x3a___x7c___x7d___closed__9;
+x_4 = lean_alloc_ctor(2, 3, 0);
+lean_ctor_set(x_4, 0, x_1);
+lean_ctor_set(x_4, 1, x_2);
+lean_ctor_set(x_4, 2, x_3);
+return x_4;
+}
+}
+static lean_object* _init_l_HTPI_sumFromTo___closed__12() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; 
+x_1 = l_term_x7b___x3a___x7c___x7d___closed__4;
+x_2 = l_HTPI_sumFromTo___closed__11;
+x_3 = l_HTPI_with2Ids___closed__6;
+x_4 = lean_alloc_ctor(2, 3, 0);
+lean_ctor_set(x_4, 0, x_1);
+lean_ctor_set(x_4, 1, x_2);
+lean_ctor_set(x_4, 2, x_3);
+return x_4;
+}
+}
+static lean_object* _init_l_HTPI_sumFromTo___closed__13() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l_term_x7b___x3a___x7c___x7d___closed__8;
+x_2 = lean_unsigned_to_nat(51u);
+x_3 = lean_alloc_ctor(7, 2, 0);
+lean_ctor_set(x_3, 0, x_1);
+lean_ctor_set(x_3, 1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l_HTPI_sumFromTo___closed__14() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; 
+x_1 = l_term_x7b___x3a___x7c___x7d___closed__4;
+x_2 = l_HTPI_sumFromTo___closed__12;
+x_3 = l_HTPI_sumFromTo___closed__13;
+x_4 = lean_alloc_ctor(2, 3, 0);
+lean_ctor_set(x_4, 0, x_1);
+lean_ctor_set(x_4, 1, x_2);
+lean_ctor_set(x_4, 2, x_3);
+return x_4;
+}
+}
+static lean_object* _init_l_HTPI_sumFromTo___closed__15() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; 
+x_1 = l_HTPI_sumFromTo___closed__2;
+x_2 = lean_unsigned_to_nat(1022u);
+x_3 = l_HTPI_sumFromTo___closed__14;
+x_4 = lean_alloc_ctor(3, 3, 0);
+lean_ctor_set(x_4, 0, x_1);
+lean_ctor_set(x_4, 1, x_2);
+lean_ctor_set(x_4, 2, x_3);
+return x_4;
+}
+}
+static lean_object* _init_l_HTPI_sumFromTo() {
+_start:
+{
+lean_object* x_1; 
+x_1 = l_HTPI_sumFromTo___closed__15;
+return x_1;
+}
+}
+static lean_object* _init_l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_from_bytes("sum_from_to", 11);
+return x_1;
+}
+}
+static lean_object* _init_l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__2() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__1;
+x_2 = l_String_toSubstring_x27(x_1);
+return x_2;
+}
+}
+static lean_object* _init_l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__3() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = lean_box(0);
+x_2 = l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__1;
+x_3 = l_Lean_Name_str___override(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__4() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l_HTPI_oneLoc___closed__1;
+x_2 = l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__1;
+x_3 = l_Lean_Name_mkStr2(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__5() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = lean_box(0);
+x_2 = l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__4;
+x_3 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_3, 0, x_2);
+lean_ctor_set(x_3, 1, x_1);
+return x_3;
+}
+}
+static lean_object* _init_l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__6() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; 
+x_1 = l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__4;
+x_2 = lean_alloc_ctor(0, 1, 0);
+lean_ctor_set(x_2, 0, x_1);
+return x_2;
+}
+}
+static lean_object* _init_l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__7() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = lean_box(0);
+x_2 = l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__6;
+x_3 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_3, 0, x_2);
+lean_ctor_set(x_3, 1, x_1);
+return x_3;
+}
+}
+static lean_object* _init_l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__8() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__5;
+x_2 = l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__7;
+x_3 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_3, 0, x_1);
+lean_ctor_set(x_3, 1, x_2);
+return x_3;
+}
+}
+LEAN_EXPORT lean_object* l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1(lean_object* x_1, lean_object* x_2, lean_object* x_3) {
+_start:
+{
+lean_object* x_4; uint8_t x_5; 
+x_4 = l_HTPI_sumFromTo___closed__2;
+lean_inc(x_1);
+x_5 = l_Lean_Syntax_isOfKind(x_1, x_4);
+if (x_5 == 0)
+{
+lean_object* x_6; lean_object* x_7; 
+lean_dec(x_2);
+lean_dec(x_1);
+x_6 = lean_box(1);
+x_7 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_7, 0, x_6);
+lean_ctor_set(x_7, 1, x_3);
+return x_7;
+}
+else
+{
+lean_object* x_8; lean_object* x_9; lean_object* x_10; lean_object* x_11; lean_object* x_12; lean_object* x_13; lean_object* x_14; lean_object* x_15; lean_object* x_16; uint8_t x_17; lean_object* x_18; lean_object* x_19; lean_object* x_20; lean_object* x_21; lean_object* x_22; lean_object* x_23; lean_object* x_24; lean_object* x_25; lean_object* x_26; lean_object* x_27; lean_object* x_28; lean_object* x_29; lean_object* x_30; lean_object* x_31; lean_object* x_32; lean_object* x_33; lean_object* x_34; lean_object* x_35; lean_object* x_36; lean_object* x_37; lean_object* x_38; lean_object* x_39; lean_object* x_40; lean_object* x_41; lean_object* x_42; lean_object* x_43; lean_object* x_44; lean_object* x_45; lean_object* x_46; lean_object* x_47; 
+x_8 = lean_unsigned_to_nat(1u);
+x_9 = l_Lean_Syntax_getArg(x_1, x_8);
+x_10 = lean_unsigned_to_nat(3u);
+x_11 = l_Lean_Syntax_getArg(x_1, x_10);
+x_12 = lean_unsigned_to_nat(5u);
+x_13 = l_Lean_Syntax_getArg(x_1, x_12);
+x_14 = lean_unsigned_to_nat(7u);
+x_15 = l_Lean_Syntax_getArg(x_1, x_14);
+lean_dec(x_1);
+x_16 = lean_ctor_get(x_2, 5);
+lean_inc(x_16);
+x_17 = 0;
+x_18 = l_Lean_SourceInfo_fromRef(x_16, x_17);
+x_19 = lean_ctor_get(x_2, 2);
+lean_inc(x_19);
+x_20 = lean_ctor_get(x_2, 1);
+lean_inc(x_20);
+lean_dec(x_2);
+x_21 = l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__3;
+x_22 = l_Lean_addMacroScope(x_20, x_21, x_19);
+x_23 = l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__2;
+x_24 = l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__8;
+lean_inc(x_18);
+x_25 = lean_alloc_ctor(3, 4, 0);
+lean_ctor_set(x_25, 0, x_18);
+lean_ctor_set(x_25, 1, x_23);
+lean_ctor_set(x_25, 2, x_22);
+lean_ctor_set(x_25, 3, x_24);
+x_26 = l_unexpandFunctionComp___closed__3;
+lean_inc(x_18);
+x_27 = lean_alloc_ctor(2, 2, 0);
+lean_ctor_set(x_27, 0, x_18);
+lean_ctor_set(x_27, 1, x_26);
+x_28 = l_setOf_unexpander___closed__3;
+lean_inc(x_18);
+x_29 = lean_alloc_ctor(2, 2, 0);
+lean_ctor_set(x_29, 0, x_18);
+lean_ctor_set(x_29, 1, x_28);
+x_30 = l___aux__HTPIDefs______macroRules__term_x7b___x3a___x7c___x7d__1___closed__16;
+lean_inc(x_18);
+x_31 = l_Lean_Syntax_node1(x_18, x_30, x_9);
+x_32 = l___aux__HTPIDefs______macroRules__term_x7b___x3a___x7c___x7d__1___closed__25;
+lean_inc(x_18);
+x_33 = lean_alloc_ctor(1, 3, 0);
+lean_ctor_set(x_33, 0, x_18);
+lean_ctor_set(x_33, 1, x_30);
+lean_ctor_set(x_33, 2, x_32);
+x_34 = l___aux__HTPIDefs______macroRules__term_x7b___x3a___x7c___x7d__1___closed__33;
+lean_inc(x_18);
+x_35 = lean_alloc_ctor(2, 2, 0);
+lean_ctor_set(x_35, 0, x_18);
+lean_ctor_set(x_35, 1, x_34);
+x_36 = l_setOf_unexpander___closed__6;
+lean_inc(x_18);
+x_37 = l_Lean_Syntax_node4(x_18, x_36, x_31, x_33, x_35, x_15);
+x_38 = l_setOf_unexpander___closed__4;
+lean_inc(x_18);
+x_39 = l_Lean_Syntax_node2(x_18, x_38, x_29, x_37);
+x_40 = l_unexpandFunctionComp___closed__7;
+lean_inc(x_18);
+x_41 = lean_alloc_ctor(2, 2, 0);
+lean_ctor_set(x_41, 0, x_18);
+lean_ctor_set(x_41, 1, x_40);
+x_42 = l_unexpandFunctionComp___closed__2;
+lean_inc(x_18);
+x_43 = l_Lean_Syntax_node3(x_18, x_42, x_27, x_39, x_41);
+lean_inc(x_18);
+x_44 = l_Lean_Syntax_node3(x_18, x_30, x_11, x_13, x_43);
+x_45 = l_setOf_unexpander___closed__2;
+x_46 = l_Lean_Syntax_node2(x_18, x_45, x_25, x_44);
+x_47 = lean_alloc_ctor(0, 2, 0);
+lean_ctor_set(x_47, 0, x_46);
+lean_ctor_set(x_47, 1, x_3);
+return x_47;
+}
+}
+}
+static lean_object* _init_l_HTPI_unexpandSumFromTo___closed__1() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_from_bytes("Sum", 3);
+return x_1;
+}
+}
+static lean_object* _init_l_HTPI_unexpandSumFromTo___closed__2() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_from_bytes("from", 4);
+return x_1;
+}
+}
+static lean_object* _init_l_HTPI_unexpandSumFromTo___closed__3() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_from_bytes("to", 2);
+return x_1;
+}
+}
+static lean_object* _init_l_HTPI_unexpandSumFromTo___closed__4() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_from_bytes(",", 1);
+return x_1;
+}
+}
+LEAN_EXPORT lean_object* l_HTPI_unexpandSumFromTo(lean_object* x_1, lean_object* x_2, lean_object* x_3) {
+_start:
+{
+lean_object* x_4; uint8_t x_5; 
+x_4 = l_setOf_unexpander___closed__2;
+lean_inc(x_1);
+x_5 = l_Lean_Syntax_isOfKind(x_1, x_4);
+if (x_5 == 0)
+{
+lean_object* x_6; lean_object* x_7; 
+lean_dec(x_2);
+lean_dec(x_1);
+x_6 = lean_box(0);
+x_7 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_7, 0, x_6);
+lean_ctor_set(x_7, 1, x_3);
+return x_7;
+}
+else
+{
+lean_object* x_8; lean_object* x_9; lean_object* x_10; uint8_t x_11; 
+x_8 = lean_unsigned_to_nat(1u);
+x_9 = l_Lean_Syntax_getArg(x_1, x_8);
+lean_dec(x_1);
+x_10 = lean_unsigned_to_nat(3u);
+lean_inc(x_9);
+x_11 = l_Lean_Syntax_matchesNull(x_9, x_10);
+if (x_11 == 0)
+{
+lean_object* x_12; lean_object* x_13; 
+lean_dec(x_9);
+lean_dec(x_2);
+x_12 = lean_box(0);
+x_13 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_13, 0, x_12);
+lean_ctor_set(x_13, 1, x_3);
+return x_13;
+}
+else
+{
+lean_object* x_14; lean_object* x_15; lean_object* x_16; lean_object* x_17; lean_object* x_18; lean_object* x_19; uint8_t x_20; 
+x_14 = lean_unsigned_to_nat(0u);
+x_15 = l_Lean_Syntax_getArg(x_9, x_14);
+x_16 = l_Lean_Syntax_getArg(x_9, x_8);
+x_17 = lean_unsigned_to_nat(2u);
+x_18 = l_Lean_Syntax_getArg(x_9, x_17);
+lean_dec(x_9);
+x_19 = l_setOf_unexpander___closed__4;
+lean_inc(x_18);
+x_20 = l_Lean_Syntax_isOfKind(x_18, x_19);
+if (x_20 == 0)
+{
+lean_object* x_21; lean_object* x_22; 
+lean_dec(x_18);
+lean_dec(x_16);
+lean_dec(x_15);
+lean_dec(x_2);
+x_21 = lean_box(0);
+x_22 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_22, 0, x_21);
+lean_ctor_set(x_22, 1, x_3);
+return x_22;
+}
+else
+{
+lean_object* x_23; lean_object* x_24; uint8_t x_25; 
+x_23 = l_Lean_Syntax_getArg(x_18, x_8);
+lean_dec(x_18);
+x_24 = l_setOf_unexpander___closed__6;
+lean_inc(x_23);
+x_25 = l_Lean_Syntax_isOfKind(x_23, x_24);
+if (x_25 == 0)
+{
+lean_object* x_26; lean_object* x_27; 
+lean_dec(x_23);
+lean_dec(x_16);
+lean_dec(x_15);
+lean_dec(x_2);
+x_26 = lean_box(0);
+x_27 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_27, 0, x_26);
+lean_ctor_set(x_27, 1, x_3);
+return x_27;
+}
+else
+{
+lean_object* x_28; uint8_t x_29; 
+x_28 = l_Lean_Syntax_getArg(x_23, x_14);
+lean_inc(x_28);
+x_29 = l_Lean_Syntax_matchesNull(x_28, x_8);
+if (x_29 == 0)
+{
+lean_object* x_30; lean_object* x_31; 
+lean_dec(x_28);
+lean_dec(x_23);
+lean_dec(x_16);
+lean_dec(x_15);
+lean_dec(x_2);
+x_30 = lean_box(0);
+x_31 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_31, 0, x_30);
+lean_ctor_set(x_31, 1, x_3);
+return x_31;
+}
+else
+{
+lean_object* x_32; lean_object* x_33; uint8_t x_34; 
+x_32 = l_Lean_Syntax_getArg(x_28, x_14);
+lean_dec(x_28);
+x_33 = l_setOf_unexpander___closed__8;
+lean_inc(x_32);
+x_34 = l_Lean_Syntax_isOfKind(x_32, x_33);
+if (x_34 == 0)
+{
+lean_object* x_35; uint8_t x_36; 
+x_35 = l_setOf_unexpander___closed__10;
+lean_inc(x_32);
+x_36 = l_Lean_Syntax_isOfKind(x_32, x_35);
+if (x_36 == 0)
+{
+lean_object* x_37; lean_object* x_38; 
+lean_dec(x_32);
+lean_dec(x_23);
+lean_dec(x_16);
+lean_dec(x_15);
+lean_dec(x_2);
+x_37 = lean_box(0);
+x_38 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_38, 0, x_37);
+lean_ctor_set(x_38, 1, x_3);
+return x_38;
+}
+else
+{
+lean_object* x_39; uint8_t x_40; 
+x_39 = l_Lean_Syntax_getArg(x_32, x_8);
+lean_inc(x_39);
+x_40 = l_Lean_Syntax_isOfKind(x_39, x_33);
+if (x_40 == 0)
+{
+lean_object* x_41; lean_object* x_42; 
+lean_dec(x_39);
+lean_dec(x_32);
+lean_dec(x_23);
+lean_dec(x_16);
+lean_dec(x_15);
+lean_dec(x_2);
+x_41 = lean_box(0);
+x_42 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_42, 0, x_41);
+lean_ctor_set(x_42, 1, x_3);
+return x_42;
+}
+else
+{
+lean_object* x_43; uint8_t x_44; 
+x_43 = l_Lean_Syntax_getArg(x_32, x_10);
+lean_dec(x_32);
+x_44 = l_Lean_Syntax_matchesNull(x_43, x_8);
+if (x_44 == 0)
+{
+lean_object* x_45; lean_object* x_46; 
+lean_dec(x_39);
+lean_dec(x_23);
+lean_dec(x_16);
+lean_dec(x_15);
+lean_dec(x_2);
+x_45 = lean_box(0);
+x_46 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_46, 0, x_45);
+lean_ctor_set(x_46, 1, x_3);
+return x_46;
+}
+else
+{
+lean_object* x_47; uint8_t x_48; 
+x_47 = l_Lean_Syntax_getArg(x_23, x_8);
+x_48 = l_Lean_Syntax_matchesNull(x_47, x_14);
+if (x_48 == 0)
+{
+lean_object* x_49; lean_object* x_50; 
+lean_dec(x_39);
+lean_dec(x_23);
+lean_dec(x_16);
+lean_dec(x_15);
+lean_dec(x_2);
+x_49 = lean_box(0);
+x_50 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_50, 0, x_49);
+lean_ctor_set(x_50, 1, x_3);
+return x_50;
+}
+else
+{
+lean_object* x_51; uint8_t x_52; lean_object* x_53; lean_object* x_54; lean_object* x_55; lean_object* x_56; lean_object* x_57; lean_object* x_58; lean_object* x_59; lean_object* x_60; lean_object* x_61; lean_object* x_62; lean_object* x_63; lean_object* x_64; 
+x_51 = l_Lean_Syntax_getArg(x_23, x_10);
+lean_dec(x_23);
+x_52 = 0;
+x_53 = l_Lean_SourceInfo_fromRef(x_2, x_52);
+x_54 = l_HTPI_unexpandSumFromTo___closed__1;
+lean_inc(x_53);
+x_55 = lean_alloc_ctor(2, 2, 0);
+lean_ctor_set(x_55, 0, x_53);
+lean_ctor_set(x_55, 1, x_54);
+x_56 = l_HTPI_unexpandSumFromTo___closed__2;
+lean_inc(x_53);
+x_57 = lean_alloc_ctor(2, 2, 0);
+lean_ctor_set(x_57, 0, x_53);
+lean_ctor_set(x_57, 1, x_56);
+x_58 = l_HTPI_unexpandSumFromTo___closed__3;
+lean_inc(x_53);
+x_59 = lean_alloc_ctor(2, 2, 0);
+lean_ctor_set(x_59, 0, x_53);
+lean_ctor_set(x_59, 1, x_58);
+x_60 = l_HTPI_unexpandSumFromTo___closed__4;
+lean_inc(x_53);
+x_61 = lean_alloc_ctor(2, 2, 0);
+lean_ctor_set(x_61, 0, x_53);
+lean_ctor_set(x_61, 1, x_60);
+x_62 = l_HTPI_sumFromTo___closed__2;
+x_63 = l_Lean_Syntax_node8(x_53, x_62, x_55, x_39, x_57, x_15, x_59, x_16, x_61, x_51);
+x_64 = lean_alloc_ctor(0, 2, 0);
+lean_ctor_set(x_64, 0, x_63);
+lean_ctor_set(x_64, 1, x_3);
+return x_64;
+}
+}
+}
+}
+}
+else
+{
+lean_object* x_65; uint8_t x_66; 
+x_65 = l_Lean_Syntax_getArg(x_23, x_8);
+x_66 = l_Lean_Syntax_matchesNull(x_65, x_14);
+if (x_66 == 0)
+{
+lean_object* x_67; lean_object* x_68; 
+lean_dec(x_32);
+lean_dec(x_23);
+lean_dec(x_16);
+lean_dec(x_15);
+lean_dec(x_2);
+x_67 = lean_box(0);
+x_68 = lean_alloc_ctor(1, 2, 0);
+lean_ctor_set(x_68, 0, x_67);
+lean_ctor_set(x_68, 1, x_3);
+return x_68;
+}
+else
+{
+lean_object* x_69; uint8_t x_70; lean_object* x_71; lean_object* x_72; lean_object* x_73; lean_object* x_74; lean_object* x_75; lean_object* x_76; lean_object* x_77; lean_object* x_78; lean_object* x_79; lean_object* x_80; lean_object* x_81; lean_object* x_82; 
+x_69 = l_Lean_Syntax_getArg(x_23, x_10);
+lean_dec(x_23);
+x_70 = 0;
+x_71 = l_Lean_SourceInfo_fromRef(x_2, x_70);
+x_72 = l_HTPI_unexpandSumFromTo___closed__1;
+lean_inc(x_71);
+x_73 = lean_alloc_ctor(2, 2, 0);
+lean_ctor_set(x_73, 0, x_71);
+lean_ctor_set(x_73, 1, x_72);
+x_74 = l_HTPI_unexpandSumFromTo___closed__2;
+lean_inc(x_71);
+x_75 = lean_alloc_ctor(2, 2, 0);
+lean_ctor_set(x_75, 0, x_71);
+lean_ctor_set(x_75, 1, x_74);
+x_76 = l_HTPI_unexpandSumFromTo___closed__3;
+lean_inc(x_71);
+x_77 = lean_alloc_ctor(2, 2, 0);
+lean_ctor_set(x_77, 0, x_71);
+lean_ctor_set(x_77, 1, x_76);
+x_78 = l_HTPI_unexpandSumFromTo___closed__4;
+lean_inc(x_71);
+x_79 = lean_alloc_ctor(2, 2, 0);
+lean_ctor_set(x_79, 0, x_71);
+lean_ctor_set(x_79, 1, x_78);
+x_80 = l_HTPI_sumFromTo___closed__2;
+x_81 = l_Lean_Syntax_node8(x_71, x_80, x_73, x_32, x_75, x_15, x_77, x_16, x_79, x_69);
+x_82 = lean_alloc_ctor(0, 2, 0);
+lean_ctor_set(x_82, 0, x_81);
+lean_ctor_set(x_82, 1, x_3);
+return x_82;
+}
+}
+}
+}
+}
+}
+}
+}
+}
+LEAN_EXPORT lean_object* l___private_HTPIDefs_0__HTPI_sum__less_match__1_splitter___rarg(lean_object* x_1, lean_object* x_2, lean_object* x_3) {
+_start:
+{
+lean_object* x_4; uint8_t x_5; 
+x_4 = lean_unsigned_to_nat(0u);
+x_5 = lean_nat_dec_eq(x_1, x_4);
+if (x_5 == 0)
+{
+lean_object* x_6; lean_object* x_7; lean_object* x_8; 
+x_6 = lean_unsigned_to_nat(1u);
+x_7 = lean_nat_sub(x_1, x_6);
+x_8 = lean_apply_1(x_3, x_7);
+return x_8;
+}
+else
+{
+lean_dec(x_3);
+lean_inc(x_2);
+return x_2;
+}
+}
+}
+LEAN_EXPORT lean_object* l___private_HTPIDefs_0__HTPI_sum__less_match__1_splitter(lean_object* x_1) {
+_start:
+{
+lean_object* x_2; 
+x_2 = lean_alloc_closure((void*)(l___private_HTPIDefs_0__HTPI_sum__less_match__1_splitter___rarg___boxed), 3, 0);
+return x_2;
+}
+}
+LEAN_EXPORT lean_object* l___private_HTPIDefs_0__HTPI_sum__less_match__1_splitter___rarg___boxed(lean_object* x_1, lean_object* x_2, lean_object* x_3) {
+_start:
+{
+lean_object* x_4; 
+x_4 = l___private_HTPIDefs_0__HTPI_sum__less_match__1_splitter___rarg(x_1, x_2, x_3);
+lean_dec(x_2);
+lean_dec(x_1);
+return x_4;
+}
+}
 lean_object* initialize_Init(uint8_t builtin, lean_object*);
 lean_object* initialize_Lean_Elab_Tactic(uint8_t builtin, lean_object*);
 lean_object* initialize_Mathlib(uint8_t builtin, lean_object*);
@@ -36138,6 +37051,62 @@ l_HTPI_tacticBy__strong__induc___closed__5 = _init_l_HTPI_tacticBy__strong__indu
 lean_mark_persistent(l_HTPI_tacticBy__strong__induc___closed__5);
 l_HTPI_tacticBy__strong__induc = _init_l_HTPI_tacticBy__strong__induc();
 lean_mark_persistent(l_HTPI_tacticBy__strong__induc);
+l_HTPI_sumFromTo___closed__1 = _init_l_HTPI_sumFromTo___closed__1();
+lean_mark_persistent(l_HTPI_sumFromTo___closed__1);
+l_HTPI_sumFromTo___closed__2 = _init_l_HTPI_sumFromTo___closed__2();
+lean_mark_persistent(l_HTPI_sumFromTo___closed__2);
+l_HTPI_sumFromTo___closed__3 = _init_l_HTPI_sumFromTo___closed__3();
+lean_mark_persistent(l_HTPI_sumFromTo___closed__3);
+l_HTPI_sumFromTo___closed__4 = _init_l_HTPI_sumFromTo___closed__4();
+lean_mark_persistent(l_HTPI_sumFromTo___closed__4);
+l_HTPI_sumFromTo___closed__5 = _init_l_HTPI_sumFromTo___closed__5();
+lean_mark_persistent(l_HTPI_sumFromTo___closed__5);
+l_HTPI_sumFromTo___closed__6 = _init_l_HTPI_sumFromTo___closed__6();
+lean_mark_persistent(l_HTPI_sumFromTo___closed__6);
+l_HTPI_sumFromTo___closed__7 = _init_l_HTPI_sumFromTo___closed__7();
+lean_mark_persistent(l_HTPI_sumFromTo___closed__7);
+l_HTPI_sumFromTo___closed__8 = _init_l_HTPI_sumFromTo___closed__8();
+lean_mark_persistent(l_HTPI_sumFromTo___closed__8);
+l_HTPI_sumFromTo___closed__9 = _init_l_HTPI_sumFromTo___closed__9();
+lean_mark_persistent(l_HTPI_sumFromTo___closed__9);
+l_HTPI_sumFromTo___closed__10 = _init_l_HTPI_sumFromTo___closed__10();
+lean_mark_persistent(l_HTPI_sumFromTo___closed__10);
+l_HTPI_sumFromTo___closed__11 = _init_l_HTPI_sumFromTo___closed__11();
+lean_mark_persistent(l_HTPI_sumFromTo___closed__11);
+l_HTPI_sumFromTo___closed__12 = _init_l_HTPI_sumFromTo___closed__12();
+lean_mark_persistent(l_HTPI_sumFromTo___closed__12);
+l_HTPI_sumFromTo___closed__13 = _init_l_HTPI_sumFromTo___closed__13();
+lean_mark_persistent(l_HTPI_sumFromTo___closed__13);
+l_HTPI_sumFromTo___closed__14 = _init_l_HTPI_sumFromTo___closed__14();
+lean_mark_persistent(l_HTPI_sumFromTo___closed__14);
+l_HTPI_sumFromTo___closed__15 = _init_l_HTPI_sumFromTo___closed__15();
+lean_mark_persistent(l_HTPI_sumFromTo___closed__15);
+l_HTPI_sumFromTo = _init_l_HTPI_sumFromTo();
+lean_mark_persistent(l_HTPI_sumFromTo);
+l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__1 = _init_l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__1();
+lean_mark_persistent(l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__1);
+l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__2 = _init_l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__2();
+lean_mark_persistent(l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__2);
+l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__3 = _init_l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__3();
+lean_mark_persistent(l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__3);
+l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__4 = _init_l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__4();
+lean_mark_persistent(l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__4);
+l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__5 = _init_l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__5();
+lean_mark_persistent(l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__5);
+l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__6 = _init_l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__6();
+lean_mark_persistent(l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__6);
+l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__7 = _init_l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__7();
+lean_mark_persistent(l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__7);
+l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__8 = _init_l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__8();
+lean_mark_persistent(l_HTPI___aux__HTPIDefs______macroRules__HTPI__sumFromTo__1___closed__8);
+l_HTPI_unexpandSumFromTo___closed__1 = _init_l_HTPI_unexpandSumFromTo___closed__1();
+lean_mark_persistent(l_HTPI_unexpandSumFromTo___closed__1);
+l_HTPI_unexpandSumFromTo___closed__2 = _init_l_HTPI_unexpandSumFromTo___closed__2();
+lean_mark_persistent(l_HTPI_unexpandSumFromTo___closed__2);
+l_HTPI_unexpandSumFromTo___closed__3 = _init_l_HTPI_unexpandSumFromTo___closed__3();
+lean_mark_persistent(l_HTPI_unexpandSumFromTo___closed__3);
+l_HTPI_unexpandSumFromTo___closed__4 = _init_l_HTPI_unexpandSumFromTo___closed__4();
+lean_mark_persistent(l_HTPI_unexpandSumFromTo___closed__4);
 return lean_io_result_mk_ok(lean_box(0));
 }
 #ifdef __cplusplus

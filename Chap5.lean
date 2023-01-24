@@ -53,7 +53,7 @@ def square2 : Nat → Nat := fun (n : Nat) => n^2
 
 example : square1 = square2 := by rfl
 
-example : square1 7 = 49 := by rfl
+#eval square1 7    --Answer: 49
 
 theorem Theorem_5_1_5 {A B C : Type} (f : A → B) (g : B → C) :
     ∃ (h : A → C), graph h = comp (graph g) (graph f) := by
@@ -281,7 +281,7 @@ example : plus = plus'' := by rfl
 
 example : plus' = plus'' := by rfl
 
-example : plus 3 2 = 5 := by rfl
+#eval plus 3 2     --Answer: 5
 
 def closed2 {A : Type} (f : A → A → A) (C : Set A) : Prop :=
     ∀ x ∈ C, ∀ y ∈ C, f x y ∈ C
