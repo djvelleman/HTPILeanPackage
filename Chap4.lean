@@ -122,9 +122,9 @@ theorem Theorem_4_3_4_2 {A : Type} (R : BinRel A) :
     done
   · -- (←)
     assume h1 : extension R = inv (extension R)
-    define                   --Goal:  ∀ (x y : A), R x y → R y x
+    define                   --Goal: ∀ (x y : A), R x y → R y x
     fix a : A; fix b : A
-    assume h2 : R a b        --Goal:  R b a
+    assume h2 : R a b        --Goal: R b a
     rewrite [←simp_ext  R, h1, simp_inv, simp_ext] at h2
     show R b a from h2
     done
@@ -204,7 +204,7 @@ theorem Theorem_4_4_6_3 {A : Type} (R : BinRel A) (B : Set A) (b : A)
   fix x : A
   assume h3 : x ∈ B        --Goal: R b x
   by_cases h4 : x = b
-  · -- Case 1 : x = b
+  · -- Case 1.  h4: x = b
     rewrite [h4]             --Goal: R b b
     have h5 : partial_order R := h1.left
     define at h5
@@ -212,7 +212,7 @@ theorem Theorem_4_4_6_3 {A : Type} (R : BinRel A) (B : Set A) (b : A)
     define at h6
     show R b b from h6 b
     done
-  · -- Case 2 : x ≠ b
+  · -- Case 2.  h4: x ≠ b
     have h5 : ∀ (x y : A), R x y ∨ R y x := h1.right
     have h6 : R x b ∨ R b x := h5 x b
     have h7 : ¬R x b := by

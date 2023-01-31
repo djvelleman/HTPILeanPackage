@@ -65,7 +65,7 @@ theorem Theorem_5_1_5 {A B C : Type} (f : A → B) (g : B → C) :
   · -- Proof that (a, c) ∈ graph h → (a, c) ∈ comp (graph g) (graph f)
     assume h1 : (a, c) ∈ graph h
     define at h1  --h1: h a = c
-    define        --Goal:  ∃ (x : B), (a, x) ∈ graph f ∧ (x, c) ∈ graph g
+    define        --Goal: ∃ (x : B), (a, x) ∈ graph f ∧ (x, c) ∈ graph g
     apply Exists.intro (f a)
     apply And.intro
     · -- Proof that (a, f a) ∈ graph f
@@ -171,7 +171,7 @@ theorem Theorem_5_3_2_1 {A B : Type} (f : A → B) (g : B → A)
   fix a : A              --Goal: (g ∘ f) a = id a
   have h2 : (f a, a) ∈ graph g := by
     rewrite [h1]         --Goal: (f a, a) ∈ inv (graph f)
-    define               --Goal:  f a = f a
+    define               --Goal: f a = f a
     rfl
     done
   define at h2           --h2: g (f a) = a

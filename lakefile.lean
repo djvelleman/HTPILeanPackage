@@ -12,6 +12,6 @@ require mathlib from git
 lean_lib HTPI {
   -- add library configuration options here
   srcDir := "HTPILib"
-  roots := #[`HTPIDefs]
+  roots := #[`HTPIDefs, `FiniteSets]
 }
 

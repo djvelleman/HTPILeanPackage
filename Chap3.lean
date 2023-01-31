@@ -50,10 +50,10 @@ example (U : Type) (A B C : Set U) (h1 : A ⊆ B ∪ C)
   fix y : U
   assume h3 : y ∈ A
   have h4 : y ∉ B := h2 y h3
-  define at h1  --h1 : ∀ ⦃a : U⦄, a ∈ A → a ∈ B ∪ C
+  define at h1  --h1: ∀ ⦃a : U⦄, a ∈ A → a ∈ B ∪ C
   have h5 : y ∈ B ∪ C := h1 h3
-  define at h5  --h5 : y ∈ B ∨ y ∈ C
-  conditional at h5  --h5 : ¬y ∈ B → y ∈ C
+  define at h5  --h5: y ∈ B ∨ y ∈ C
+  conditional at h5  --h5: ¬y ∈ B → y ∈ C
   show y ∈ C from h5 h4
   done
 
@@ -145,13 +145,13 @@ A \ (B \ C) ⊆ (A \ B) ∪ C := by
   define; define at h1
   have h2 : ¬x ∈ B \ C := h1.right
   define at h2; demorgan at h2
-            --Now h2 : ¬x ∈ B ∨ x ∈ C
+            --h2: ¬x ∈ B ∨ x ∈ C
   by_cases on h2
-  · -- Case 1.  h2 : ¬x ∈ B
+  · -- Case 1. h2: ¬x ∈ B
     apply Or.inl
     show x ∈ A \ B from And.intro h1.left h2
     done
-  · -- Case 2.  h2 : x ∈ C
+  · -- Case 2. h2: x ∈ C
     apply Or.inr
     show x ∈ C from h2
     done
@@ -176,8 +176,8 @@ example
   have h5 : a ∉ A ∩ B := h2 a
   define at h4
   define at h5; demorgan at h5
-  disj_syll h5 h3  --Now h5 : ¬a ∈ B
-  disj_syll h4 h5  --Now h4 : a ∈ C
+  disj_syll h5 h3  --h5: ¬a ∈ B
+  disj_syll h4 h5  --h4: a ∈ C
   show a ∈ C from h4
   done
 
@@ -193,7 +193,7 @@ example
     show ∃ (x : U), x ∈ A ∩ B from
       Exists.intro a (And.intro h3 h6)
     done
-  disj_syll h4 h5  --Now h4 : a ∈ C
+  disj_syll h4 h5  --h4: a ∈ C
   show a ∈ C from h4
   done
 
