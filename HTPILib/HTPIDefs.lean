@@ -28,6 +28,10 @@ def setOf.unexpander : Lean.PrettyPrinter.Unexpander
   | `($_ fun ($x:ident : $ty:term) => $p) => `({ $x:ident : $ty:term | $p })
   | _ => throw ()
 
+--Make sure Lean understands {x} and ∅ as Sets, not Finsets
+attribute [default_instance] Set.instSingletonSet
+attribute [default_instance] Set.instEmptyCollectionSet
+
 --Should be fixed in Lean soon--then can remove this.
 @[app_unexpander Function.comp] def unexpandFunctionComp : Lean.PrettyPrinter.Unexpander
   | `($(_) $f:term $g:term $x:term) => `(($f ∘ $g) $x)
@@ -1101,13 +1105,13 @@ theorem func_from_graph {A B : Type} (F : Set (A × B)) :
   obtain z _h5 h6 from h1 x
   exact h6 (f x) y h3 h4
 
-def sum_less {A : Type} [AddZeroClass A] (n : Nat) (f : Nat → A) : A :=
-  match n with
+def sum_less {A : Type} [AddZeroClass A] (x : Nat) (f : Nat → A) : A :=
+  match x with
     | 0 => 0
-    | k + 1 => sum_less k f + f k
+    | n + 1 => sum_less n f + f n
 
-def sum_from_to {A : Type} [AddZeroClass A] (i j : Nat) (f : Nat → A) : A :=
-  sum_less (j + 1 - i) (fun x => f (x + i))
+def sum_from_to {A : Type} [AddZeroClass A] (k n : Nat) (f : Nat → A) : A :=
+  sum_less (n + 1 - k) (fun x => f (k + x))
 
 syntax (name := sumFromTo) "Sum " ident " from " term " to " term ", " term:51 : term
 macro_rules (kind := sumFromTo)
@@ -1118,34 +1122,34 @@ macro_rules (kind := sumFromTo)
   | `($_ $k:term $n:term fun ($i:ident : $_) => $b) => `(Sum $i from $k to $n, $b)
   | _ => throw ()
 
-theorem sum_from_to_base {A : Type} [AddZeroClass A] {k : Nat} {f : Nat → A} :
+theorem sum_base {A : Type} [AddZeroClass A] {k : Nat} {f : Nat → A} :
     Sum i from k to k, f i = f k := by
   define : Sum i from k to k, f i
   rewrite [Nat.add_sub_cancel_left]
   unfold sum_less; unfold sum_less
-  rewrite [zero_add, zero_add]
+  rewrite [zero_add, add_zero]
   rfl
   done
  
-theorem sum_from_to_step {A : Type} [AddZeroClass A] {k n : Nat} {f : Nat → A}
+theorem sum_step {A : Type} [AddZeroClass A] {k n : Nat} {f : Nat → A}
     (h : k ≤ n) : Sum i from k to (n + 1), f i = (Sum i from k to n, f i) + f (n + 1) := by
   define : Sum i from k to (n+1), f i
   obtain j h1 from Nat.le.dest h
   have h2 : n + 1 + 1 - k = n + 1 - k + 1 := by
     rewrite [←h1, add_assoc, add_assoc, Nat.add_sub_cancel_left, add_assoc, Nat.add_sub_cancel_left, add_assoc]
     rfl
-  have h3 : f (n + 1) = f ((n + 1 - k) + k) := by
-    rewrite [←h1, add_assoc, Nat.add_sub_cancel_left, Nat.add_comm]
+  have h3 : f (n + 1) = f (k + (n + 1 - k)) := by
+    rewrite [←h1, add_assoc, Nat.add_sub_cancel_left]
     rfl
   rewrite [h2, h3]
   rfl
   done
 
-theorem sum_from_zero_to_step {A : Type} [AddZeroClass A] {n : Nat} {f : Nat → A} :
+theorem sum_from_zero_step {A : Type} [AddZeroClass A] {n : Nat} {f : Nat → A} :
     Sum i from 0 to (n + 1), f i = (Sum i from 0 to n, f i) + f (n + 1) :=
-  sum_from_to_step (Nat.zero_le n)
+  sum_step (Nat.zero_le n)
 
-theorem sum_from_to_empty {A : Type} [AddZeroClass A] (k n : Nat) (f : Nat → A)
+theorem sum_empty {A : Type} [AddZeroClass A] (k n : Nat) (f : Nat → A)
     (h : n < k) : Sum i from k to n, f i = 0 := by
   define : Sum i from k to n, f i
   have h2 : n + 1 - k = 0 := Nat.sub_eq_zero_of_le h

@@ -141,8 +141,7 @@ theorem Theorem_5_2_5_2 {A B C : Type} (f : A → B) (g : B → C) :
 theorem Theorem_5_3_1 {A B : Type}
     (f : A → B) (h1 : one_to_one f) (h2 : onto f) :
     ∃ (g : B → A), graph g = inv (graph f) := by
-  apply (func_from_graph (inv (graph f))).rtl
-                --Goal: is_func_graph (inv (graph f))
+  rewrite [func_from_graph]   --Goal: is_func_graph (inv (graph f))
   define        --Goal: ∀ (x : B), ∃! (y : A), (x, y) ∈ inv (graph f)
   fix b : B
   exists_unique

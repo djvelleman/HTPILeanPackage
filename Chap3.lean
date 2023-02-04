@@ -199,14 +199,14 @@ example
 
 -- 3.6
 theorem empty_union {U : Type} (B : Set U) :
-    (∅ : Set U) ∪ B = B := by
+    ∅ ∪ B = B := by
   apply Set.ext
   fix x : U
   apply Iff.intro
   · -- (→)
-    assume h1 : x ∈ (∅ : Set U) ∪ B
+    assume h1 : x ∈ ∅ ∪ B
     define at h1
-    have h2 : x ∉ (∅ : Set U) := by
+    have h2 : x ∉ ∅ := by
       by_contra h3
       define at h3  --Now h3 : False
       show False from h3
@@ -216,7 +216,7 @@ theorem empty_union {U : Type} (B : Set U) :
     done
   · -- (←)
     assume h1 : x ∈ B
-    show x ∈ (∅ : Set U) ∪ B from Or.inr h1
+    show x ∈ ∅ ∪ B from Or.inr h1
     done
   done
 
