@@ -1,10 +1,10 @@
 {"version": 4,
- "packagesDir": "./lake-packages",
+ "packagesDir": "lake-packages",
  "packages":
  [{"git":
    {"url": "https://github.com/leanprover-community/mathlib4.git",
     "subDir?": null,
-    "rev": "7a4790bb512b0b0414136c3ad9151ed4d523bf0f",
+    "rev": "53a2f7ebc6121d206513007683b5a7f52330f9c5",
     "name": "mathlib",
     "inputRev?": null}},
   {"git":
@@ -22,6 +22,6 @@
   {"git":
    {"url": "https://github.com/leanprover/std4",
     "subDir?": null,
-    "rev": "cda27d551340756d5ed6f9b83716a9db799c5537",
+    "rev": "14ac0a9637e10d36e05544e84baf56e76dd6adf8",
     "name": "std",
     "inputRev?": "main"}}]}

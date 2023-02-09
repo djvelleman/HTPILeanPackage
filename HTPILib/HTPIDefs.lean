@@ -253,7 +253,8 @@ def unfoldExUn (lev : Level) (v : Name) (t b : Expr) (_ : BinderInfo) : Expr :=
   mkExists lev v BinderInfo.default t body
 
 /- Unfold head in current context--must set local context before call.
-If exun = true, then unfold ExistsUnique using my def; else don't unfold it.
+If first = true, then unfold ExistsUnique using my def; else don't unfold it.
+Also, if first = true, then unfold ite and dite; otherwise don't.
 If rep = true, unfold repeatedly.
 Let whnfCore handle everything except unfolding of constants.
 Do all normalization up to first unfolding of a definition; on next call do that unfolding
