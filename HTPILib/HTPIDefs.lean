@@ -569,7 +569,7 @@ def binegRule (form : Expr) : TacticM ruleType := do
 
 elab "bicond_neg" f:(colonTerm)? l:(oneLoc)? : tactic => doEquivTac f l `bicond_neg binegRule
 
--- Give error if any ident in i is already in use.  Is this right thing to do in call cases?
+-- Give error if any ident in i is already in use.  Is this right thing to do in all cases?
 partial def checkIdUsed (tac : Name) (i : Syntax) : TacticM Unit := do
   match i with
     | .missing => return ()
@@ -950,6 +950,7 @@ elab "fix" w:term " : " t:term : tactic => doFix w (some t)
 macro "show " c:term " from " p:term : tactic => `(tactic| {show $c; exact $p})
 macro "show " c:term " := " p:term : tactic => `(tactic| {show $c; exact $p})
 
+/- Not needed anymore--use Nat.strongRec' in Mathlib.Data.Nat.Basic.lean
 theorem str_induc (P : Nat → Prop)
     (h : ∀ (n : Nat), (∀ n_1 < n, P n_1)→ P n) : ∀ (n : Nat), P n := by
   have h2 : ∀ (n : Nat), ∀ k < n, P k := by
@@ -975,6 +976,7 @@ theorem str_induc (P : Nat → Prop)
   have h3 := h2 (n+1) n
   apply h3
   exact Nat.lt_succ_self n
+-/
 
 theorem induc_from (P : Nat → Prop) (k : Nat) (h1 : P k) (h2 : (∀ n ≥ k, P n → P (n+1))) :
     ∀ n ≥ k, P n := by
@@ -1019,7 +1021,7 @@ def doInduc (strong : Bool) : TacticM Unit := do
                 let ih ← Meta.mkForallFVars #[fv1] (← mkArrow v1lv Pv1)
                 Meta.mkForallFVars #[fv] (← mkArrow ih Pv)
               let newgoal ← Meta.mkFreshExprSyntheticOpaqueMVar newtar tag
-              assign goal (mkApp2 (Expr.const ``str_induc []) m newgoal)
+              assign goal (mkApp2 (Expr.const ``Nat.strongRec' [Level.zero]) m newgoal)
               replaceMainGoal [newgoal.mvarId!]
             else
               let (base, ind, rule) ← Meta.lambdaTelescope m fun fvs Pv => do
@@ -1027,8 +1029,13 @@ def doInduc (strong : Bool) : TacticM Unit := do
                 let fv := fvs[0]!
                 let PFPv ← getPropForm Pv
                 let (fr, Qv) := match PFPv with
-                  | PropForm.implies l r => match l with
+                  | PropForm.implies l r => match (consumeMData l) with
                     | (app (app (app (app (const ``GE.ge _) (const ``Nat _)) _) a) min) =>
+                      if (a == fv) && !(containsFVar min (fvarId! fv)) then
+                        (some (min, l), r)
+                      else
+                        (none, Pv)
+                    | (app (app (app (app (const ``LE.le _) (const ``Nat _)) _) min) a) =>
                       if (a == fv) && !(containsFVar min (fvarId! fv)) then
                         (some (min, l), r)
                       else
@@ -1056,7 +1063,8 @@ def doInduc (strong : Bool) : TacticM Unit := do
 
 elab "by_induc" : tactic => doInduc false
 elab "by_strong_induc" : tactic => doInduc true
-
+#check Nat.rec
+#check Nat.strongRec'
 end tactic_defs
 
 --Constructing a function from its graph:
