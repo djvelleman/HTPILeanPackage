@@ -228,7 +228,7 @@ def closure {A : Type} (f : A → A) (B C : Set A) : Prop :=
 theorem Theorem_5_4_5 {A : Type} (f : A → A) (B : Set A) :
     ∃ (C : Set A), closure f B C := by
   let F : Set (Set A) := { D : Set A | B ⊆ D ∧ closed f D }
-  let C : Set A := ⋂₀F
+  let C : Set A := ⋂₀ F
   apply Exists.intro C    --Goal: closure f B C
   define                  --Goal: C ∈ F ∧ ∀ x ∈ F, C ⊆ x
   apply And.intro

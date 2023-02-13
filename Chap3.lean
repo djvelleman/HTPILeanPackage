@@ -72,8 +72,8 @@ example (U : Type) (P Q : Pred U)
   done
 
 theorem Example_3_3_5 (U : Type) (B : Set U)
-    (F : Set (Set U)) : ⋃₀F ⊆ B → F ⊆ 𝒫 B := by
-  assume h1 : ⋃₀F ⊆ B
+    (F : Set (Set U)) : ⋃₀ F ⊆ B → F ⊆ 𝒫 B := by
+  assume h1 : ⋃₀ F ⊆ B
   define
   fix x : Set U
   assume h2 : x ∈ F

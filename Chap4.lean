@@ -247,7 +247,7 @@ def pairwise_disjoint {A : Type} (F : Set (Set A)) : Prop :=
     ∀ X ∈ F, ∀ Y ∈ F, X ≠ Y → empty (X ∩ Y)
 
 def partition {A : Type} (F : Set (Set A)) : Prop :=
-    (∀ (x : A), x ∈ ⋃₀F) ∧ pairwise_disjoint F ∧ ∀ X ∈ F, ¬empty X 
+    (∀ (x : A), x ∈ ⋃₀ F) ∧ pairwise_disjoint F ∧ ∀ X ∈ F, ¬empty X 
 
 lemma Lemma_4_5_5_1 {A : Type} (R : BinRel A) (h : equiv_rel R) :
     ∀ (x : A), x ∈ equivClass R x := by
@@ -294,7 +294,7 @@ lemma Lemma_4_5_5_2 {A : Type} (R : BinRel A) (h : equiv_rel R) :
   done
 
 lemma Theorem_4_5_4_part_1 {A : Type} (R : BinRel A) (h : equiv_rel R) :
-    ∀ (x : A), x ∈ ⋃₀(mod A R) := by
+    ∀ (x : A), x ∈ ⋃₀ (mod A R) := by
   fix x : A
   define        --Goal: ∃ (t : Set A), t ∈ mod A R ∧ x ∈ t
   apply Exists.intro (equivClass R x)
@@ -381,7 +381,7 @@ theorem Theorem_4_5_6 {A : Type} (F : Set (Set A)) (h: partition F) :
     assume h2 : X ∈ mod A R           --Goal: X ∈ F
     define at h2                      --h2: ∃ (x : A), equivClass R x = X
     obtain (x : A) (h3 : equivClass R x = X) from h2
-    have h4 : x ∈ ⋃₀F := h.left x
+    have h4 : x ∈ ⋃₀ F := h.left x
     define at h4
     obtain (Y : Set A) (h5 : Y ∈ F ∧ x ∈ Y) from h4
     have h6 : equivClass R x = Y :=
