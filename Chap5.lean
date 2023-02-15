@@ -2,33 +2,123 @@ import HTPIDefs
 namespace HTPI
 set_option pp.funBinderTypes true
 
---From Chapter 4
+/- Definitions from Chapter 4 -/
+def Dom {A B : Type} (R : Set (A × B)) : Set A :=
+    { a : A | ∃ (b : B), (a, b) ∈ R }
+
+def Ran {A B : Type} (R : Set (A × B)) : Set B :=
+    { b : B | ∃ (a : A), (a, b) ∈ R }
+
 def inv {A B : Type} (R : Set (A × B)) : Set (B × A) :=
     { (b, a) : B × A | (a, b) ∈ R }
+
 def comp {A B C : Type} (S : Set (B × C)) (R : Set (A × B)) :
     Set (A × C) := { (a, c) : A × C | ∃ (x : B), (a, x) ∈ R ∧ (x, c) ∈ S }
-theorem simp_inv {A B : Type} (R : Set (A × B)) (a : A) (b : B) :
-    (b, a) ∈ inv R ↔ (a, b) ∈ R := by rfl
+
+def extension {A B : Type} (R : Rel A B) : Set (A × B) :=
+    { (a, b) : A × B | R a b }
+
+def reflexive {A : Type} (R : BinRel A) : Prop :=
+    ∀ (x : A), R x x
+
+def symmetric {A : Type} (R : BinRel A) : Prop :=
+    ∀ (x y : A), R x y → R y x
+
+def transitive {A : Type} (R : BinRel A) : Prop :=
+    ∀ (x y z : A), R x y → R y z → R x z
+
+def elementhood (A : Type) (a : A) (X : Set A) : Prop := a ∈ X
+
+def relFromExt {A B : Type}
+    (R : Set (A × B)) (a : A) (b : B) : Prop := (a, b) ∈ R
+
+def antisymmetric {A : Type} (R : BinRel A) : Prop :=
+    ∀ (x y : A), R x y → R y x → x = y
+
+def partial_order {A : Type} (R : BinRel A) : Prop :=
+    reflexive R ∧ transitive R ∧ antisymmetric R
+
+def total_order {A : Type} (R : BinRel A) : Prop :=
+    partial_order R ∧ ∀ (x y : A), R x y ∨ R y x
+
 def sub (A : Type) (X Y : Set A) : Prop := X ⊆ Y
+
 def smallestElt {A : Type} (R : BinRel A) (b : A) (B : Set A) : Prop :=
     b ∈ B ∧ ∀ x ∈ B, R b x
 
---Chapter 5
---5.1
-/- This definition is in HTPIDefs
+def minimalElt {A : Type} (R : BinRel A) (b : A) (B : Set A) : Prop :=
+    b ∈ B ∧ ¬∃ x ∈ B, R x b ∧ x ≠ b
+
+def upperBd {A : Type} (R : BinRel A) (a : A) (B : Set A) : Prop :=
+    ∀ x ∈ B, R x a
+
+def lub {A : Type} (R : BinRel A) (a : A) (B : Set A) : Prop :=
+    smallestElt R a { c : A | upperBd R c B }
+
+def equiv_rel {A : Type} (R : BinRel A) : Prop :=
+    reflexive R ∧ symmetric R ∧ transitive R
+
+def equivClass {A : Type} (R : BinRel A) (x : A) : Set A :=
+    { y : A | R y x }
+
+def mod (A : Type) (R : BinRel A) : Set (Set A) :=
+    { equivClass R x | x : A }
+
+def empty {A : Type} (X : Set A) : Prop := ¬∃ (x : A), x ∈ X 
+
+def pairwise_disjoint {A : Type} (F : Set (Set A)) : Prop :=
+    ∀ X ∈ F, ∀ Y ∈ F, X ≠ Y → empty (X ∩ Y)
+
+def partition {A : Type} (F : Set (Set A)) : Prop :=
+    (∀ (x : A), x ∈ ⋃₀ F) ∧ pairwise_disjoint F ∧ ∀ X ∈ F, ¬empty X
+
+def EqRelFromPart {A : Type} (F : Set (Set A)) (x y : A) : Prop :=
+    ∃ X ∈ F, x ∈ X ∧ y ∈ X
+
+/- Definitions and theorems in HTPIDefs
 def graph {A B : Type} (f : A → B) : Set (A × B) :=
     { (a, b) : A × B | f a = b }
+
+def is_func_graph {A B : Type} (G : Set (A × B)) : Prop :=
+    ∀ (x : A), ∃! (y : B), (x, y) ∈ G
+
+theorem func_from_graph {A B : Type} (F : Set (A × B)) :
+    (∃ (f : A → B), graph f = F) ↔ is_func_graph F := by
 -/
 
+/- Definitions -/
+def onto {A B : Type} (f : A → B) : Prop :=
+    ∀ (y : B), ∃ (x : A), f x = y
+
+def one_to_one {A B : Type} (f : A → B) : Prop :=
+    ∀ (x1 x2 : A), f x1 = f x2 → x1 = x2
+
+def closed {A : Type} (f : A → A) (C : Set A) : Prop := ∀ x ∈ C, f x ∈ C
+
+def closure {A : Type} (f : A → A) (B C : Set A) : Prop :=
+    smallestElt (sub A) C { D : Set A | B ⊆ D ∧ closed f D }
+
+def closed2 {A : Type} (f : A → A → A) (C : Set A) : Prop :=
+    ∀ x ∈ C, ∀ y ∈ C, f x y ∈ C
+
+def closure2 {A : Type} (f : A → A → A) (B C : Set A) : Prop := 
+    smallestElt (sub A) C { D : Set A | B ⊆ D ∧ closed2 f D }
+
+def closed_family {A : Type} (F : Set (A → A)) (C : Set A) : Prop :=
+    ∀ f ∈ F, closed f C
+
+def closure_family {A : Type} (F : Set (A → A)) (B C : Set A) : Prop :=
+    smallestElt (sub A) C { D : Set A | B ⊆ D ∧ closed_family F D }
+
+def image {A B : Type} (f : A → B) (X : Set A) : Set B :=
+    { f x | x ∈ X }
+
+def inverse_image {A B : Type} (f : A → B) (Y : Set B) : Set A :=
+    { a : A | f a ∈ Y }
+
+/- Section 5.1 -/
 theorem simp_graph {A B : Type} (f : A → B) (a : A) (b : B) :
     (a, b) ∈ graph f ↔ f a = b := by rfl
-
-/- Also in HTPIDefs
-def is_func_graph {A B : Type} (F : Set (A × B)) : Prop :=
-    ∀ (x : A), ∃! (y : B), (x, y) ∈ F
-theorem func_from_graph {A B : Type} (F : Set (A × B)) :
-    (∃ (f : A → B), graph f = F) ↔ is_func_graph F
--/
 
 theorem Theorem_5_1_4 {A B : Type} (f g : A → B) :
     (∀ (a : A), f a = g a) → f = g := funext
@@ -47,13 +137,13 @@ example {A B : Type} (f g : A → B) :
   show f x = g x from h2.symm
   done
 
-def square1 (n : Nat) : Nat := n^2
+def square1 (n : Nat) : Nat := n ^ 2
 
-def square2 : Nat → Nat := fun (n : Nat) => n^2
+def square2 : Nat → Nat := fun (n : Nat) => n ^ 2
 
 example : square1 = square2 := by rfl
 
-#eval square1 7    --Answer: 49
+#eval square1 7     --Answer: 49
 
 theorem Theorem_5_1_5 {A B C : Type} (f : A → B) (g : B → C) :
     ∃ (h : A → C), graph h = comp (graph g) (graph f) := by
@@ -98,13 +188,53 @@ example {A B : Type} (f : A → B) : f ∘ id = f := by rfl
 
 example {A B : Type} (f : A → B) : id ∘ f = f := by rfl
 
--- 5.2
-def onto {A B : Type} (f : A → B) : Prop :=
-    ∀ (y : B), ∃ (x : A), f x = y
+-- Exercises
+-- 1.
+theorem func_from_graph_ltr {A B : Type} (F : Set (A × B)) :
+    (∃ (f : A → B), graph f = F) → is_func_graph F := sorry
 
-def one_to_one {A B : Type} (f : A → B) : Prop :=
-    ∀ (x1 x2 : A), f x1 = f x2 → x1 = x2
+-- 2.
+theorem Exercise_5_1_13a
+    {A B C : Type} (R : Set (A × B)) (S : Set (B × C)) (f : A → C)
+    (h1 : ∀ (b : B), b ∈ Ran R ∧ b ∈ Dom S) (h2 : graph f = comp S R) :
+    is_func_graph S := sorry
 
+-- 3.
+theorem Exercise_5_1_14a
+    {A B : Type} (f : A → B) (R : BinRel A) (S : BinRel B)
+    (h : ∀ (x y : A), R x y ↔ S (f x) (f y)) :
+    reflexive S → reflexive R := sorry
+
+-- 4.
+--You might not be able to complete this proof
+theorem Exercise_5_1_15a
+    {A B : Type} (f : A → B) (R : BinRel A) (S : BinRel B)
+    (h : ∀ (x y : B), S x y ↔ ∃ (u v : A), f u = x ∧ f v = y ∧ R u v) :
+    reflexive R → reflexive S := sorry
+
+-- 5.
+--You might not be able to complete this proof
+theorem Exercise_5_1_15c
+    {A B : Type} (f : A → B) (R : BinRel A) (S : BinRel B)
+    (h : ∀ (x y : B), S x y ↔ ∃ (u v : A), f u = x ∧ f v = y ∧ R u v) :
+    transitive R → transitive S := sorry
+
+-- 6.
+theorem Exercise_5_1_16b
+    {A B : Type} (R : BinRel B) (S : BinRel (A → B))
+    (h : ∀ (f g : A → B), S f g ↔ ∀ (x : A), R (f x) (g x)) :
+    symmetric R → symmetric S := sorry
+
+-- 7.
+theorem Exercise_5_1_17a {A : Type} (f : A → A) (a : A)
+    (h : ∀ (x : A), f x = a) : ∀ (g : A → A), f ∘ g = f := sorry
+
+-- 8.
+theorem Exercise_5_1_17b {A : Type} (f : A → A) (a : A)
+    (h : ∀ (g : A → A), f ∘ g = f) :
+    ∃ (y : A), ∀ (x : A), f x = y := sorry
+
+/- Section 5.2 -/
 theorem Theorem_5_2_5_1 {A B C : Type} (f : A → B) (g : B → C) :
     one_to_one f → one_to_one g → one_to_one (g ∘ f) := by
   assume h1 : one_to_one f
@@ -137,7 +267,56 @@ theorem Theorem_5_2_5_2 {A B C : Type} (f : A → B) (g : B → C) :
   show g (f a) = c from h3
   done
 
--- 5.3
+-- Exercises
+-- 1.
+theorem Exercise_5_2_10a {A B C : Type} (f: A → B) (g : B → C) :
+    onto (g ∘ f) → onto g := sorry
+
+-- 2.
+theorem Exercise_5_2_10b {A B C : Type} (f: A → B) (g : B → C) :
+    one_to_one (g ∘ f) → one_to_one f := sorry
+
+-- 3.
+theorem Exercise_5_2_11a {A B C : Type} (f: A → B) (g : B → C) :
+    onto f → ¬(one_to_one g) → ¬(one_to_one (g ∘ f)) := sorry
+
+-- 4.
+theorem Exercise_5_2_11b {A B C : Type} (f: A → B) (g : B → C) :
+    ¬(onto f) → one_to_one g → ¬(onto (g ∘ f)) := sorry
+
+-- 5.
+theorem Exercise_5_2_12 {A B : Type} (f : A → B) (g : B → Set A)
+    (h : ∀ (b : B), g b = { a : A | f a = b }) :
+    onto f → one_to_one g := sorry
+
+-- 6.
+theorem Exercise_5_2_16 {A B C : Type}
+    (R : Set (A × B)) (S : Set (B × C)) (f : A → C) (g : B → C)
+    (h1 : graph f = comp S R) (h2 : graph g = S) (h3 : one_to_one g) :
+    is_func_graph R := sorry
+
+-- 7.
+theorem Exercise_5_2_17a
+    {A B : Type} (f : A → B) (R : BinRel A) (S : BinRel B)
+    (h1 : ∀ (x y : B), S x y ↔ ∃ (u v : A), f u = x ∧ f v = y ∧ R u v)
+    (h2 : onto f) : reflexive R → reflexive S := sorry
+
+-- 8.
+theorem Exercise_5_2_17b
+    {A B : Type} (f : A → B) (R : BinRel A) (S : BinRel B)
+    (h1 : ∀ (x y : B), S x y ↔ ∃ (u v : A), f u = x ∧ f v = y ∧ R u v)
+    (h2 : one_to_one f) : transitive R → transitive S := sorry
+
+-- 9.
+theorem Exercise_5_2_21a {A B C : Type} (f : B → C) (g h : A → B)
+    (h1 : one_to_one f) (h2 : f ∘ g = f ∘ h) : g = h := sorry
+
+-- 10.
+theorem Exercise_5_2_21b {A B C : Type} (f : B → C) (a : A)
+    (h1 : ∀ (g h : A → B), f ∘ g = f ∘ h → g = h) :
+    one_to_one f := sorry
+
+/- Section 5.3 -/
 theorem Theorem_5_3_1 {A B : Type}
     (f : A → B) (h1 : one_to_one f) (h2 : onto f) :
     ∃ (g : B → A), graph g = inv (graph f) := by
@@ -219,12 +398,45 @@ theorem Theorem_5_3_5 {A B : Type} (f : A → B) (g : B → A)
   show graph g = inv (graph f) from h5
   done
 
--- 5.4
-def closed {A : Type} (f : A → A) (C : Set A) : Prop := ∀ x ∈ C, f x ∈ C
+-- Exercises
+-- 1.
+theorem Theorem_5_3_2_2_ex {A B : Type} (f : A → B) (g : B → A)
+    (h1 : graph g = inv (graph f)) : f ∘ g = id := sorry
 
-def closure {A : Type} (f : A → A) (B C : Set A) : Prop :=
-    smallestElt (sub A) C { D : Set A | B ⊆ D ∧ closed f D}
+-- 2.
+theorem Theorem_5_3_3_2_ex {A B : Type} (f : A → B) :
+    (∃ (g : B → A), f ∘ g = id) → onto f := sorry
 
+-- 3.
+theorem Exercise_5_3_11a {A B : Type} (f : A → B) (g : B → A) :
+    one_to_one f → f ∘ g = id → graph g = inv (graph f) := sorry
+
+-- 4.
+theorem Exercise_5_3_11b {A B : Type} (f : A → B) (g : B → A) :
+    onto f → g ∘ f = id → graph g = inv (graph f) := sorry
+
+-- 5.
+theorem Exercise_5_3_14a {A B : Type} (f : A → B) (g : B → A)
+    (h : f ∘ g = id) : ∀ x ∈ Ran (graph g), g (f x) = x := sorry
+
+-- 6.
+theorem Exercise_5_3_18 {A B C : Type} (f : A → C) (g : B → C)
+    (h1 : one_to_one g) (h2 : onto g) :
+    ∃ (h : A → B), g ∘ h = f := sorry
+
+-- Definition for next two exercises:
+def conj (A : Type) (f1 f2 : A → A) : Prop :=
+    ∃ (g g' : A → A), (f1 = g' ∘ f2 ∘ g) ∧ (g ∘ g' = id) ∧ (g' ∘ g = id)
+
+-- 7.
+theorem Exercise_5_3_17a {A : Type} : symmetric (conj A) := sorry
+
+-- 8.
+theorem Exercise_5_3_17b {A : Type} (f1 f2 : A → A)
+    (h1 : conj A f1 f2) (h2 : ∃ (a : A), f1 a = a) :
+    ∃ (a : A), f2 a = a := sorry
+
+/- Section 5.4 -/
 theorem Theorem_5_4_5 {A : Type} (f : A → A) (B : Set A) :
     ∃ (C : Set A), closure f B C := by
   let F : Set (Set A) := { D : Set A | B ⊆ D ∧ closed f D }
@@ -282,25 +494,49 @@ example : plus' = plus'' := by rfl
 
 #eval plus 3 2     --Answer: 5
 
-def closed2 {A : Type} (f : A → A → A) (C : Set A) : Prop :=
-    ∀ x ∈ C, ∀ y ∈ C, f x y ∈ C
-
-def closure2 {A : Type} (f : A → A → A) (B C : Set A) : Prop := 
-    smallestElt (sub A) C { D : Set A | B ⊆ D ∧ closed2 f D }
-
 theorem Theorem_5_4_9 {A : Type} (f : A → A → A) (B : Set A) :
     ∃ (C : Set A), closure2 f B C := sorry
 
--- 5.5
-def image {A B : Type} (f : A → B) (X : Set A) : Set B :=
-    { f x | x ∈ X }
+-- Exercises
+-- 1.
+example {A : Type} (F : Set (Set A)) (B : Set A) :
+    smallestElt (sub A) B F → B = ⋂₀ F := sorry
 
-def inverse_image {A B : Type} (f : A → B) (Y : Set B) : Set A :=
-    { a : A | f a ∈ Y }
+-- 2.
+def complement {A : Type} (B : Set A) : Set A := { a : A | a ∉ B }
 
+theorem simp_complement {A : Type} (a : A) (B : Set A) :
+    a ∈ complement B ↔ a ∉ B := by rfl
+
+theorem Exercise_5_4_7 {A : Type} (f g : A → A) (C : Set A)
+    (h1 : f ∘ g = id) (h2 : closed f C) : closed g (complement C) := sorry
+
+-- 3.
+theorem Exercise_5_4_9a {A : Type} (f : A → A) (C1 C2 : Set A)
+    (h1 : closed f C1) (h2 : closed f C2) : closed f (C1 ∪ C2) := sorry
+
+-- 4.
+theorem Exercise_5_4_10a {A : Type} (f : A → A) (B1 B2 C1 C2 : Set A)
+    (h1 : closure f B1 C1) (h2 : closure f B2 C2) :
+    B1 ⊆ B2 → C1 ⊆ C2 := sorry
+
+-- 5.
+theorem Exercise_5_4_10b {A : Type} (f : A → A) (B1 B2 C1 C2 : Set A)
+    (h1 : closure f B1 C1) (h2 : closure f B2 C2) :
+    closure f (B1 ∪ B2) (C1 ∪ C2) := sorry
+
+-- 6.
+theorem Theorem_5_4_9_ex {A : Type} (f : A → A → A) (B : Set A) :
+    ∃ (C : Set A), closure2 f B C := sorry
+
+-- 7.
+theorem Exercise_5_4_13a {A : Type} (F : Set (A → A)) (B : Set A) :
+    ∃ (C : Set A), closure_family F B C := sorry
+
+/- Section 5.5 -/
 theorem simp_image {A B : Type} (f : A → B) (X : Set A) (b : B) :
     b ∈ image f X ↔ ∃ x ∈ X, f x = b := by rfl
-    
+
 theorem simp_inverse_image {A B : Type} (f : A → B) (Y : Set B) (a : A) :
     a ∈ inverse_image f Y ↔ f a ∈ Y := by rfl
 
@@ -340,8 +576,8 @@ theorem Theorem_5_5_2_2 {A B : Type} (f : A → B) (W X : Set A)
     obtain (x1 : A) (h3 : x1 ∈ W ∧ f x1 = y) from h2.left
     obtain (x2 : A) (h4 : x2 ∈ X ∧ f x2 = y) from h2.right
     have h5 : f x2 = y := h4.right
-    rewrite [←h3.right] at h5    --h5: f x2 = f x1
-    define at h1                 --h1: ∀ (x1 x2 : A), f x1 = f x2 → x1 = x2
+    rewrite [←h3.right] at h5  --h5: f x2 = f x1
+    define at h1               --h1: ∀ (x1 x2 : A), f x1 = f x2 → x1 = x2
     have h6 : x2 = x1 := h1 x2 x1 h5
     rewrite [h6] at h4           --h4: x1 ∈ X ∧ f x1 = y
     show y ∈ image f (W ∩ X) from
@@ -349,6 +585,7 @@ theorem Theorem_5_5_2_2 {A B : Type} (f : A → B) (W X : Set A)
     done
   done
 
+--Warning!  Not all of these examples are correct!
 example {A B : Type} (f : A → B) (W X : Set A) :
     image f (W ∪ X) = image f W ∪ image f X := sorry
 

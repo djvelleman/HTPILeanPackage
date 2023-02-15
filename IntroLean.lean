@@ -26,12 +26,13 @@ theorem two_imp (P Q R : Prop)
   have h4 : Q := h1 h3
   show ¬R from h2 h4
   done
-
+  
 theorem Example_3_2_5_simple
     (B C : Set Nat) (a : Nat)
     (h1 : a ∈ B) (h2 : a ∉ B \ C) : a ∈ C := by
-  define at h2
+  define at h2       --Now h2 : ¬(a ∈ B ∧ ¬a ∈ C)
   demorgan at h2; conditional at h2
+                     --Now h2 : a ∈ B → a ∈ C
   show a ∈ C from h2 h1
   done
 

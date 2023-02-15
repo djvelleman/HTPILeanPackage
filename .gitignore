@@ -1,9 +1,8 @@
 test.lean
 EquivTests.lean
-Chap3Ex.lean
-Chap4Ex.lean
-Chap5Ex.lean
-Chap6.lean
+Chap3ExSol.lean
+Chap4ExSol.lean
+Chap5ExSol.lean
+Chap6ExSol.lean
 Chap7.lean
-Chap6Ex.lean
 RemovedFromHTPIDefs.lean

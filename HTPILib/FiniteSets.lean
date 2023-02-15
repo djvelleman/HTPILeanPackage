@@ -101,7 +101,8 @@ def equinum {A B : Type} (X : Set A) (Y : Set B) : Prop :=
 def numElts {A : Type} (X : Set A) (n : Nat) : Prop :=
     equinum (I n) X
 
-def finite {A : Type} (X : Set A) : Prop := ∃ (n : Nat), numElts X n
+def finite {A : Type} (X : Set A) : Prop :=
+    ∃ (n : Nat), numElts X n
 
 theorem match_pair {A B : Type} {R : Set (A × B)} {X : Set A} {Y : Set B} {j : A} {u : B}
     (h1 : matching R X Y) (h2 : (j, u) ∈ R) : j ∈ X ∧ u ∈ Y := by
