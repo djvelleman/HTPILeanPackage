@@ -2,13 +2,29 @@ import HTPIDefs
 namespace HTPI
 set_option pp.funBinderTypes true
 
+-- Version of finite sets using relations rather than sets of ordered pairs
+
 def empty {A : Type} (X : Set A) : Prop := ¬∃ (x : A), x ∈ X
-def inv {A B : Type} (R : Set (A × B)) : Set (B × A) :=
-    { (b, a) : B × A | (a, b) ∈ R }
-theorem Theorem_4_2_5_1 {A B : Type}
-    (R : Set (A × B)) : inv (inv R) = R := by rfl
-theorem simp_inv {A B : Type} (R : Set (A × B)) (a : A) (b : B) :
-    (b, a) ∈ inv R ↔ (a, b) ∈ R := by rfl
+
+theorem RelExt {A B : Type} (R S : Rel A B)
+    (h : ∀ (a : A) (b : B), R a b ↔ S a b) : R = S := by
+  apply funext
+  fix a
+  apply funext
+  fix b
+  rewrite [h]
+  rfl
+
+def invRel {A B : Type} (R : Rel A B) (b : B) (a : A) : Prop := R a b
+
+theorem invRel_invRel {A B : Type} (R : Rel A B) : invRel (invRel R) = R := by
+  apply RelExt
+  fix a; fix b
+  rfl
+  done
+
+theorem simp_invRel {A B : Type} (R : Rel A B) (a : A) (b : B) :
+    invRel R b a ↔ R a b := by rfl
 
 /- Basic properties of finite sets -/
 
@@ -86,17 +102,17 @@ theorem I_diff (n : Nat) : I (n + 1) \ { n + 1 } = I n := by
     done
   done
 
-def pairing {A B : Type} (R : Set (A × B)) (X : Set A) (Y : Set B) : Prop :=
-    ∀ (x : A) (y : B), (x, y) ∈ R → x ∈ X ∧ y ∈ Y
+def pairing {A B : Type} (R : Rel A B) (X : Set A) (Y : Set B) : Prop :=
+    ∀ (x : A) (y : B), R x y → x ∈ X ∧ y ∈ Y
 
-def match_from {A B : Type} (R : Set (A × B)) (X : Set A) : Prop :=
-    ∀ x ∈ X, ∃! (y : B), (x, y) ∈ R
+def match_from {A B : Type} (R : Rel A B) (X : Set A) : Prop :=
+    ∀ x ∈ X, ∃! (y : B), R x y
 
-def matching {A B : Type} (R : Set (A × B)) (X : Set A) (Y : Set B) : Prop :=
-    pairing R X Y ∧ match_from R X ∧ match_from (inv R) Y
+def matching {A B : Type} (R : Rel A B) (X : Set A) (Y : Set B) : Prop :=
+    pairing R X Y ∧ match_from R X ∧ match_from (invRel R) Y
 
 def equinum {A B : Type} (X : Set A) (Y : Set B) : Prop :=
-    ∃ (R : Set (A × B)), matching R X Y
+    ∃ (R : Rel A B), matching R X Y
 
 def numElts {A : Type} (X : Set A) (n : Nat) : Prop :=
     equinum (I n) X
@@ -104,16 +120,16 @@ def numElts {A : Type} (X : Set A) (n : Nat) : Prop :=
 def finite {A : Type} (X : Set A) : Prop :=
     ∃ (n : Nat), numElts X n
 
-theorem match_pair {A B : Type} {R : Set (A × B)} {X : Set A} {Y : Set B} {j : A} {u : B}
-    (h1 : matching R X Y) (h2 : (j, u) ∈ R) : j ∈ X ∧ u ∈ Y := by
+theorem match_pair {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B} {a : A} {b : B}
+    (h1 : matching R X Y) (h2 : R a b) : a ∈ X ∧ b ∈ Y := by
   define at h1
   have h3 := h1.left
   define at h3
-  exact h3 j u h2
+  exact h3 a b h2
   done
 
-theorem match_inv {A B : Type} {R : Set (A × B)} {X : Set A} {Y : Set B}
-    (h : matching R X Y) : matching (inv R) Y X := by
+theorem match_inv {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B}
+    (h : matching R X Y) : matching (invRel R) Y X := by
   define
   apply And.intro
   · -- Proof that pairing R Y X
@@ -125,32 +141,32 @@ theorem match_inv {A B : Type} {R : Set (A × B)} {X : Set A} {Y : Set B}
     exact And.intro h2.right h2.left
     done
   · -- proof that match_from (inv R) Y ∧ match_from (inv (inv R)) X
-    rewrite [Theorem_4_2_5_1]
+    rewrite [invRel_invRel]
     define at h
     exact And.intro h.right.right h.right.left
     done
   done
 
-theorem match_unique {A B : Type} {R : Set (A × B)} {X : Set A} {j : A} {u v : B}
-    (h1 : match_from R X) (h2 : j ∈ X) (h3 : (j, u) ∈ R) (h4 : (j, v) ∈ R) : u = v := by
+theorem match_unique {A B : Type} {R : Rel A B} {X : Set A} {j : A} {u v : B}
+    (h1 : match_from R X) (h2 : j ∈ X) (h3 : R j u) (h4 : R j v) : u = v := by
   define at h1
   have h5 := h1 j h2
   obtain z _h6 h7 from h5
   exact h7 u v h3 h4
   done
 
-def remove_one {A B : Type} (R : Set (A × B)) (u : A) (v : B) : Set (A × B) :=
-    { (x, y) : A × B | x ≠ u ∧ y ≠ v ∧ ((x, y) ∈ R ∨ ((x, v) ∈ R ∧ (u, y) ∈ R)) }
+def remove_one {A B : Type} (R : Rel A B) (u : A) (v : B) (x : A) (y : B) : Prop :=
+    x ≠ u ∧ y ≠ v ∧ (R x y ∨ (R x v ∧ R u y))
 
-theorem remove_one_pair {A B : Type} {R : Set (A × B)} {X : Set A} {Y : Set B} {x u : A} {y v : B}
-    (h1 : matching R X Y) (h2 : (x, y) ∈ remove_one R u v) : x ∈ X \ {u} ∧ y ∈ Y \ {v} := by
+theorem remove_one_pair {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B} {x u : A} {y v : B}
+    (h1 : matching R X Y) (h2 : remove_one R u v x y) : x ∈ X \ {u} ∧ y ∈ Y \ {v} := by
   define at h2
   have h3 : x ∈ X ∧ y ∈ Y := by
     by_cases on h2.right.right with h3
-    · -- Case 1. h3: (x, y) ∈ R
+    · -- Case 1. h3: R x y
       exact match_pair h1 h3
       done
-    · -- Case 2. h3: (x, v) ∈ R ∧ (u, y) ∈ R
+    · -- Case 2. h3: R x v ∧ R y u
       have h4 := match_pair h1 h3.left
       have h5 := match_pair h1 h3.right
       exact And.intro h4.left h5.right
@@ -159,20 +175,20 @@ theorem remove_one_pair {A B : Type} {R : Set (A × B)} {X : Set A} {Y : Set B} 
   exact And.intro (And.intro h3.left h2.left) (And.intro h3.right h2.right.left)
   done
 
-theorem remove_inv_comm {A B : Type} (R : Set (A × B)) (u : A) (v : B) :
-    inv (remove_one R u v) = remove_one (inv R) v u := by
-  apply Set.ext
-  fix (b, a)
-  define : (b, a) ∈ inv (remove_one R u v)
-  define : (b, a) ∈ remove_one (inv R) v u
-  simp [simp_inv]
-  rewrite [←and_assoc, @and_comm (¬a = u), and_assoc, @and_comm ((a, v) ∈ R)]
+theorem remove_inv_comm {A B : Type} (R : Rel A B) (u : A) (v : B) :
+    invRel (remove_one R u v) = remove_one (invRel R) v u := by
+  apply RelExt
+  fix b; fix a
+  define : invRel (remove_one R u v) b a
+  define : remove_one (invRel R) v u b a
+  simp [simp_invRel]
+  rewrite [←and_assoc, @and_comm (¬a = u), and_assoc, @and_comm (R a v)]
   rfl
   done
 
-theorem remove_iff_1 {A B : Type} {R : Set (A × B)} {X : Set A} {Y : Set B} {x u : A} {v : B}
-    (h1 : matching R X Y) (h2 : x ≠ u) (h3 : (x, v) ∈ R) :
-    ∀ (y : B), (x, y) ∈ remove_one R u v ↔ (u, y) ∈ R := by
+theorem remove_iff_1 {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B} {x u : A} {v : B}
+    (h1 : matching R X Y) (h2 : x ≠ u) (h3 : R x v) :
+    ∀ (y : B), remove_one R u v x y ↔ R u y := by
   fix y
   have h4 := match_pair h1 h3
   apply Iff.intro
@@ -199,9 +215,9 @@ theorem remove_iff_1 {A B : Type} {R : Set (A × B)} {X : Set A} {Y : Set B} {x 
     done
   done
 
-theorem remove_iff_2 {A B : Type} {R : Set (A × B)} {x u : A} {v : B}
-    (h2 : x ≠ u) (h3 : (x, v) ∉ R) :
-    ∀ (y : B), (x, y) ∈ remove_one R u v ↔ (x, y) ∈ R := by
+theorem remove_iff_2 {A B : Type} {R : Rel A B} {x u : A} {v : B}
+    (h2 : x ≠ u) (h3 : ¬R x v) :
+    ∀ (y : B), remove_one R u v x y ↔ R x y := by
   fix y
   apply Iff.intro
   · -- (→)
@@ -226,19 +242,9 @@ theorem remove_iff_2 {A B : Type} {R : Set (A × B)} {x u : A} {v : B}
     done
   done
 
-/-
-theorem remove_iff_2 {A B : Type} {R : Set (A × B)} {u : A} {y v : B} (x : A)
-    (h2 : y ≠ v) (h3 : (u, y) ∉ R) :
-    (x, y) ∈ remove_one R u v ↔ (x, y) ∈ R := by
-  rewrite [←simp_inv, ←simp_inv R, remove_inv_comm]
-  rewrite [←simp_inv] at h3
-  exact remove_iff_1 x h2 h3
-  done
--/
-
-theorem unique_in_remove_one {A B : Type} {R : Set (A × B)} {X : Set A} {Y : Set B} {w x u : A} {v : B}
-    (h1 : matching R X Y) (h2 : w ∈ X) (h3 : ∀ (y : B), (x, y) ∈ remove_one R u v ↔ (w, y) ∈ R) :
-    ∃! (y : B), (x, y) ∈ remove_one R u v := by
+theorem unique_in_remove_one {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B} {w x u : A} {v : B}
+    (h1 : matching R X Y) (h2 : w ∈ X) (h3 : ∀ (y : B), remove_one R u v x y ↔ R w y) :
+    ∃! (y : B), remove_one R u v x y := by
   have h4 := h1.right.left w h2
   define at h4; define
   obtain z h5 from h4
@@ -250,22 +256,22 @@ theorem unique_in_remove_one {A B : Type} {R : Set (A × B)} {X : Set A} {Y : Se
   exact h5.right y1
   done
 
-theorem remove_one_match_from {A B : Type} {R : Set (A × B)} {X : Set A} {Y : Set B} {u : A}
+theorem remove_one_match_from {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B} {u : A}
     (h1 : matching R X Y) (h2 : u ∈ X) (v : B): match_from (remove_one R u v) (X \ {u}) := by
   define
   fix x
   assume h4
   define at h4
-  by_cases h5 : (x, v) ∈ R
-  · -- Case 1. h5: (x, v) ∈ R
+  by_cases h5 : R x v
+  · -- Case 1. h5: R x v
     exact unique_in_remove_one h1 h2 (remove_iff_1 h1 h4.right h5)
     done
-  · -- Case 2. h5: (x, v) ∉ R
+  · -- Case 2. h5: ¬R x v
     exact unique_in_remove_one h1 h4.left (remove_iff_2 h4.right h5)
     done
   done
 
-theorem remove_one_matching {A B : Type} {R : Set (A × B)} {X : Set A} {Y : Set B} {u : A} {v : B}
+theorem remove_one_matching {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B} {u : A} {v : B}
     (h1 : matching R X Y) (h2 : u ∈ X) (h3 : v ∈ Y) :
     matching (remove_one R u v) (X \ {u}) (Y \ {v}) := by
   define
@@ -282,35 +288,7 @@ theorem remove_one_matching {A B : Type} {R : Set (A × B)} {X : Set A} {Y : Set
     exact remove_one_match_from (match_inv h1) h3 u
   done
 
-theorem pair_eq {A B : Type} (a1 a2 : A) (b1 b2 : B) :
-    (a1, b1) = (a2, b2) ↔ a1 = a2 ∧ b1 = b2 := by
-  apply Iff.intro
-  · -- (→)
-    assume h1
-    apply And.intro
-    · -- Proof that a1 = a2
-      exact
-        calc a1
-            = (a1, b1).1 := by rfl
-          _ = (a2, b2).1 := by rw [h1]
-          _ = a2 := by rfl
-      done
-    · -- Proof that b1 = b2
-      exact
-        calc b1
-            = (a1, b1).2 := by rfl
-          _ = (a2, b2).2 := by rw [h1]
-          _ = b2 := by rfl
-      done
-    done
-  · -- (←)
-    assume h1
-    rewrite [h1.left, h1.right]
-    rfl
-    done
-  done
-
-theorem empty_match_from {A B : Type} (R : Set (A × B)) (X : Set A) (h : empty X) : match_from R X := by
+theorem empty_match_from {A B : Type} {R : Rel A B} {X : Set A} (h : empty X) : match_from R X := by
   define
   fix x
   assume h1
@@ -319,7 +297,11 @@ theorem empty_match_from {A B : Type} (R : Set (A × B)) (X : Set A) (h : empty 
   exact Exists.intro x h1
   done
 
-theorem one_elt_match_from {A B : Type} (a : A) (b : B) : match_from {(a, b)} {a} := by
+def one_match {A B : Type} (a : A) (b : B) (x : A) (y : B) : Prop :=
+    x = a ∧ y = b
+
+theorem one_elt_match_from {A B : Type} (a : A) (b : B) :
+    match_from (one_match a b) {a} := by
   define
   fix x
   assume h1
@@ -329,40 +311,20 @@ theorem one_elt_match_from {A B : Type} (a : A) (b : B) : match_from {(a, b)} {a
   · -- Existence
     apply Exists.intro b
     define
+    apply And.intro
+    rfl
     rfl
     done
   · -- Uniqueness
     fix b1; fix b2
     assume h2; assume h3
     define at h2; define at h3
-    rewrite [←h3] at h2
-    exact ((pair_eq a a b1 b2).ltr h2).right
+    rewrite [h3.right]
+    exact h2.right
     done
   done
 
 /- Basic theorems about finite sets and number of elements -/
-
-/-
-theorem remove_one_equinum {A B : Type} {X : Set A} {Y : Set B} {x : A} {y : B}
-    (h1 : equinum X Y) (h2 : x ∈ X) (h3 : y ∈ Y) : equinum (X \ { x }) (Y \ { y }) := by
-  define
-  obtain R h4 from h1
-  have h5 := h4.right.right y h3
-  obtain j h6 _h7 from h5
-  define at h6
-  have h8 := match_pair h4 h6
-  have h9 := matching_swap h4 h2 h8.left
-  have h10 : (x, y) ∈ swap R x j := by
-    define
-    apply Or.inl
-    apply And.intro _ h6
-    rfl
-    done
-  let R' := (swap R x j) \ { (x, y) }
-  have h11 := matching_cut h9 h10
-  exact Exists.intro R' h11
-  done
--/
 
 theorem remove_one_equinum {A B : Type} {X : Set A} {Y : Set B} {x : A} {y : B}
     (h1 : equinum X Y) (h2 : x ∈ X) (h3 : y ∈ Y) : equinum (X \ { x }) (Y \ { y }) := by
@@ -381,6 +343,8 @@ theorem remove_one_numElts {A : Type} {X : Set A} {n : Nat} {x : A}
   exact h4
   done
 
+def empty_match {A B : Type} (a : A) (b : B) : Prop := False
+
 theorem zero_elts_iff_empty {A : Type} (X : Set A) : numElts X 0 ↔ empty X := by
   apply Iff.intro
   · -- (→)
@@ -393,30 +357,28 @@ theorem zero_elts_iff_empty {A : Type} (X : Set A) : numElts X 0 ↔ empty X := 
     obtain j h5 _h6 from h4.right.right x h3
     define at h5
     have h7 := match_pair h4 h5
-    have h8 := h7.left
-    define at h8
-    linarith
+    contradict I_0_empty
+    exact Exists.intro j h7.left
     done
   · -- (←)
     assume h1
     define
-    apply Exists.intro ∅
+    apply Exists.intro empty_match
     define
     apply And.intro
     · -- Proof of pairing
       define
       fix n; fix a
       assume h2
-      define at h2
       exact False.elim h2
       done
     · -- Proofs of match_from
       apply And.intro
-      · -- Proof of match_from ∅ (I 0)
-        exact empty_match_from _ (I 0) I_0_empty
+      · -- Proof of match_from empty_match (I 0)
+        exact empty_match_from I_0_empty
         done
-      · -- Proof of match_from (inv ∅) X
-        exact empty_match_from _ X h1
+      · -- Proof of match_from (invRel empty_match) X
+        exact empty_match_from h1
         done
       done
     done
@@ -429,7 +391,7 @@ theorem one_elt_iff_singleton {A : Type} (X : Set A) : numElts X 1 ↔ ∃ (x : 
   · -- (→)
     assume h1
     obtain R h2 from h1
-    have h3 : 1 ∈ ({1} : Set Nat) := by define; rfl
+    have h3 : 1 ∈ {1} := by define; rfl
     obtain x h4 _h5 from h2.right.left 1 h3
     have h6 := match_pair h2 h4
     apply Exists.intro x
@@ -442,7 +404,7 @@ theorem one_elt_iff_singleton {A : Type} (X : Set A) : numElts X 1 ↔ ∃ (x : 
       have h8 := h2.right.right a h7
       obtain j h9 _h10 from h8
       define at h9
-      have h11 := match_pair h2 h9 
+      have h11 := match_pair h2 h9
       have h12 := h11.left
       define at h12
       rewrite [h12] at h9
@@ -458,7 +420,7 @@ theorem one_elt_iff_singleton {A : Type} (X : Set A) : numElts X 1 ↔ ∃ (x : 
   · -- (←)
     assume h1
     obtain x h2 from h1
-    let R : Set (Nat × A) := {(1, x)}
+    let R : Rel Nat A := one_match 1 x
     apply Exists.intro R
     define
     apply And.intro
@@ -467,7 +429,6 @@ theorem one_elt_iff_singleton {A : Type} (X : Set A) : numElts X 1 ↔ ∃ (x : 
       fix n; fix a
       assume h3
       define at h3
-      rewrite [pair_eq n 1 a x] at h3
       rewrite [h3.left, h3.right, h2]
       apply And.intro
       · -- Proof that 1 ∈ {1}
@@ -485,14 +446,15 @@ theorem one_elt_iff_singleton {A : Type} (X : Set A) : numElts X 1 ↔ ∃ (x : 
         exact one_elt_match_from 1 x
         done
       · -- Proof that match_from (inv R) X
-        have h3 : inv R = {(x, 1)} := by
-          apply Set.ext
-          fix (a, n)
-          define : (a, n) ∈ ({(x, 1)} : Set (A × Nat))
-          define : (a, n) ∈ inv R
-          simp [pair_eq, and_comm]
+        have h3 : invRel R = one_match x 1 := by
+          apply RelExt
+          fix y; fix n
+          define : invRel R y n
+          define : one_match x 1 y n
+          rewrite [and_comm]
+          rfl
           done
-        rewrite [h2, h3]
+        rewrite [h2, h3]     
         exact one_elt_match_from x 1
         done
       done

@@ -9,6 +9,9 @@ def Dom {A B : Type} (R : Set (A × B)) : Set A :=
 def Ran {A B : Type} (R : Set (A × B)) : Set B :=
     { b : B | ∃ (a : A), (a, b) ∈ R }
 
+def inv {A B : Type} (R : Set (A × B)) : Set (B × A) :=
+    { (b, a) : B × A | (a, b) ∈ R }
+
 def comp {A B C : Type} (S : Set (B × C)) (R : Set (A × B)) :
     Set (A × C) := { (a, c) : A × C | ∃ (x : B), (a, x) ∈ R ∧ (x, c) ∈ S }
 
@@ -101,8 +104,6 @@ def inverse_image {A B : Type} (f : A → B) (Y : Set B) : Set A :=
     { a : A | f a ∈ Y }
 
 /- Definitions and theorems in FiniteSets and HTPIDefs
-def inv {A B : Type} (R : Set (A × B)) : Set (B × A) :=
-    { (b, a) : B × A | (a, b) ∈ R }
 
 def empty {A : Type} (X : Set A) : Prop := ¬∃ (x : A), x ∈ X 
 
@@ -114,12 +115,6 @@ def is_func_graph {A B : Type} (G : Set (A × B)) : Prop :=
 
 theorem func_from_graph {A B : Type} (F : Set (A × B)) :
     (∃ (f : A → B), graph f = F) ↔ is_func_graph F := by
-
-theorem simp_inv {A B : Type} (R : Set (A × B)) (a : A) (b : B) :
-    (b, a) ∈ inv R ↔ (a, b) ∈ R := by rfl
-
-theorem Theorem_4_2_5_1 {A B : Type}
-    (R : Set (A × B)) : inv (inv R) = R := by rfl
 
 theorem zero_elts_iff_empty {A : Type} (X : Set A) :
     numElts X 0 ↔ empty X
