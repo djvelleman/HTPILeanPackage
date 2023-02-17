@@ -39,10 +39,11 @@ def setOf.unexpander : Lean.PrettyPrinter.Unexpander
 attribute [default_instance] Set.instSingletonSet
 attribute [default_instance] Set.instEmptyCollectionSet
 
---Should be fixed in Lean soon--then can remove this.
+/- No longer needed
 @[app_unexpander Function.comp] def unexpandFunctionComp : Lean.PrettyPrinter.Unexpander
   | `($(_) $f:term $g:term $x:term) => `(($f ∘ $g) $x)
   | _ => throw ()
+-/
 
 -- Set theory notation that should be in library.  Will it be added eventually?
 -- Copying similar in:  Mathlib/Init/Set.lean, lean4/Init/Notation.lean, std4/Std/Classes/SetNotation.lean

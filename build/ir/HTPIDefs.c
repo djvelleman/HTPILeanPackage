@@ -164,7 +164,7 @@ static lean_object* l_HTPI_unfoldExUn___closed__3;
 static lean_object* l_HTPI_doObtain___lambda__1___closed__10;
 static lean_object* l_HTPI_doDefine___lambda__1___closed__2;
 static lean_object* l_term_x7b___x3a___x7c___x7d___closed__14;
-static lean_object* l_unexpandFunctionComp___closed__4;
+static lean_object* l___aux__HTPIDefs______macroRules__term___u2288____1___closed__8;
 static lean_object* l_HTPI_orstrat___lambda__2___closed__14;
 static lean_object* l_HTPI_setUpCases___closed__3;
 static lean_object* l_HTPI_withId___closed__3;
@@ -359,7 +359,6 @@ static lean_object* l_HTPI_getDefineFormLabel___closed__1;
 static lean_object* l_HTPI_doDefinition___lambda__1___closed__3;
 LEAN_EXPORT lean_object* l_HTPI_orstrat___lambda__1___boxed(lean_object**);
 static lean_object* l_HTPI_ExprToString___closed__8;
-static lean_object* l_unexpandFunctionComp___closed__5;
 static lean_object* l_HTPI_doAssume___closed__1;
 LEAN_EXPORT lean_object* l_HTPI_doInduc___lambda__1(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_tacticTraceExpr_______closed__2;
@@ -433,7 +432,6 @@ static lean_object* l_HTPI_orstrat___lambda__1___closed__1;
 static lean_object* l_HTPI_tacticContradict_______closed__2;
 LEAN_EXPORT lean_object* l_HTPI___aux__HTPIDefs______elabRules__HTPI__tacticContrapos______1(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_doRewrite___closed__17;
-static lean_object* l_unexpandFunctionComp___closed__3;
 LEAN_EXPORT lean_object* l_HTPI_myTrace___boxed(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_tacticOr__right_____closed__5;
 static lean_object* l_HTPI_tacticExists__unique___closed__3;
@@ -463,7 +461,6 @@ static lean_object* l_HTPI_tacticTraceExpr_______closed__8;
 lean_object* l_Lean_Meta_getLevel(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_term___u25b3_____closed__2;
 lean_object* l_Lean_FVarId_getDecl(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
-static lean_object* l_unexpandFunctionComp___closed__7;
 static lean_object* l_HTPI_colonTerm___closed__2;
 lean_object* l_Lean_Expr_forallE___override(lean_object*, lean_object*, lean_object*, uint8_t);
 lean_object* l_Lean_Elab_Tactic_withMainContext___rarg(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
@@ -471,7 +468,6 @@ LEAN_EXPORT lean_object* l_HTPI_dmRuleFromInfo___boxed(lean_object*, lean_object
 static lean_object* l_HTPI_tacticShow__From_____closed__7;
 static lean_object* l_HTPI_doInduc___lambda__2___closed__1;
 static lean_object* l_HTPI_cdlRule___closed__19;
-LEAN_EXPORT lean_object* l_unexpandFunctionComp(lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_dmRule___closed__26;
 LEAN_EXPORT lean_object* l_HTPI_myFail(lean_object*);
 static lean_object* l_HTPI_dmRule___closed__39;
@@ -514,6 +510,7 @@ static lean_object* l_HTPI_doRewrite___closed__14;
 static lean_object* l_HTPI_dmRule___closed__35;
 LEAN_EXPORT lean_object* l_HTPI_formFromLoc___boxed(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_doRewrite___closed__1;
+static lean_object* l___aux__HTPIDefs______macroRules__term___u2288____1___closed__7;
 static lean_object* l_HTPI_with2Ids___closed__10;
 static lean_object* l_HTPI_tacticDefinition_______closed__1;
 static lean_object* l_HTPI_doRewrite___closed__8;
@@ -523,7 +520,6 @@ static lean_object* l_HTPI_orstrat___lambda__1___closed__4;
 static lean_object* l_HTPI_dmRule___closed__10;
 static lean_object* l_HTPI___aux__HTPIDefs______macroRules__HTPI__tacticShow__From____1___closed__5;
 static lean_object* l_HTPI_tacticConditional_______closed__2;
-static lean_object* l_unexpandFunctionComp___closed__2;
 static lean_object* l_HTPI_with2Ids___closed__3;
 static lean_object* l_HTPI_cpRule___closed__5;
 static lean_object* l_HTPI_ensureContra___closed__2;
@@ -563,6 +559,7 @@ LEAN_EXPORT lean_object* l_HTPI___aux__HTPIDefs______elabRules__HTPI__tacticExis
 static lean_object* l_HTPI_doInduc___lambda__1___closed__12;
 LEAN_EXPORT lean_object* l_HTPI_fixCase___lambda__1(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 uint8_t lean_name_eq(lean_object*, lean_object*);
+static lean_object* l___aux__HTPIDefs______macroRules__term___u2288____1___closed__9;
 LEAN_EXPORT lean_object* l___aux__HTPIDefs______unexpand__symmDiff__1(lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_doInduc___lambda__1___closed__17;
 LEAN_EXPORT lean_object* l___aux__HTPIDefs______unexpand__symmDiff__1___lambda__2___boxed(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
@@ -618,6 +615,7 @@ static lean_object* l_HTPI_qnRule___closed__17;
 static lean_object* l_HTPI_sumFromTo___closed__15;
 LEAN_EXPORT lean_object* l_HTPI_tacticDemorgan____;
 static lean_object* l_HTPI_tacticWhnf_______closed__7;
+static lean_object* l___aux__HTPIDefs______macroRules__term___u2288____1___closed__10;
 lean_object* lean_mk_syntax_ident(lean_object*);
 static lean_object* l_HTPI_orstrat___lambda__2___closed__13;
 static lean_object* l___aux__HTPIDefs______macroRules__term_x7b___x3a___x7c___x7d__1___closed__17;
@@ -638,7 +636,6 @@ lean_object* l_Lean_MacroScopesView_review(lean_object*);
 static lean_object* l_HTPI_doFix___closed__2;
 lean_object* l_Lean_MVarId_assert(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 LEAN_EXPORT lean_object* l_HTPI_doReplace___boxed(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
-static lean_object* l_unexpandFunctionComp___closed__6;
 static lean_object* l_HTPI_ExprToString___closed__3;
 static lean_object* l___aux__HTPIDefs______macroRules__term___u25b3____1___closed__5;
 static lean_object* l_setOf_unexpander___closed__8;
@@ -1133,7 +1130,6 @@ LEAN_EXPORT lean_object* l_HTPI_parseIdOrTerm___boxed(lean_object*);
 LEAN_EXPORT lean_object* l_HTPI_tacticBy__induc;
 LEAN_EXPORT lean_object* l_HTPI___aux__HTPIDefs______elabRules__HTPI__tacticDefinition______1__1(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
 static lean_object* l_HTPI_unfoldHead___closed__2;
-static lean_object* l_unexpandFunctionComp___closed__1;
 static lean_object* l_HTPI_tacticContradict_______closed__6;
 static lean_object* l_HTPI_tacticConditional_______closed__4;
 static lean_object* l_term_x7b___x3a___x7c___x7d___closed__11;
@@ -3317,150 +3313,6 @@ return x_423;
 }
 }
 }
-static lean_object* _init_l_unexpandFunctionComp___closed__1() {
-_start:
-{
-lean_object* x_1; 
-x_1 = lean_mk_string_from_bytes("paren", 5);
-return x_1;
-}
-}
-static lean_object* _init_l_unexpandFunctionComp___closed__2() {
-_start:
-{
-lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; lean_object* x_5; 
-x_1 = l___aux__HTPIDefs______macroRules__term_x7b___x3a___x7c___x7d__1___closed__9;
-x_2 = l___aux__HTPIDefs______macroRules__term_x7b___x3a___x7c___x7d__1___closed__21;
-x_3 = l___aux__HTPIDefs______macroRules__term_x7b___x3a___x7c___x7d__1___closed__22;
-x_4 = l_unexpandFunctionComp___closed__1;
-x_5 = l_Lean_Name_mkStr4(x_1, x_2, x_3, x_4);
-return x_5;
-}
-}
-static lean_object* _init_l_unexpandFunctionComp___closed__3() {
-_start:
-{
-lean_object* x_1; 
-x_1 = lean_mk_string_from_bytes("(", 1);
-return x_1;
-}
-}
-static lean_object* _init_l_unexpandFunctionComp___closed__4() {
-_start:
-{
-lean_object* x_1; 
-x_1 = lean_mk_string_from_bytes("term_∘_", 9);
-return x_1;
-}
-}
-static lean_object* _init_l_unexpandFunctionComp___closed__5() {
-_start:
-{
-lean_object* x_1; lean_object* x_2; lean_object* x_3; 
-x_1 = lean_box(0);
-x_2 = l_unexpandFunctionComp___closed__4;
-x_3 = l_Lean_Name_str___override(x_1, x_2);
-return x_3;
-}
-}
-static lean_object* _init_l_unexpandFunctionComp___closed__6() {
-_start:
-{
-lean_object* x_1; 
-x_1 = lean_mk_string_from_bytes("∘", 3);
-return x_1;
-}
-}
-static lean_object* _init_l_unexpandFunctionComp___closed__7() {
-_start:
-{
-lean_object* x_1; 
-x_1 = lean_mk_string_from_bytes(")", 1);
-return x_1;
-}
-}
-LEAN_EXPORT lean_object* l_unexpandFunctionComp(lean_object* x_1, lean_object* x_2, lean_object* x_3) {
-_start:
-{
-lean_object* x_4; uint8_t x_5; 
-x_4 = l_setOf_unexpander___closed__2;
-lean_inc(x_1);
-x_5 = l_Lean_Syntax_isOfKind(x_1, x_4);
-if (x_5 == 0)
-{
-lean_object* x_6; lean_object* x_7; 
-lean_dec(x_2);
-lean_dec(x_1);
-x_6 = lean_box(0);
-x_7 = lean_alloc_ctor(1, 2, 0);
-lean_ctor_set(x_7, 0, x_6);
-lean_ctor_set(x_7, 1, x_3);
-return x_7;
-}
-else
-{
-lean_object* x_8; lean_object* x_9; lean_object* x_10; uint8_t x_11; 
-x_8 = lean_unsigned_to_nat(1u);
-x_9 = l_Lean_Syntax_getArg(x_1, x_8);
-lean_dec(x_1);
-x_10 = lean_unsigned_to_nat(3u);
-lean_inc(x_9);
-x_11 = l_Lean_Syntax_matchesNull(x_9, x_10);
-if (x_11 == 0)
-{
-lean_object* x_12; lean_object* x_13; 
-lean_dec(x_9);
-lean_dec(x_2);
-x_12 = lean_box(0);
-x_13 = lean_alloc_ctor(1, 2, 0);
-lean_ctor_set(x_13, 0, x_12);
-lean_ctor_set(x_13, 1, x_3);
-return x_13;
-}
-else
-{
-lean_object* x_14; lean_object* x_15; lean_object* x_16; lean_object* x_17; lean_object* x_18; uint8_t x_19; lean_object* x_20; lean_object* x_21; lean_object* x_22; lean_object* x_23; lean_object* x_24; lean_object* x_25; lean_object* x_26; lean_object* x_27; lean_object* x_28; lean_object* x_29; lean_object* x_30; lean_object* x_31; lean_object* x_32; lean_object* x_33; lean_object* x_34; 
-x_14 = lean_unsigned_to_nat(0u);
-x_15 = l_Lean_Syntax_getArg(x_9, x_14);
-x_16 = l_Lean_Syntax_getArg(x_9, x_8);
-x_17 = lean_unsigned_to_nat(2u);
-x_18 = l_Lean_Syntax_getArg(x_9, x_17);
-lean_dec(x_9);
-x_19 = 0;
-x_20 = l_Lean_SourceInfo_fromRef(x_2, x_19);
-x_21 = l_unexpandFunctionComp___closed__3;
-lean_inc(x_20);
-x_22 = lean_alloc_ctor(2, 2, 0);
-lean_ctor_set(x_22, 0, x_20);
-lean_ctor_set(x_22, 1, x_21);
-x_23 = l_unexpandFunctionComp___closed__6;
-lean_inc(x_20);
-x_24 = lean_alloc_ctor(2, 2, 0);
-lean_ctor_set(x_24, 0, x_20);
-lean_ctor_set(x_24, 1, x_23);
-x_25 = l_unexpandFunctionComp___closed__5;
-lean_inc(x_20);
-x_26 = l_Lean_Syntax_node3(x_20, x_25, x_15, x_24, x_16);
-x_27 = l_unexpandFunctionComp___closed__7;
-lean_inc(x_20);
-x_28 = lean_alloc_ctor(2, 2, 0);
-lean_ctor_set(x_28, 0, x_20);
-lean_ctor_set(x_28, 1, x_27);
-x_29 = l_unexpandFunctionComp___closed__2;
-lean_inc(x_20);
-x_30 = l_Lean_Syntax_node3(x_20, x_29, x_22, x_26, x_28);
-x_31 = l___aux__HTPIDefs______macroRules__term_x7b___x3a___x7c___x7d__1___closed__16;
-lean_inc(x_20);
-x_32 = l_Lean_Syntax_node1(x_20, x_31, x_18);
-x_33 = l_Lean_Syntax_node2(x_20, x_4, x_30, x_32);
-x_34 = lean_alloc_ctor(0, 2, 0);
-lean_ctor_set(x_34, 0, x_33);
-lean_ctor_set(x_34, 1, x_3);
-return x_34;
-}
-}
-}
-}
 static lean_object* _init_l_term___u2288_____closed__1() {
 _start:
 {
@@ -3576,25 +3428,61 @@ static lean_object* _init_l___aux__HTPIDefs______macroRules__term___u2288____1__
 _start:
 {
 lean_object* x_1; 
-x_1 = lean_mk_string_from_bytes("term_⊆_", 9);
+x_1 = lean_mk_string_from_bytes("paren", 5);
 return x_1;
 }
 }
 static lean_object* _init_l___aux__HTPIDefs______macroRules__term___u2288____1___closed__5() {
 _start:
 {
-lean_object* x_1; lean_object* x_2; lean_object* x_3; 
-x_1 = lean_box(0);
-x_2 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__4;
-x_3 = l_Lean_Name_str___override(x_1, x_2);
-return x_3;
+lean_object* x_1; lean_object* x_2; lean_object* x_3; lean_object* x_4; lean_object* x_5; 
+x_1 = l___aux__HTPIDefs______macroRules__term_x7b___x3a___x7c___x7d__1___closed__9;
+x_2 = l___aux__HTPIDefs______macroRules__term_x7b___x3a___x7c___x7d__1___closed__21;
+x_3 = l___aux__HTPIDefs______macroRules__term_x7b___x3a___x7c___x7d__1___closed__22;
+x_4 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__4;
+x_5 = l_Lean_Name_mkStr4(x_1, x_2, x_3, x_4);
+return x_5;
 }
 }
 static lean_object* _init_l___aux__HTPIDefs______macroRules__term___u2288____1___closed__6() {
 _start:
 {
 lean_object* x_1; 
+x_1 = lean_mk_string_from_bytes("(", 1);
+return x_1;
+}
+}
+static lean_object* _init_l___aux__HTPIDefs______macroRules__term___u2288____1___closed__7() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_from_bytes("term_⊆_", 9);
+return x_1;
+}
+}
+static lean_object* _init_l___aux__HTPIDefs______macroRules__term___u2288____1___closed__8() {
+_start:
+{
+lean_object* x_1; lean_object* x_2; lean_object* x_3; 
+x_1 = lean_box(0);
+x_2 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__7;
+x_3 = l_Lean_Name_str___override(x_1, x_2);
+return x_3;
+}
+}
+static lean_object* _init_l___aux__HTPIDefs______macroRules__term___u2288____1___closed__9() {
+_start:
+{
+lean_object* x_1; 
 x_1 = lean_mk_string_from_bytes("⊆", 3);
+return x_1;
+}
+}
+static lean_object* _init_l___aux__HTPIDefs______macroRules__term___u2288____1___closed__10() {
+_start:
+{
+lean_object* x_1; 
+x_1 = lean_mk_string_from_bytes(")", 1);
 return x_1;
 }
 }
@@ -3634,25 +3522,25 @@ lean_inc(x_14);
 x_16 = lean_alloc_ctor(2, 2, 0);
 lean_ctor_set(x_16, 0, x_14);
 lean_ctor_set(x_16, 1, x_15);
-x_17 = l_unexpandFunctionComp___closed__3;
+x_17 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__6;
 lean_inc(x_14);
 x_18 = lean_alloc_ctor(2, 2, 0);
 lean_ctor_set(x_18, 0, x_14);
 lean_ctor_set(x_18, 1, x_17);
-x_19 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__6;
+x_19 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__9;
 lean_inc(x_14);
 x_20 = lean_alloc_ctor(2, 2, 0);
 lean_ctor_set(x_20, 0, x_14);
 lean_ctor_set(x_20, 1, x_19);
-x_21 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__5;
+x_21 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__8;
 lean_inc(x_14);
 x_22 = l_Lean_Syntax_node3(x_14, x_21, x_9, x_20, x_11);
-x_23 = l_unexpandFunctionComp___closed__7;
+x_23 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__10;
 lean_inc(x_14);
 x_24 = lean_alloc_ctor(2, 2, 0);
 lean_ctor_set(x_24, 0, x_14);
 lean_ctor_set(x_24, 1, x_23);
-x_25 = l_unexpandFunctionComp___closed__2;
+x_25 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__5;
 lean_inc(x_14);
 x_26 = l_Lean_Syntax_node3(x_14, x_25, x_18, x_22, x_24);
 x_27 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__2;
@@ -4436,7 +4324,7 @@ static lean_object* _init_l_HTPI_idOrTerm___closed__5() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; 
-x_1 = l_unexpandFunctionComp___closed__3;
+x_1 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__6;
 x_2 = lean_alloc_ctor(5, 1, 0);
 lean_ctor_set(x_2, 0, x_1);
 return x_2;
@@ -4460,7 +4348,7 @@ static lean_object* _init_l_HTPI_idOrTerm___closed__7() {
 _start:
 {
 lean_object* x_1; lean_object* x_2; 
-x_1 = l_unexpandFunctionComp___closed__7;
+x_1 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__10;
 x_2 = lean_alloc_ctor(5, 1, 0);
 lean_ctor_set(x_2, 0, x_1);
 return x_2;
@@ -4958,7 +4846,7 @@ x_9 = lean_array_data(x_4);
 x_10 = l_HTPI_SyntaxToString_SyntaxListToString(x_9);
 x_11 = lean_string_append(x_8, x_10);
 lean_dec(x_10);
-x_12 = l_unexpandFunctionComp___closed__7;
+x_12 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__10;
 x_13 = lean_string_append(x_11, x_12);
 return x_13;
 }
@@ -4971,7 +4859,7 @@ lean_dec(x_1);
 x_15 = l_HTPI_SyntaxToString___closed__3;
 x_16 = lean_string_append(x_15, x_14);
 lean_dec(x_14);
-x_17 = l_unexpandFunctionComp___closed__7;
+x_17 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__10;
 x_18 = lean_string_append(x_16, x_17);
 return x_18;
 }
@@ -5003,7 +4891,7 @@ x_29 = l_HTPI_SyntaxToString_SyntaxListToString___closed__2;
 x_30 = lean_string_append(x_28, x_29);
 x_31 = lean_string_append(x_30, x_22);
 lean_dec(x_22);
-x_32 = l_unexpandFunctionComp___closed__7;
+x_32 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__10;
 x_33 = lean_string_append(x_31, x_32);
 return x_33;
 }
@@ -5278,7 +5166,7 @@ x_3 = l_Nat_repr(x_2);
 x_4 = l_HTPI_ExprToString___closed__1;
 x_5 = lean_string_append(x_4, x_3);
 lean_dec(x_3);
-x_6 = l_unexpandFunctionComp___closed__7;
+x_6 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__10;
 x_7 = lean_string_append(x_5, x_6);
 return x_7;
 }
@@ -5293,7 +5181,7 @@ x_10 = l_Lean_Name_toString(x_8, x_9);
 x_11 = l_HTPI_ExprToString___closed__2;
 x_12 = lean_string_append(x_11, x_10);
 lean_dec(x_10);
-x_13 = l_unexpandFunctionComp___closed__7;
+x_13 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__10;
 x_14 = lean_string_append(x_12, x_13);
 return x_14;
 }
@@ -5308,7 +5196,7 @@ x_17 = l_Lean_Name_toString(x_15, x_16);
 x_18 = l_HTPI_ExprToString___closed__3;
 x_19 = lean_string_append(x_18, x_17);
 lean_dec(x_17);
-x_20 = l_unexpandFunctionComp___closed__7;
+x_20 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__10;
 x_21 = lean_string_append(x_19, x_20);
 return x_21;
 }
@@ -5324,7 +5212,7 @@ x_25 = lean_format_pretty(x_23, x_24);
 x_26 = l_HTPI_ExprToString___closed__4;
 x_27 = lean_string_append(x_26, x_25);
 lean_dec(x_25);
-x_28 = l_unexpandFunctionComp___closed__7;
+x_28 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__10;
 x_29 = lean_string_append(x_27, x_28);
 return x_29;
 }
@@ -5346,7 +5234,7 @@ x_37 = lean_string_append(x_35, x_36);
 x_38 = l_List_toString___at_HTPI_ExprToString___spec__1(x_31);
 x_39 = lean_string_append(x_37, x_38);
 lean_dec(x_38);
-x_40 = l_unexpandFunctionComp___closed__7;
+x_40 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__10;
 x_41 = lean_string_append(x_39, x_40);
 return x_41;
 }
@@ -5367,7 +5255,7 @@ x_48 = lean_string_append(x_46, x_47);
 x_49 = l_HTPI_ExprToString(x_43);
 x_50 = lean_string_append(x_48, x_49);
 lean_dec(x_49);
-x_51 = l_unexpandFunctionComp___closed__7;
+x_51 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__10;
 x_52 = lean_string_append(x_50, x_51);
 return x_52;
 }
@@ -5400,7 +5288,7 @@ x_68 = lean_string_append(x_67, x_61);
 x_69 = l_HTPI_binderString(x_56);
 x_70 = lean_string_append(x_68, x_69);
 lean_dec(x_69);
-x_71 = l_unexpandFunctionComp___closed__7;
+x_71 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__10;
 x_72 = lean_string_append(x_70, x_71);
 return x_72;
 }
@@ -5433,7 +5321,7 @@ x_88 = lean_string_append(x_87, x_81);
 x_89 = l_HTPI_binderString(x_76);
 x_90 = lean_string_append(x_88, x_89);
 lean_dec(x_89);
-x_91 = l_unexpandFunctionComp___closed__7;
+x_91 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__10;
 x_92 = lean_string_append(x_90, x_91);
 return x_92;
 }
@@ -5467,7 +5355,7 @@ x_108 = lean_string_append(x_107, x_101);
 x_109 = l_HTPI_ExprToString(x_96);
 x_110 = lean_string_append(x_108, x_109);
 lean_dec(x_109);
-x_111 = l_unexpandFunctionComp___closed__7;
+x_111 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__10;
 x_112 = lean_string_append(x_110, x_111);
 return x_112;
 }
@@ -5495,7 +5383,7 @@ x_120 = lean_string_append(x_118, x_119);
 x_121 = l_HTPI_ExprToString(x_115);
 x_122 = lean_string_append(x_120, x_121);
 lean_dec(x_121);
-x_123 = l_unexpandFunctionComp___closed__7;
+x_123 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__10;
 x_124 = lean_string_append(x_122, x_123);
 return x_124;
 }
@@ -5523,7 +5411,7 @@ x_136 = lean_string_append(x_135, x_132);
 x_137 = l_HTPI_ExprToString(x_127);
 x_138 = lean_string_append(x_136, x_137);
 lean_dec(x_137);
-x_139 = l_unexpandFunctionComp___closed__7;
+x_139 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__10;
 x_140 = lean_string_append(x_138, x_139);
 return x_140;
 }
@@ -29693,7 +29581,7 @@ lean_inc(x_27);
 x_31 = lean_alloc_ctor(2, 2, 0);
 lean_ctor_set(x_31, 0, x_27);
 lean_ctor_set(x_31, 1, x_30);
-x_32 = l_unexpandFunctionComp___closed__3;
+x_32 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__6;
 lean_inc(x_27);
 x_33 = lean_alloc_ctor(2, 2, 0);
 lean_ctor_set(x_33, 0, x_27);
@@ -29706,7 +29594,7 @@ lean_ctor_set(x_35, 1, x_34);
 x_36 = l___aux__HTPIDefs______macroRules__term_x7b___x3a___x7c___x7d__1___closed__16;
 lean_inc(x_27);
 x_37 = l_Lean_Syntax_node1(x_27, x_36, x_24);
-x_38 = l_unexpandFunctionComp___closed__7;
+x_38 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__10;
 lean_inc(x_27);
 x_39 = lean_alloc_ctor(2, 2, 0);
 lean_ctor_set(x_39, 0, x_27);
@@ -35346,7 +35234,7 @@ lean_ctor_set(x_25, 0, x_18);
 lean_ctor_set(x_25, 1, x_23);
 lean_ctor_set(x_25, 2, x_22);
 lean_ctor_set(x_25, 3, x_24);
-x_26 = l_unexpandFunctionComp___closed__3;
+x_26 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__6;
 lean_inc(x_18);
 x_27 = lean_alloc_ctor(2, 2, 0);
 lean_ctor_set(x_27, 0, x_18);
@@ -35376,12 +35264,12 @@ x_37 = l_Lean_Syntax_node4(x_18, x_36, x_31, x_33, x_35, x_15);
 x_38 = l_setOf_unexpander___closed__4;
 lean_inc(x_18);
 x_39 = l_Lean_Syntax_node2(x_18, x_38, x_29, x_37);
-x_40 = l_unexpandFunctionComp___closed__7;
+x_40 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__10;
 lean_inc(x_18);
 x_41 = lean_alloc_ctor(2, 2, 0);
 lean_ctor_set(x_41, 0, x_18);
 lean_ctor_set(x_41, 1, x_40);
-x_42 = l_unexpandFunctionComp___closed__2;
+x_42 = l___aux__HTPIDefs______macroRules__term___u2288____1___closed__5;
 lean_inc(x_18);
 x_43 = l_Lean_Syntax_node3(x_18, x_42, x_27, x_39, x_41);
 lean_inc(x_18);
@@ -35949,20 +35837,6 @@ l_setOf_unexpander___closed__9 = _init_l_setOf_unexpander___closed__9();
 lean_mark_persistent(l_setOf_unexpander___closed__9);
 l_setOf_unexpander___closed__10 = _init_l_setOf_unexpander___closed__10();
 lean_mark_persistent(l_setOf_unexpander___closed__10);
-l_unexpandFunctionComp___closed__1 = _init_l_unexpandFunctionComp___closed__1();
-lean_mark_persistent(l_unexpandFunctionComp___closed__1);
-l_unexpandFunctionComp___closed__2 = _init_l_unexpandFunctionComp___closed__2();
-lean_mark_persistent(l_unexpandFunctionComp___closed__2);
-l_unexpandFunctionComp___closed__3 = _init_l_unexpandFunctionComp___closed__3();
-lean_mark_persistent(l_unexpandFunctionComp___closed__3);
-l_unexpandFunctionComp___closed__4 = _init_l_unexpandFunctionComp___closed__4();
-lean_mark_persistent(l_unexpandFunctionComp___closed__4);
-l_unexpandFunctionComp___closed__5 = _init_l_unexpandFunctionComp___closed__5();
-lean_mark_persistent(l_unexpandFunctionComp___closed__5);
-l_unexpandFunctionComp___closed__6 = _init_l_unexpandFunctionComp___closed__6();
-lean_mark_persistent(l_unexpandFunctionComp___closed__6);
-l_unexpandFunctionComp___closed__7 = _init_l_unexpandFunctionComp___closed__7();
-lean_mark_persistent(l_unexpandFunctionComp___closed__7);
 l_term___u2288_____closed__1 = _init_l_term___u2288_____closed__1();
 lean_mark_persistent(l_term___u2288_____closed__1);
 l_term___u2288_____closed__2 = _init_l_term___u2288_____closed__2();
@@ -35991,6 +35865,14 @@ l___aux__HTPIDefs______macroRules__term___u2288____1___closed__5 = _init_l___aux
 lean_mark_persistent(l___aux__HTPIDefs______macroRules__term___u2288____1___closed__5);
 l___aux__HTPIDefs______macroRules__term___u2288____1___closed__6 = _init_l___aux__HTPIDefs______macroRules__term___u2288____1___closed__6();
 lean_mark_persistent(l___aux__HTPIDefs______macroRules__term___u2288____1___closed__6);
+l___aux__HTPIDefs______macroRules__term___u2288____1___closed__7 = _init_l___aux__HTPIDefs______macroRules__term___u2288____1___closed__7();
+lean_mark_persistent(l___aux__HTPIDefs______macroRules__term___u2288____1___closed__7);
+l___aux__HTPIDefs______macroRules__term___u2288____1___closed__8 = _init_l___aux__HTPIDefs______macroRules__term___u2288____1___closed__8();
+lean_mark_persistent(l___aux__HTPIDefs______macroRules__term___u2288____1___closed__8);
+l___aux__HTPIDefs______macroRules__term___u2288____1___closed__9 = _init_l___aux__HTPIDefs______macroRules__term___u2288____1___closed__9();
+lean_mark_persistent(l___aux__HTPIDefs______macroRules__term___u2288____1___closed__9);
+l___aux__HTPIDefs______macroRules__term___u2288____1___closed__10 = _init_l___aux__HTPIDefs______macroRules__term___u2288____1___closed__10();
+lean_mark_persistent(l___aux__HTPIDefs______macroRules__term___u2288____1___closed__10);
 l_term___u25b3_____closed__1 = _init_l_term___u25b3_____closed__1();
 lean_mark_persistent(l_term___u25b3_____closed__1);
 l_term___u25b3_____closed__2 = _init_l_term___u25b3_____closed__2();
