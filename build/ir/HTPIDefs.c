@@ -1,6 +1,6 @@
 // Lean compiler output
 // Module: HTPIDefs
-// Imports: Init Lean.Elab.Tactic Mathlib
+// Imports: Init Lean.Elab.Tactic MathlibTactics Mathlib.Data.Set.Basic Mathlib.Data.Set.Lattice Mathlib.Data.Rel Mathlib.Data.Nat.Basic Mathlib.Data.Int.Basic Mathlib.Data.Rat.Basic Mathlib.Data.Real.Basic
 #include <lean/lean.h>
 #if defined(__clang__)
 #pragma clang diagnostic ignored "-Wunused-parameter"
@@ -189,6 +189,7 @@ LEAN_EXPORT lean_object* l_HTPI_tacticDefinition______1;
 static lean_object* l_HTPI_tacticFix_____closed__5;
 lean_object* l_Lean_Expr_bvar___override(lean_object*);
 lean_object* lean_array_fget(lean_object*, lean_object*);
+lean_object* l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(lean_object*);
 static lean_object* l_HTPI_idOrTerm_x3fType___closed__1;
 static lean_object* l_HTPI_doDefine___lambda__1___closed__6;
 static lean_object* l_HTPI_tacticDefinition______1___closed__5;
@@ -750,7 +751,6 @@ static lean_object* l_HTPI_tacticOr__right_____closed__4;
 static lean_object* l_HTPI_orstrat___lambda__1___closed__5;
 static lean_object* l_HTPI_qnRule___closed__20;
 static lean_object* l_HTPI_tacticDemorgan_______closed__1;
-lean_object* l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(lean_object*);
 static lean_object* l_HTPI_unfoldHead___lambda__1___closed__1;
 LEAN_EXPORT uint8_t l___private_Init_Data_Option_Basic_0__beqOption____x40_Init_Data_Option_Basic___hyg_1116____at_HTPI___aux__HTPIDefs______elabRules__HTPI__tacticDisj__syll________1___spec__1(lean_object*, lean_object*);
 LEAN_EXPORT lean_object* l_HTPI_qnRule(lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*, lean_object*);
@@ -5833,7 +5833,7 @@ lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
 lean_dec(x_1);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -13983,7 +13983,7 @@ lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
 lean_dec(x_1);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -15469,7 +15469,7 @@ lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
 lean_dec(x_1);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -16765,7 +16765,7 @@ lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
 lean_dec(x_1);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -18043,7 +18043,7 @@ lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
 lean_dec(x_1);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -18519,7 +18519,7 @@ lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
 lean_dec(x_1);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -19229,7 +19229,7 @@ lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
 lean_dec(x_1);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -21263,7 +21263,7 @@ lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
 lean_dec(x_1);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -21415,7 +21415,7 @@ lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
 lean_dec(x_1);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -23312,7 +23312,7 @@ lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
 lean_dec(x_1);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -24055,7 +24055,7 @@ lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
 lean_dec(x_1);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -24791,7 +24791,7 @@ lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
 lean_dec(x_1);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -25062,7 +25062,7 @@ lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
 lean_dec(x_1);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -25325,7 +25325,7 @@ lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
 lean_dec(x_1);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -26539,7 +26539,7 @@ lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
 lean_dec(x_1);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -26676,7 +26676,7 @@ lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
 lean_dec(x_1);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -26913,7 +26913,7 @@ lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
 lean_dec(x_1);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -27050,7 +27050,7 @@ lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
 lean_dec(x_1);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -28455,7 +28455,7 @@ lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
 lean_dec(x_1);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -29464,7 +29464,7 @@ lean_dec(x_5);
 lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -31226,7 +31226,7 @@ lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
 lean_dec(x_1);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -31345,7 +31345,7 @@ lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
 lean_dec(x_1);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -31982,7 +31982,7 @@ lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
 lean_dec(x_1);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -32084,7 +32084,7 @@ lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
 lean_dec(x_1);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -32187,7 +32187,7 @@ lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
 lean_dec(x_1);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -32289,7 +32289,7 @@ lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
 lean_dec(x_1);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -34789,7 +34789,7 @@ lean_dec(x_5);
 lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -34878,7 +34878,7 @@ lean_dec(x_5);
 lean_dec(x_4);
 lean_dec(x_3);
 lean_dec(x_2);
-x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__TypeCheck______elabRules__tacticType__check____1___spec__1___rarg(x_10);
+x_13 = l_Lean_Elab_throwUnsupportedSyntax___at___aux__Mathlib__Tactic__Constructor______elabRules__tacticFconstructor__1___spec__1___rarg(x_10);
 return x_13;
 }
 else
@@ -35760,7 +35760,14 @@ return x_4;
 }
 lean_object* initialize_Init(uint8_t builtin, lean_object*);
 lean_object* initialize_Lean_Elab_Tactic(uint8_t builtin, lean_object*);
-lean_object* initialize_Mathlib(uint8_t builtin, lean_object*);
+lean_object* initialize_MathlibTactics(uint8_t builtin, lean_object*);
+lean_object* initialize_Mathlib_Data_Set_Basic(uint8_t builtin, lean_object*);
+lean_object* initialize_Mathlib_Data_Set_Lattice(uint8_t builtin, lean_object*);
+lean_object* initialize_Mathlib_Data_Rel(uint8_t builtin, lean_object*);
+lean_object* initialize_Mathlib_Data_Nat_Basic(uint8_t builtin, lean_object*);
+lean_object* initialize_Mathlib_Data_Int_Basic(uint8_t builtin, lean_object*);
+lean_object* initialize_Mathlib_Data_Rat_Basic(uint8_t builtin, lean_object*);
+lean_object* initialize_Mathlib_Data_Real_Basic(uint8_t builtin, lean_object*);
 static bool _G_initialized = false;
 LEAN_EXPORT lean_object* initialize_HTPIDefs(uint8_t builtin, lean_object* w) {
 lean_object * res;
@@ -35772,7 +35779,28 @@ lean_dec_ref(res);
 res = initialize_Lean_Elab_Tactic(builtin, lean_io_mk_world());
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
-res = initialize_Mathlib(builtin, lean_io_mk_world());
+res = initialize_MathlibTactics(builtin, lean_io_mk_world());
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_Mathlib_Data_Set_Basic(builtin, lean_io_mk_world());
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_Mathlib_Data_Set_Lattice(builtin, lean_io_mk_world());
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_Mathlib_Data_Rel(builtin, lean_io_mk_world());
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_Mathlib_Data_Nat_Basic(builtin, lean_io_mk_world());
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_Mathlib_Data_Int_Basic(builtin, lean_io_mk_world());
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_Mathlib_Data_Rat_Basic(builtin, lean_io_mk_world());
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_Mathlib_Data_Real_Basic(builtin, lean_io_mk_world());
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
 l_term_x7b___x3a___x7c___x7d___closed__1 = _init_l_term_x7b___x3a___x7c___x7d___closed__1();

@@ -1,5 +1,12 @@
 import Lean.Elab.Tactic
-import Mathlib
+import MathlibTactics
+import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Rel
+import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Int.Basic
+import Mathlib.Data.Rat.Basic
+import Mathlib.Data.Real.Basic
 
 def Iff.ltr {p q : Prop} (h : p ↔ q) := h.mp
 def Iff.rtl {p q : Prop} (h : p ↔ q) := h.mpr
@@ -237,7 +244,7 @@ def mkIff (l r : Expr) : Expr :=
   mkApp2 (mkConst ``Iff) l r
 
 --Need to supply level--I always have it, so easiest to use it.
-def mkExists (l : Level) (x : Name) (bi : BinderInfo) (t : Expr) (b : Expr) : Expr :=
+def mkExists (l : Level) (x : Name) (bi : BinderInfo) (t b : Expr) : Expr :=
   mkApp2 (mkConst ``Exists [l]) t (mkLambda x bi t b)
 
 def myFail {α} (tac : Name) (msg : String) : TacticM α := do
