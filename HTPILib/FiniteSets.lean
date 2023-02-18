@@ -1,10 +1,8 @@
-import HTPIDefs
+import Chap5lib
 namespace HTPI
 set_option pp.funBinderTypes true
 
 -- Version of finite sets using relations rather than sets of ordered pairs
-
-def empty {A : Type} (X : Set A) : Prop := ¬∃ (x : A), x ∈ X
 
 theorem RelExt {A B : Type} (R S : Rel A B)
     (h : ∀ (a : A) (b : B), R a b ↔ S a b) : R = S := by

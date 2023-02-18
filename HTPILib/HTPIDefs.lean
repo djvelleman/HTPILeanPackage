@@ -1071,8 +1071,6 @@ def doInduc (strong : Bool) : TacticM Unit := do
 
 elab "by_induc" : tactic => doInduc false
 elab "by_strong_induc" : tactic => doInduc true
-#check Nat.rec
-#check Nat.strongRec'
 end tactic_defs
 
 --Constructing a function from its graph:
