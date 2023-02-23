@@ -55,30 +55,30 @@ theorem Theorem_4_3_4_3 {A : Type} (R : BinRel A) :
 
 -- 4.
 theorem Exercise_4_3_12a {A : Type} (R : BinRel A) (h1 : reflexive R) :
-    reflexive (relFromExt (inv (extension R))) := sorry
+    reflexive (RelFromExt (inv (extension R))) := sorry
 
 -- 5.
 theorem Exercise_4_3_12c {A : Type} (R : BinRel A) (h1 : transitive R) :
-    transitive (relFromExt (inv (extension R))) := sorry
+    transitive (RelFromExt (inv (extension R))) := sorry
 
 -- 6.
 theorem Exercise_4_3_18 {A : Type}
     (R S : BinRel A) (h1 : transitive R) (h2 : transitive S)
     (h3 : comp (extension S) (extension R) ⊆
       comp (extension R) (extension S)) :
-    transitive (relFromExt (comp (extension R) (extension S))) := sorry
+    transitive (RelFromExt (comp (extension R) (extension S))) := sorry
 
 -- 7.
 --You might not be able to complete this proof
 theorem Exercise_4_3_13b {A : Type}
     (R1 R2 : BinRel A) (h1 : symmetric R1) (h2 : symmetric R2) :
-    symmetric (relFromExt ((extension R1) ∪ (extension R2))) := sorry
+    symmetric (RelFromExt ((extension R1) ∪ (extension R2))) := sorry
 
 -- 8.
 --You might not be able to complete this proof
 theorem Exercise_4_3_13c {A : Type}
     (R1 R2 : BinRel A) (h1 : transitive R1) (h2 : transitive R2) :
-    transitive (relFromExt ((extension R1) ∪ (extension R2))) := sorry
+    transitive (RelFromExt ((extension R1) ∪ (extension R2))) := sorry
 
 /- Section 4.4 -/
 -- 1.
@@ -138,7 +138,7 @@ theorem Exercise_4_4_22 {A : Type}
 -- 10.
 theorem Exercise_4_4_24 (A : Type) (R : Set (A × A)) :
     smallestElt (sub (A × A)) (R ∪ (inv R))
-    { T : Set (A × A) | R ⊆ T ∧ symmetric (relFromExt T) } := sorry
+    { T : Set (A × A) | R ⊆ T ∧ symmetric (RelFromExt T) } := sorry
 
 /- Section 4.5 -/
 -- 1.

@@ -94,9 +94,6 @@ def rep_comp {A : Type} (R : Set (A × A)) (x : Nat) : Set (A × A) :=
 def cumul_comp {A : Type} (R : Set (A × A)) : Set (A × A) :=
     { (x, y) : A × A | ∃ n ≥ 1, (x, y) ∈ rep_comp R n }
 
-def transExt {A : Type} (R : Set (A × A)) : Prop :=
-    ∀ (x y z : A), (x, y) ∈ R → (y, z) ∈ R → (x, z) ∈ R
-
 /- Section 6.1 -/
 theorem Like_Example_6_1_2 :
     ∀ (n : Nat), 3 ∣ n ^ 3 + 2 * n := by

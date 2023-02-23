@@ -239,9 +239,10 @@ theorem Exercise_6_5_11 {A : Type} (R : Set (A × A)) :
 
 -- 6.
 lemma rep_comp_sub_trans {A : Type} {R S : Set (A × A)}
-    (h1 : R ⊆ S) (h2 : transExt S): ∀ n ≥ 1, rep_comp R n ⊆ S := sorry
+    (h1 : R ⊆ S) (h2 : transitive (RelFromExt S)) :
+    ∀ n ≥ 1, rep_comp R n ⊆ S := sorry
 
 -- 7.
 theorem Exercise_6_5_14 {A : Type} (R : Set (A × A)) :
     smallestElt (sub (A × A)) (cumul_comp R)
-    { S : Set (A × A) | R ⊆ S ∧ transExt S } := sorry
+    { S : Set (A × A) | R ⊆ S ∧ transitive (RelFromExt S) } := sorry

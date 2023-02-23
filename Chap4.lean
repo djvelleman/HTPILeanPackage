@@ -29,7 +29,7 @@ def transitive {A : Type} (R : BinRel A) : Prop :=
 
 def elementhood (A : Type) (a : A) (X : Set A) : Prop := a ∈ X
 
-def relFromExt {A B : Type}
+def RelFromExt {A B : Type}
     (R : Set (A × B)) (a : A) (b : B) : Prop := (a, b) ∈ R
 
 def antisymmetric {A : Type} (R : BinRel A) : Prop :=
@@ -179,15 +179,15 @@ theorem Theorem_4_3_4_2 {A : Type} (R : BinRel A) :
     done
   done
 
-theorem simp_relFromExt {A B : Type}
+theorem simp_RelFromExt {A B : Type}
     (R : Set (A × B)) (a : A) (b : B) :
-    relFromExt R a b ↔ (a, b) ∈ R := by rfl
+    RelFromExt R a b ↔ (a, b) ∈ R := by rfl
 
 example {A B : Type} (R : Rel A B) :
-    relFromExt (extension R) = R := by rfl
+    RelFromExt (extension R) = R := by rfl
 
 example {A B : Type} (R : Set (A × B)) :
-    extension (relFromExt R) = R := by rfl
+    extension (RelFromExt R) = R := by rfl
 
 /- Section 4.4 -/
 theorem Theorem_4_4_6_2 {A : Type} (R : BinRel A) (B : Set A) (b : A)
