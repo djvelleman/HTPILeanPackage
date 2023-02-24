@@ -96,8 +96,8 @@ theorem Exercise_6_3_13b (k : Nat) : ∀ n ≥ 2 * k ^ 2,
     fact n ≥ k ^ n := sorry
 
 -- 6.
-def seq_6_3_15 (x : Nat) : Int :=
-    match x with
+def seq_6_3_15 (k : Nat) : Int :=
+    match k with
       | 0 => 0
       | n + 1 => 2 * seq_6_3_15 n + n
 
@@ -105,8 +105,8 @@ theorem Exercise_6_3_15 : ∀ (n : Nat),
     seq_6_3_15 n = 2 ^ n - n - 1 := sorry
 
 -- 7.
-def seq_6_3_16 (x : Nat) : Nat :=
-    match x with
+def seq_6_3_16 (k : Nat) : Nat :=
+    match k with
       | 0 => 2
       | n + 1 => (seq_6_3_16 n) ^ 2
 
@@ -144,22 +144,22 @@ theorem Exercise_6_4_8a : ∀ (m n : Nat) ,
 theorem Exercise_6_4_8d : ∀ (m k : Nat), Fib m ∣ Fib (m * k) := sorry
 
 -- 8.
-def Fib_like (x : Nat) : Nat :=
-    match x with
-      | 0 => 1
-      | 1 => 2
-      | n + 2 => 2 * (Fib_like n) + Fib_like (n + 1)
+def Fib_like (n : Nat) : Nat :=
+  match n with
+    | 0 => 1
+    | 1 => 2
+    | k + 2 => 2 * (Fib_like k) + Fib_like (k + 1)
 
 theorem Fib_like_formula : ∀ (n : Nat), Fib_like n = 2 ^ n := sorry
 
 -- 9.
-def triple_rec (x : Nat) : Nat :=
-    match x with
-      | 0 => 0
-      | 1 => 2
-      | 2 => 4
-      | n + 3 => 4 * triple_rec n +
-                  6 * triple_rec (n + 1) + triple_rec (n + 2)
+def triple_rec (n : Nat) : Nat :=
+  match n with
+    | 0 => 0
+    | 1 => 2
+    | 2 => 4
+    | k + 3 => 4 * triple_rec k +
+                6 * triple_rec (k + 1) + triple_rec (k + 2)
 
 theorem triple_rec_formula :
     ∀ (n : Nat), triple_rec n = 2 ^ n * Fib n := sorry

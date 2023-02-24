@@ -4,76 +4,77 @@ set_option pp.funBinderTypes true
 
 /- Definitions -/
 def Dom {A B : Type} (R : Set (A × B)) : Set A :=
-    { a : A | ∃ (b : B), (a, b) ∈ R }
+  { a : A | ∃ (b : B), (a, b) ∈ R }
 
 def Ran {A B : Type} (R : Set (A × B)) : Set B :=
-    { b : B | ∃ (a : A), (a, b) ∈ R }
+  { b : B | ∃ (a : A), (a, b) ∈ R }
 
 def inv {A B : Type} (R : Set (A × B)) : Set (B × A) :=
-    { (b, a) : B × A | (a, b) ∈ R }
+  { (b, a) : B × A | (a, b) ∈ R }
 
-def comp {A B C : Type} (S : Set (B × C)) (R : Set (A × B)) :
-    Set (A × C) := { (a, c) : A × C | ∃ (x : B), (a, x) ∈ R ∧ (x, c) ∈ S }
+def comp {A B C : Type}
+    (S : Set (B × C)) (R : Set (A × B)) : Set (A × C) :=
+  { (a, c) : A × C | ∃ (x : B), (a, x) ∈ R ∧ (x, c) ∈ S }
 
 def extension {A B : Type} (R : Rel A B) : Set (A × B) :=
-    { (a, b) : A × B | R a b }
+  { (a, b) : A × B | R a b }
 
 def reflexive {A : Type} (R : BinRel A) : Prop :=
-    ∀ (x : A), R x x
+  ∀ (x : A), R x x
 
 def symmetric {A : Type} (R : BinRel A) : Prop :=
-    ∀ (x y : A), R x y → R y x
+  ∀ (x y : A), R x y → R y x
 
 def transitive {A : Type} (R : BinRel A) : Prop :=
-    ∀ (x y z : A), R x y → R y z → R x z
+  ∀ (x y z : A), R x y → R y z → R x z
 
 def elementhood (A : Type) (a : A) (X : Set A) : Prop := a ∈ X
 
 def RelFromExt {A B : Type}
-    (R : Set (A × B)) (a : A) (b : B) : Prop := (a, b) ∈ R
+  (R : Set (A × B)) (a : A) (b : B) : Prop := (a, b) ∈ R
 
 def antisymmetric {A : Type} (R : BinRel A) : Prop :=
-    ∀ (x y : A), R x y → R y x → x = y
+  ∀ (x y : A), R x y → R y x → x = y
 
 def partial_order {A : Type} (R : BinRel A) : Prop :=
-    reflexive R ∧ transitive R ∧ antisymmetric R
+  reflexive R ∧ transitive R ∧ antisymmetric R
 
 def total_order {A : Type} (R : BinRel A) : Prop :=
-    partial_order R ∧ ∀ (x y : A), R x y ∨ R y x
+  partial_order R ∧ ∀ (x y : A), R x y ∨ R y x
 
 def sub (A : Type) (X Y : Set A) : Prop := X ⊆ Y
 
 def smallestElt {A : Type} (R : BinRel A) (b : A) (B : Set A) : Prop :=
-    b ∈ B ∧ ∀ x ∈ B, R b x
+  b ∈ B ∧ ∀ x ∈ B, R b x
 
 def minimalElt {A : Type} (R : BinRel A) (b : A) (B : Set A) : Prop :=
-    b ∈ B ∧ ¬∃ x ∈ B, R x b ∧ x ≠ b
+  b ∈ B ∧ ¬∃ x ∈ B, R x b ∧ x ≠ b
 
 def upperBd {A : Type} (R : BinRel A) (a : A) (B : Set A) : Prop :=
-    ∀ x ∈ B, R x a
+  ∀ x ∈ B, R x a
 
 def lub {A : Type} (R : BinRel A) (a : A) (B : Set A) : Prop :=
-    smallestElt R a { c : A | upperBd R c B }
+  smallestElt R a { c : A | upperBd R c B }
 
 def equiv_rel {A : Type} (R : BinRel A) : Prop :=
-    reflexive R ∧ symmetric R ∧ transitive R
+  reflexive R ∧ symmetric R ∧ transitive R
 
 def equivClass {A : Type} (R : BinRel A) (x : A) : Set A :=
-    { y : A | R y x }
+  { y : A | R y x }
 
 def mod (A : Type) (R : BinRel A) : Set (Set A) :=
-    { equivClass R x | x : A }
+  { equivClass R x | x : A }
 
 def empty {A : Type} (X : Set A) : Prop := ¬∃ (x : A), x ∈ X 
 
 def pairwise_disjoint {A : Type} (F : Set (Set A)) : Prop :=
-    ∀ X ∈ F, ∀ Y ∈ F, X ≠ Y → empty (X ∩ Y)
+  ∀ X ∈ F, ∀ Y ∈ F, X ≠ Y → empty (X ∩ Y)
 
 def partition {A : Type} (F : Set (Set A)) : Prop :=
-    (∀ (x : A), x ∈ ⋃₀ F) ∧ pairwise_disjoint F ∧ ∀ X ∈ F, ¬empty X
+  (∀ (x : A), x ∈ ⋃₀ F) ∧ pairwise_disjoint F ∧ ∀ X ∈ F, ¬empty X
 
 def EqRelFromPart {A : Type} (F : Set (Set A)) (x y : A) : Prop :=
-    ∃ X ∈ F, x ∈ X ∧ y ∈ X
+  ∃ X ∈ F, x ∈ X ∧ y ∈ X
 
 /- Section 4.2 -/
 theorem Theorem_4_2_5_1 {A B : Type}

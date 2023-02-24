@@ -17,9 +17,9 @@ theorem remove_one_numElts {A : Type} {X : Set A} {n : Nat} {x : A}
     (h1 : numElts X (n + 1)) (h2 : x ∈ X) : numElts (X \ {x}) n
 
 def sum_less {A : Type} [AddZeroClass A] (x : Nat) (f : Nat → A) : A :=
-    match x with
-      | 0 => 0
-      | n + 1 => sum_less n f + f n
+  match x with
+    | 0 => 0
+    | n + 1 => sum_less n f + f n
 -/
 
 /- Definitions -/
@@ -30,69 +30,69 @@ def nat_odd (n : Nat) : Prop := ∃ (k : Nat), n = 2 * k + 1
 def extendPO {A : Type} (R : BinRel A) (b : A) (x y : A) : Prop :=
     R x y ∨ (R x b ∧ ¬R y b)
 
-def fact (x : Nat) : Nat :=
-    match x with
-      | 0 => 1
-      | n + 1 => (n + 1) * fact n
+def fact (k : Nat) : Nat :=
+  match k with
+    | 0 => 1
+    | n + 1 => (n + 1) * fact n
 
-def Fib (x : Nat) : Nat :=
-    match x with
-      | 0 => 0
-      | 1 => 1
-      | n + 2 => Fib n + Fib (n + 1)
+def Fib (n : Nat) : Nat :=
+  match n with
+    | 0 => 0
+    | 1 => 1
+    | k + 2 => Fib k + Fib (k + 1)
 
-def rep_image {A : Type} (f : A → A) (x : Nat) (B : Set A) : Set A :=
-    match x with
-      | 0 => B
-      | n + 1 => image f (rep_image f n B)
+def rep_image {A : Type} (f : A → A) (n : Nat) (B : Set A) : Set A :=
+  match n with
+    | 0 => B
+    | k + 1 => image f (rep_image f k B)
 
 def cumul_image {A : Type} (f : A → A) (B : Set A) : Set A :=
     { x : A | ∃ (n : Nat), x ∈ rep_image f n B }
 
 def rep_image_family {A : Type}
-    (F : Set (A → A)) (x : Nat) (B : Set A) : Set A :=
-    match x with
-      | 0 => B
-      | n + 1 => { x : A | ∃ f ∈ F, x ∈ image f (rep_image_family F n B) }
+    (F : Set (A → A)) (n : Nat) (B : Set A) : Set A :=
+  match n with
+    | 0 => B
+    | k + 1 => { x : A | ∃ f ∈ F, x ∈ image f (rep_image_family F k B) }
 
 def cumul_image_family {A : Type}
     (F : Set (A → A)) (B : Set A) : Set A :=
-    { x : A | ∃ (n : Nat), x ∈ rep_image_family F n B }
+  { x : A | ∃ (n : Nat), x ∈ rep_image_family F n B }
 
 def image2 {A : Type} (f : A → A → A) (B : Set A) : Set A :=
     { z : A | ∃ (x y : A), x ∈ B ∧ y ∈ B ∧ z = f x y }
 
 def rep_image2 {A : Type}
-    (f : A → A → A) (x : Nat) (B : Set A) : Set A :=
-    match x with
-      | 0 => B
-      | n + 1 => image2 f (rep_image2 f n B)
+    (f : A → A → A) (n : Nat) (B : Set A) : Set A :=
+  match n with
+    | 0 => B
+    | k + 1 => image2 f (rep_image2 f k B)
 
 def cumul_image2 {A : Type} (f : A → A → A) (B : Set A) : Set A :=
-    { x : A | ∃ (n : Nat), x ∈ rep_image2 f n B }
+  { x : A | ∃ (n : Nat), x ∈ rep_image2 f n B }
 
 def un_image2 {A : Type} (f : A → A → A) (B : Set A) : Set A :=
-    B ∪ (image2 f B)
+  B ∪ (image2 f B)
 
 def rep_un_image2 {A : Type}
-    (f : A → A → A) (x : Nat) (B : Set A) : Set A :=
-    match x with
-      | 0 => B
-      | n + 1 => un_image2 f (rep_un_image2 f n B)
+    (f : A → A → A) (n : Nat) (B : Set A) : Set A :=
+  match n with
+    | 0 => B
+    | k + 1 => un_image2 f (rep_un_image2 f k B)
 
 def cumul_un_image2 {A : Type}
     (f : A → A → A) (B : Set A) : Set A :=
-    { x : A | ∃ (n : Nat), x ∈ rep_un_image2 f n B }
+  { x : A | ∃ (n : Nat), x ∈ rep_un_image2 f n B }
 
 def idExt (A : Type) : Set (A × A) := { (x, y) : A × A | x = y }
 
-def rep_comp {A : Type} (R : Set (A × A)) (x : Nat) : Set (A × A) :=
-    match x with
-      | 0 => idExt A
-      | n + 1 => comp (rep_comp R n) R
+def rep_comp {A : Type} (R : Set (A × A)) (n : Nat) : Set (A × A) :=
+  match n with
+    | 0 => idExt A
+    | k + 1 => comp (rep_comp R k) R
 
 def cumul_comp {A : Type} (R : Set (A × A)) : Set (A × A) :=
-    { (x, y) : A × A | ∃ n ≥ 1, (x, y) ∈ rep_comp R n }
+  { (x, y) : A × A | ∃ n ≥ 1, (x, y) ∈ rep_comp R n }
 
 /- Section 6.1 -/
 theorem Like_Example_6_1_2 :
@@ -489,6 +489,19 @@ theorem Example_6_4_1 : ∀ m > 0, ∀ (n : Nat),
     done
   done
 
+lemma ge_two_of_ne {n : Nat} (h1 : n ≠ 0) (h2 : n ≠ 1) : n ≥ 2 := by
+  have h3 : n ≥ 1 := Nat.pos_of_ne_zero h1
+  show n ≥ 2 from lt_of_le_of_ne' h3 h2
+  done
+
+lemma plus_two_of_ge {n : Nat} (h : n ≥ 2) : ∃ (k : Nat), n = k + 2 := by
+  apply Exists.intro (n - 2)
+  show n = n - 2 + 2 from (Nat.sub_add_cancel h).symm
+  done
+
+lemma plus_two_of_ne {n : Nat} (h1 : n ≠ 0) (h2 : n ≠ 1) :
+    ∃ (k : Nat), n = k + 2 := plus_two_of_ge (ge_two_of_ne h1 h2)
+
 example : ∀ (n : Nat), Fib n < 2 ^ n := by
   by_strong_induc
   fix n : Nat
@@ -505,27 +518,22 @@ example : ∀ (n : Nat), Fib n < 2 ^ n := by
       norm_num
       done
     · -- Case 2.2. h2: n ≠ 1
-      have h3 : 2 ≤ n := by
-        have h4 : 1 ≤ n := Nat.pos_of_ne_zero h1
-        show 2 ≤ n from lt_of_le_of_ne' h4 h2
-        done
-      let k : Nat := n - 2
-      have h4 : k + 2 = n := Nat.sub_add_cancel h3
-      have h5 : k < n := by linarith
-      have h6 : Fib k < 2 ^ k := ih k h5
-      have h7 : k + 1 < n := by linarith
-      have h8 : Fib (k + 1) < 2 ^ (k + 1) := ih (k + 1) h7
-      have h9 : 3 ≤ 4 := by linarith
+      obtain (k : Nat) (h3 : n = k + 2) from plus_two_of_ne h1 h2
+      have h4 : k < n := by linarith
+      have h5 : Fib k < 2 ^ k := ih k h4
+      have h6 : k + 1 < n := by linarith
+      have h7 : Fib (k + 1) < 2 ^ (k + 1) := ih (k + 1) h6
+      have h8 : 3 ≤ 4 := by linarith
       show Fib n < 2 ^ n from
         calc Fib n
-            = Fib (k + 2) := by rw [h4]
+            = Fib (k + 2) := by rw [h3]
           _ = Fib k + Fib (k + 1) := by rfl
-          _ < 2 ^ k + Fib (k + 1) := add_lt_add_right h6 _
-          _ < 2 ^ k + 2 ^ (k + 1) := add_lt_add_left h8 _
+          _ < 2 ^ k + Fib (k + 1) := add_lt_add_right h5 _
+          _ < 2 ^ k + 2 ^ (k + 1) := add_lt_add_left h7 _
           _ = 2 ^ k * 3 := by ring
-          _ ≤ 2 ^ k * 4 := Nat.mul_le_mul_left _ h9
+          _ ≤ 2 ^ k * 4 := Nat.mul_le_mul_left _ h8
           _ = 2 ^ (k + 2) := by ring
-          _ = 2 ^ n := by rw [h4]
+          _ = 2 ^ n := by rw [h3]
       done
     done
   done

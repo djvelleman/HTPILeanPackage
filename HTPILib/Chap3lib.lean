@@ -2,6 +2,11 @@ import HTPIDefs
 namespace HTPI
 set_option pp.funBinderTypes true
 
+/- Definitions -/
+def even (n : Int) : Prop := ∃ (k : Int), n = 2 * k
+
+def odd (n : Int) : Prop := ∃ (k : Int), n = 2 * k + 1
+
 /- Sections 3.1 and 3.2 -/
 theorem Example_3_2_4_v2 (P Q R : Prop)
     (h : P → (Q → R)) : ¬R → (P → ¬Q) := by

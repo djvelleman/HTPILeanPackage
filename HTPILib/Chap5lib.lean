@@ -4,10 +4,10 @@ set_option pp.funBinderTypes true
 
 /- Definitions and theorems in HTPIDefs
 def graph {A B : Type} (f : A → B) : Set (A × B) :=
-    { (a, b) : A × B | f a = b }
+  { (a, b) : A × B | f a = b }
 
 def is_func_graph {A B : Type} (G : Set (A × B)) : Prop :=
-    ∀ (x : A), ∃! (y : B), (x, y) ∈ G
+  ∀ (x : A), ∃! (y : B), (x, y) ∈ G
 
 theorem func_from_graph {A B : Type} (F : Set (A × B)) :
     (∃ (f : A → B), graph f = F) ↔ is_func_graph F := by
@@ -15,33 +15,33 @@ theorem func_from_graph {A B : Type} (F : Set (A × B)) :
 
 /- Definitions -/
 def onto {A B : Type} (f : A → B) : Prop :=
-    ∀ (y : B), ∃ (x : A), f x = y
+  ∀ (y : B), ∃ (x : A), f x = y
 
 def one_to_one {A B : Type} (f : A → B) : Prop :=
-    ∀ (x1 x2 : A), f x1 = f x2 → x1 = x2
+  ∀ (x1 x2 : A), f x1 = f x2 → x1 = x2
 
 def closed {A : Type} (f : A → A) (C : Set A) : Prop := ∀ x ∈ C, f x ∈ C
 
 def closure {A : Type} (f : A → A) (B C : Set A) : Prop :=
-    smallestElt (sub A) C { D : Set A | B ⊆ D ∧ closed f D }
+  smallestElt (sub A) C { D : Set A | B ⊆ D ∧ closed f D }
 
 def closed2 {A : Type} (f : A → A → A) (C : Set A) : Prop :=
-    ∀ x ∈ C, ∀ y ∈ C, f x y ∈ C
+  ∀ x ∈ C, ∀ y ∈ C, f x y ∈ C
 
 def closure2 {A : Type} (f : A → A → A) (B C : Set A) : Prop := 
-    smallestElt (sub A) C { D : Set A | B ⊆ D ∧ closed2 f D }
+  smallestElt (sub A) C { D : Set A | B ⊆ D ∧ closed2 f D }
 
 def closed_family {A : Type} (F : Set (A → A)) (C : Set A) : Prop :=
-    ∀ f ∈ F, closed f C
+  ∀ f ∈ F, closed f C
 
 def closure_family {A : Type} (F : Set (A → A)) (B C : Set A) : Prop :=
-    smallestElt (sub A) C { D : Set A | B ⊆ D ∧ closed_family F D }
+  smallestElt (sub A) C { D : Set A | B ⊆ D ∧ closed_family F D }
 
 def image {A B : Type} (f : A → B) (X : Set A) : Set B :=
-    { f x | x ∈ X }
+  { f x | x ∈ X }
 
 def inverse_image {A B : Type} (f : A → B) (Y : Set B) : Set A :=
-    { a : A | f a ∈ Y }
+  { a : A | f a ∈ Y }
 
 /- Section 5.1 -/
 theorem simp_graph {A B : Type} (f : A → B) (a : A) (b : B) :

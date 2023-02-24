@@ -1120,13 +1120,13 @@ theorem func_from_graph {A B : Type} (F : Set (A × B)) :
   obtain z _h5 h6 from h1 x
   exact h6 (f x) y h3 h4
 
-def sum_less {A : Type} [AddZeroClass A] (x : Nat) (f : Nat → A) : A :=
-  match x with
+def sum_less {A : Type} [AddZeroClass A] (m : Nat) (f : Nat → A) : A :=
+  match m with
     | 0 => 0
     | n + 1 => sum_less n f + f n
 
 def sum_from_to {A : Type} [AddZeroClass A] (k n : Nat) (f : Nat → A) : A :=
-  sum_less (n + 1 - k) (fun x => f (k + x))
+  sum_less (n + 1 - k) (fun (j : Nat) => f (k + j))
 
 syntax (name := sumFromTo) "Sum " ident " from " term " to " term ", " term:51 : term
 macro_rules (kind := sumFromTo)

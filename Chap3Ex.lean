@@ -195,10 +195,6 @@ theorem Exercise_3_4_6 (U : Type) (A B C : Set U) :
   done
 
 -- 3.
-def even (n : Int) : Prop := ∃ (k : Int), n = 2 * k
-
-def odd (n : Int) : Prop := ∃ (k : Int), n = 2 * k + 1
-
 theorem Exercise_3_4_10 (x y : Int)
     (h1 : odd x) (h2 : odd y) : even (x - y) := sorry
 
