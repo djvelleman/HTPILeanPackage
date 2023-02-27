@@ -7,6 +7,7 @@ import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Int.Basic
 import Mathlib.Data.Rat.Basic
 import Mathlib.Data.Real.Basic
+import Mathlib.Data.ZMod.Defs
 
 def Iff.ltr {p q : Prop} (h : p ↔ q) := h.mp
 def Iff.rtl {p q : Prop} (h : p ↔ q) := h.mpr

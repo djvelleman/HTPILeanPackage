@@ -7,3 +7,5 @@ Chap6ExSol.lean
 Chap7.lean
 RemovedFromHTPIDefs.lean
 FiniteSetsPairs.lean
+FiniteSetsFunc.lean
+.DS_Store
