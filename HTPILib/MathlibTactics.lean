@@ -22,7 +22,7 @@ import Mathlib.Tactic.Core
 import Mathlib.Tactic.Existsi
 --import Mathlib.Tactic.Expect
 --import Mathlib.Tactic.FailIfNoProgress
---import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.FieldSimp
 --import Mathlib.Tactic.FinCases
 --import Mathlib.Tactic.Find
 --import Mathlib.Tactic.GeneralizeProofs

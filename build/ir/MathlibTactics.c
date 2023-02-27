@@ -1,6 +1,6 @@
 // Lean compiler output
 // Module: MathlibTactics
-// Imports: Init Mathlib.Tactic.Basic Mathlib.Tactic.ByContra Mathlib.Tactic.Cases Mathlib.Tactic.CasesM Mathlib.Tactic.Choose Mathlib.Tactic.Classical Mathlib.Tactic.Clear! Mathlib.Tactic.ClearExcept Mathlib.Tactic.Clear_ Mathlib.Tactic.Coe Mathlib.Tactic.Constructor Mathlib.Tactic.Contrapose Mathlib.Tactic.Conv Mathlib.Tactic.Convert Mathlib.Tactic.Core Mathlib.Tactic.Existsi Mathlib.Tactic.Have Mathlib.Tactic.HelpCmd Mathlib.Tactic.LibrarySearch Mathlib.Tactic.Linarith Mathlib.Tactic.Linarith.Datatypes Mathlib.Tactic.Linarith.Elimination Mathlib.Tactic.Linarith.Frontend Mathlib.Tactic.Linarith.Lemmas Mathlib.Tactic.Linarith.Parsing Mathlib.Tactic.Linarith.Preprocessing Mathlib.Tactic.Linarith.Verification Mathlib.Tactic.Nontriviality Mathlib.Tactic.Nontriviality.Core Mathlib.Tactic.NormCast Mathlib.Tactic.NormCast.Tactic Mathlib.Tactic.NormNum Mathlib.Tactic.NormNum.Basic Mathlib.Tactic.NormNum.Core Mathlib.Tactic.PushNeg Mathlib.Tactic.Rename Mathlib.Tactic.RenameBVar Mathlib.Tactic.Ring Mathlib.Tactic.Ring.Basic Mathlib.Tactic.Ring.RingNF Mathlib.Tactic.RunCmd Mathlib.Tactic.Set Mathlib.Tactic.SimpIntro Mathlib.Tactic.SimpRw Mathlib.Tactic.Simps.Basic Mathlib.Tactic.Simps.NotationClass Mathlib.Tactic.Tauto Mathlib.Tactic.ToAdditive Mathlib.Tactic.Trace Mathlib.Tactic.Use Mathlib.Tactic.Zify Mathlib.Tactic.Zify.Attr
+// Imports: Init Mathlib.Tactic.Basic Mathlib.Tactic.ByContra Mathlib.Tactic.Cases Mathlib.Tactic.CasesM Mathlib.Tactic.Choose Mathlib.Tactic.Classical Mathlib.Tactic.Clear! Mathlib.Tactic.ClearExcept Mathlib.Tactic.Clear_ Mathlib.Tactic.Coe Mathlib.Tactic.Constructor Mathlib.Tactic.Contrapose Mathlib.Tactic.Conv Mathlib.Tactic.Convert Mathlib.Tactic.Core Mathlib.Tactic.Existsi Mathlib.Tactic.FieldSimp Mathlib.Tactic.Have Mathlib.Tactic.HelpCmd Mathlib.Tactic.LibrarySearch Mathlib.Tactic.Linarith Mathlib.Tactic.Linarith.Datatypes Mathlib.Tactic.Linarith.Elimination Mathlib.Tactic.Linarith.Frontend Mathlib.Tactic.Linarith.Lemmas Mathlib.Tactic.Linarith.Parsing Mathlib.Tactic.Linarith.Preprocessing Mathlib.Tactic.Linarith.Verification Mathlib.Tactic.Nontriviality Mathlib.Tactic.Nontriviality.Core Mathlib.Tactic.NormCast Mathlib.Tactic.NormCast.Tactic Mathlib.Tactic.NormNum Mathlib.Tactic.NormNum.Basic Mathlib.Tactic.NormNum.Core Mathlib.Tactic.PushNeg Mathlib.Tactic.Rename Mathlib.Tactic.RenameBVar Mathlib.Tactic.Ring Mathlib.Tactic.Ring.Basic Mathlib.Tactic.Ring.RingNF Mathlib.Tactic.RunCmd Mathlib.Tactic.Set Mathlib.Tactic.SimpIntro Mathlib.Tactic.SimpRw Mathlib.Tactic.Simps.Basic Mathlib.Tactic.Simps.NotationClass Mathlib.Tactic.Tauto Mathlib.Tactic.ToAdditive Mathlib.Tactic.Trace Mathlib.Tactic.Use Mathlib.Tactic.Zify Mathlib.Tactic.Zify.Attr
 #include <lean/lean.h>
 #if defined(__clang__)
 #pragma clang diagnostic ignored "-Wunused-parameter"
@@ -30,6 +30,7 @@ lean_object* initialize_Mathlib_Tactic_Conv(uint8_t builtin, lean_object*);
 lean_object* initialize_Mathlib_Tactic_Convert(uint8_t builtin, lean_object*);
 lean_object* initialize_Mathlib_Tactic_Core(uint8_t builtin, lean_object*);
 lean_object* initialize_Mathlib_Tactic_Existsi(uint8_t builtin, lean_object*);
+lean_object* initialize_Mathlib_Tactic_FieldSimp(uint8_t builtin, lean_object*);
 lean_object* initialize_Mathlib_Tactic_Have(uint8_t builtin, lean_object*);
 lean_object* initialize_Mathlib_Tactic_HelpCmd(uint8_t builtin, lean_object*);
 lean_object* initialize_Mathlib_Tactic_LibrarySearch(uint8_t builtin, lean_object*);
@@ -120,6 +121,9 @@ res = initialize_Mathlib_Tactic_Core(builtin, lean_io_mk_world());
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
 res = initialize_Mathlib_Tactic_Existsi(builtin, lean_io_mk_world());
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_Mathlib_Tactic_FieldSimp(builtin, lean_io_mk_world());
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
 res = initialize_Mathlib_Tactic_Have(builtin, lean_io_mk_world());
