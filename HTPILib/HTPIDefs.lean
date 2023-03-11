@@ -12,6 +12,13 @@ import Mathlib.Data.ZMod.Defs
 def Iff.ltr {p q : Prop} (h : p ↔ q) := h.mp
 def Iff.rtl {p q : Prop} (h : p ↔ q) := h.mpr
 
+/-To allow use of "termination_hint" in recursive definitions.  Don't use?
+syntax withPosition("termination_hint : " term " := " term Lean.Parser.semicolonOrLinebreak) term : term
+
+macro_rules
+  | `(termination_hint : $t := $p; $b) => `(have : $t := $p; $b)
+-/
+
 --New set theory notation.
 --Lower priority than all other set theory notation
 macro (priority := low-1) "{ " pat:term " : " t:term " | " p:term " }" : term =>
@@ -54,6 +61,7 @@ notation:50 a:50 " ⊈ " b:50 => ¬ (a ⊆ b)
 --Switch to that??  But display of symmDiff seems to use △.
 infixl:100 " △ " => symmDiff
 
+namespace HTPI
 --Some theorems not in library
 theorem not_not_and_distrib {p q : Prop} : ¬(¬ p ∧ q) ↔ (p ∨ ¬ q) := by
   rw [not_and_or, Classical.not_not]
@@ -77,7 +85,6 @@ theorem not_imp_iff_not_and {p q : Prop} : ¬ (q → p) ↔ ¬ p ∧ q := by
 theorem not_not_iff {p q : Prop} : ¬(¬p ↔ q) ↔ (p ↔ q) := by
   rw [not_iff, Classical.not_not]
 
-namespace HTPI
 def Pred (t : Type u) : Type u := t → Prop
 --def Rel (s t : Type u) : Type u := s → t → Prop   --Defined in Mathlib.Data.Rel
 def BinRel (t : Type u) : Type u := Rel t t
@@ -304,6 +311,11 @@ partial def unfoldHead (e : Expr) (tac : Name) (first rep : Bool) : TacticM Expr
         (app (const ``Set.instMembershipSet _) _)) x) y) =>
         if (e3 == app y x) then
           myFail tac "failed to unfold definition"  --Don't unfold `x ∈ y` to `y x`
+        else
+          return e3
+      | (app (app (const ``setOf _) _) f) => 
+        if (e3 == f) then
+          myFail tac "failed to unfold definition"  --Don't unfold `{ x | p }` to `fun x => p`
         else
           return e3
       | _ => return e3
@@ -1165,9 +1177,61 @@ theorem sum_from_zero_step {A : Type} [AddZeroClass A] {n : Nat} {f : Nat → A}
     Sum i from 0 to (n + 1), f i = (Sum i from 0 to n, f i) + f (n + 1) :=
   sum_step (Nat.zero_le n)
 
-theorem sum_empty {A : Type} [AddZeroClass A] (k n : Nat) (f : Nat → A)
+theorem sum_empty {A : Type} [AddZeroClass A] {k n : Nat} {f : Nat → A}
     (h : n < k) : Sum i from k to n, f i = 0 := by
   define : Sum i from k to n, f i
+  have h2 : n + 1 - k = 0 := Nat.sub_eq_zero_of_le h
+  rewrite [h2]
+  rfl
+  done
+
+def prod_less {A : Type} [MulOneClass A] (m : Nat) (f : Nat → A) : A :=
+  match m with
+    | 0 => 1
+    | n + 1 => prod_less n f * f n
+
+def prod_from_to {A : Type} [MulOneClass A] (k n : Nat) (f : Nat → A) : A :=
+  prod_less (n + 1 - k) (fun (j : Nat) => f (k + j))
+
+syntax (name := prodFromTo) "Prod " ident " from " term " to " term ", " term:51 : term
+macro_rules (kind := prodFromTo)
+  | `(Prod $i from $k to $n, $p) => `(prod_from_to $k $n (fun $i => $p))
+
+@[app_unexpander prod_from_to] def unexpandProdFromTo : Lean.PrettyPrinter.Unexpander
+  | `($_ $k:term $n:term fun $i:ident => $b) => `(Prod $i from $k to $n, $b)
+  | `($_ $k:term $n:term fun ($i:ident : $_) => $b) => `(Prod $i from $k to $n, $b)
+  | _ => throw ()
+
+theorem prod_base {A : Type} [MulOneClass A] {k : Nat} {f : Nat → A} :
+    Prod i from k to k, f i = f k := by
+  define : Prod i from k to k, f i
+  rewrite [Nat.add_sub_cancel_left]
+  unfold prod_less; unfold prod_less
+  rewrite [one_mul, add_zero]
+  rfl
+  done
+ 
+theorem prod_step {A : Type} [MulOneClass A] {k n : Nat} {f : Nat → A}
+    (h : k ≤ n) : Prod i from k to (n + 1), f i = (Prod i from k to n, f i) * f (n + 1) := by
+  define : Prod i from k to (n+1), f i
+  obtain j h1 from Nat.le.dest h
+  have h2 : n + 1 + 1 - k = n + 1 - k + 1 := by
+    rewrite [←h1, add_assoc, add_assoc, Nat.add_sub_cancel_left, add_assoc, Nat.add_sub_cancel_left, add_assoc]
+    rfl
+  have h3 : f (n + 1) = f (k + (n + 1 - k)) := by
+    rewrite [←h1, add_assoc, Nat.add_sub_cancel_left]
+    rfl
+  rewrite [h2, h3]
+  rfl
+  done
+
+theorem prod_from_zero_step {A : Type} [MulOneClass A] {n : Nat} {f : Nat → A} :
+    Prod i from 0 to (n + 1), f i = (Prod i from 0 to n, f i) * f (n + 1) :=
+  prod_step (Nat.zero_le n)
+
+theorem prod_empty {A : Type} [MulOneClass A] {k n : Nat} {f : Nat → A}
+    (h : n < k) : Prod i from k to n, f i = 1 := by
+  define : Prod i from k to n, f i
   have h2 : n + 1 - k = 0 := Nat.sub_eq_zero_of_le h
   rewrite [h2]
   rfl

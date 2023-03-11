@@ -1,4 +1,4 @@
-import Chap3lib
+import Chap3
 namespace HTPI
 set_option pp.funBinderTypes true
 
@@ -129,7 +129,7 @@ theorem Exercise_3_5_8 (U : Type) (A B : Set U) :
 -- 5.
 theorem Exercise_3_5_17b (U : Type) (F : Set (Set U)) (B : Set U) :
     B ∪ (⋂₀ F) =
-      ⋂₀ { X : Set U | ∃ (A : Set U), A ∈ F ∧ X = B ∪ A} := sorry
+      ⋂₀ { X : Set U | ∃ (A : Set U), A ∈ F ∧ X = B ∪ A } := sorry
 
 -- 6.
 theorem Exercise_3_5_18 (U : Type) (F G H : Set (Set U))
@@ -143,7 +143,7 @@ theorem Exercise_3_5_24a (U : Type) (A B C : Set U) :
 /- Section 3.6 -/
 -- 1.
 theorem Exercise_3_4_15 (U : Type) (B : Set U) (F : Set (Set U)) :
-    ⋃₀ {X : Set U | ∃ (A : Set U), A ∈ F ∧ X = A \ B}
+    ⋃₀ { X : Set U | ∃ (A : Set U), A ∈ F ∧ X = A \ B }
       ⊆ ⋃₀ (F \ 𝒫 B) := sorry
 
 -- 2.
@@ -170,7 +170,7 @@ theorem Exercise_3_6_10 (U : Type) (A : Set U)
     (h1 : ∀ (F : Set (Set U)), ⋃₀ F = A → A ∈ F) :
     ∃! (x : U), x ∈ A := by
   --Hint:  Start like this:
-  let F0 := {X : Set U | X ⊆ A ∧ ∃! (x : U), x ∈ X}
+  let F0 : Set (Set U) := { X : Set U | X ⊆ A ∧ ∃! (x : U), x ∈ X }
   --Now F0 is in the tactic state, with the definition above
   have h2 : ⋃₀ F0 = A := sorry
   
@@ -188,7 +188,7 @@ theorem Exercise_3_4_6 (U : Type) (A B C : Set U) :
   fix x : U
   show x ∈ A \ (B ∩ C) ↔ x ∈ A \ B ∪ A \ C from
     calc x ∈ A \ (B ∩ C)
-        ↔ x ∈ A ∧ ¬(x ∈ B ∧ x ∈ C) := sorry
+      _ ↔ x ∈ A ∧ ¬(x ∈ B ∧ x ∈ C) := sorry
       _ ↔ x ∈ A ∧ (¬x ∈ B ∨ ¬x ∈ C) := sorry  
       _ ↔ (x ∈ A ∧ ¬x ∈ B) ∨ (x ∈ A ∧ ¬x ∈ C) := sorry
       _ ↔ x ∈ (A \ B) ∪ (A \ C) := sorry

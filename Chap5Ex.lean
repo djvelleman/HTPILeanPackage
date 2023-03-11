@@ -1,4 +1,4 @@
-import Chap5lib
+import Chap5
 namespace HTPI
 set_option pp.funBinderTypes true
 
@@ -142,9 +142,6 @@ example {A : Type} (F : Set (Set A)) (B : Set A) :
 
 -- 2.
 def complement {A : Type} (B : Set A) : Set A := { a : A | a ∉ B }
-
-theorem simp_complement {A : Type} (a : A) (B : Set A) :
-    a ∈ complement B ↔ a ∉ B := by rfl
 
 theorem Exercise_5_4_7 {A : Type} (f g : A → A) (C : Set A)
     (h1 : f ∘ g = id) (h2 : closed f C) : closed g (complement C) := sorry

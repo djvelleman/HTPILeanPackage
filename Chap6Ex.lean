@@ -1,4 +1,4 @@
-import Chap6lib
+import Chap6
 namespace HTPI
 set_option pp.funBinderTypes true
 

@@ -9,3 +9,5 @@ RemovedFromHTPIDefs.lean
 FiniteSetsPairs.lean
 FiniteSetsFunc.lean
 .DS_Store
+TalkExamples.lean
+Chap7Unused.lean
