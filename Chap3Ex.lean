@@ -128,8 +128,7 @@ theorem Exercise_3_5_8 (U : Type) (A B : Set U) :
 
 -- 5.
 theorem Exercise_3_5_17b (U : Type) (F : Set (Set U)) (B : Set U) :
-    B ∪ (⋂₀ F) =
-      ⋂₀ { X : Set U | ∃ (A : Set U), A ∈ F ∧ X = B ∪ A } := sorry
+    B ∪ (⋂₀ F) = { x : U | ∀ (A : Set U), A ∈ F → x ∈ B ∪ A } := sorry
 
 -- 6.
 theorem Exercise_3_5_18 (U : Type) (F G H : Set (Set U))
