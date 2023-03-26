@@ -894,7 +894,8 @@ def parseIdOrTerm?Type (tac : Name) (it : IdOrTerm?Type) : TacticM (Term × (Opt
 
 def doIntroOption (i : Term) (t : Option Term) : TacticM Unit := do
   match t with
-    | some tt => evalTactic (← `(tactic| intro ($i : $tt)))
+    | some tt => --evalTactic (← `(tactic| intro ($i : $tt)))
+      evalTactic (← `(tactic| intro h; match @h with | ($i : $tt) => ?_; try clear h))
     | none => evalTactic (← `(tactic| intro $i:term))
 
 def doObtain (itw ith : IdOrTerm?Type) (tm : Term) : TacticM Unit :=

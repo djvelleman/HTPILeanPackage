@@ -1,4 +1,4 @@
-import Chap8  -- Maybe eventually make this Chap8lib, which will import Chap5lib?
+import Chap8Part1  -- Maybe eventually make this Chap8lib, which will import Chap5lib?
 namespace HTPI
 set_option pp.funBinderTypes true
 
