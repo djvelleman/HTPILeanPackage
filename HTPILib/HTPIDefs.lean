@@ -1134,6 +1134,16 @@ theorem func_from_graph {A B : Type} (F : Set (A × B)) :
   obtain z _h5 h6 from h1 x
   exact h6 (f x) y h3 h4
 
+--Sum of m terms of the form f i, starting with i = k
+def sum_val_from {A : Type} [AddZeroClass A] (m k : Nat) (f : Nat → A) : A :=
+  match m with
+    | 0 => 0
+    | n + 1 => sum_val_from n k f + f (k + n)
+
+def sum_from_to {A : Type} [AddZeroClass A] (k n : Nat) (f : Nat → A) : A :=
+  sum_val_from (n + 1 - k) k f
+
+/- Old versions
 def sum_less {A : Type} [AddZeroClass A] (m : Nat) (f : Nat → A) : A :=
   match m with
     | 0 => 0
@@ -1141,6 +1151,7 @@ def sum_less {A : Type} [AddZeroClass A] (m : Nat) (f : Nat → A) : A :=
 
 def sum_from_to {A : Type} [AddZeroClass A] (k n : Nat) (f : Nat → A) : A :=
   sum_less (n + 1 - k) (fun (j : Nat) => f (k + j))
+-/
 
 syntax (name := sumFromTo) "Sum " ident " from " term " to " term ", " term:51 : term
 macro_rules (kind := sumFromTo)
@@ -1155,14 +1166,14 @@ theorem sum_base {A : Type} [AddZeroClass A] {k : Nat} {f : Nat → A} :
     Sum i from k to k, f i = f k := by
   define : Sum i from k to k, f i
   rewrite [Nat.add_sub_cancel_left]
-  unfold sum_less; unfold sum_less
+  unfold sum_val_from; unfold sum_val_from
   rewrite [zero_add, add_zero]
   rfl
   done
  
 theorem sum_step {A : Type} [AddZeroClass A] {k n : Nat} {f : Nat → A}
     (h : k ≤ n) : Sum i from k to (n + 1), f i = (Sum i from k to n, f i) + f (n + 1) := by
-  define : Sum i from k to (n+1), f i
+  define : Sum i from k to (n + 1), f i
   obtain j h1 from Nat.le.dest h
   have h2 : n + 1 + 1 - k = n + 1 - k + 1 := by
     rewrite [←h1, add_assoc, add_assoc, Nat.add_sub_cancel_left, add_assoc, Nat.add_sub_cancel_left, add_assoc]
@@ -1186,6 +1197,16 @@ theorem sum_empty {A : Type} [AddZeroClass A] {k n : Nat} {f : Nat → A}
   rfl
   done
 
+/-
+def prod_terms_from {A : Type} [MulOneClass A] (m k : Nat) (f : Nat → A) : A :=
+  match m with
+    | 0 => 1
+    | n + 1 => prod_terms_from n k f * f (k + n)
+
+def prod_from_to {A : Type} [MulOneClass A] (k n : Nat) (f : Nat → A) : A :=
+  prod_terms_from (n + 1 - k) k f
+
+/- Old versions
 def prod_less {A : Type} [MulOneClass A] (m : Nat) (f : Nat → A) : A :=
   match m with
     | 0 => 1
@@ -1193,6 +1214,7 @@ def prod_less {A : Type} [MulOneClass A] (m : Nat) (f : Nat → A) : A :=
 
 def prod_from_to {A : Type} [MulOneClass A] (k n : Nat) (f : Nat → A) : A :=
   prod_less (n + 1 - k) (fun (j : Nat) => f (k + j))
+-/
 
 syntax (name := prodFromTo) "Prod " ident " from " term " to " term ", " term:51 : term
 macro_rules (kind := prodFromTo)
@@ -1207,7 +1229,7 @@ theorem prod_base {A : Type} [MulOneClass A] {k : Nat} {f : Nat → A} :
     Prod i from k to k, f i = f k := by
   define : Prod i from k to k, f i
   rewrite [Nat.add_sub_cancel_left]
-  unfold prod_less; unfold prod_less
+  unfold prod_terms_from; unfold prod_terms_from
   rewrite [one_mul, add_zero]
   rfl
   done
@@ -1237,3 +1259,4 @@ theorem prod_empty {A : Type} [MulOneClass A] {k n : Nat} {f : Nat → A}
   rewrite [h2]
   rfl
   done
+-/
