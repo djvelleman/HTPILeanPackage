@@ -13,6 +13,6 @@ lean_lib HTPI {
   -- add library configuration options here
   srcDir := "HTPILib"
   roots := #[`HTPIDefs, `MathlibTactics,
-    `Chap3, `Chap4, `Chap5, `Chap6, `Chap8Part1]
+    `Chap3, `Chap4, `Chap5, `Chap6, `Chap7, `Chap8Part1]
 }
 

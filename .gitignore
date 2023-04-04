@@ -1,10 +1,11 @@
+/build
+/lake-packages/*
 test.lean
 EquivTests.lean
 Chap3ExSol.lean
 Chap4ExSol.lean
 Chap5ExSol.lean
 Chap6ExSol.lean
-Chap7.lean
 RemovedFromHTPIDefs.lean
 FiniteSetsPairs.lean
 FiniteSetsFunc.lean
