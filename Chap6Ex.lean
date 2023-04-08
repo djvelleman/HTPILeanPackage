@@ -166,11 +166,15 @@ theorem triple_rec_formula :
 
 -- 10.
 lemma quot_rem_unique_lemma {m q r q' r' : Nat}
-    (h1 : q * m + r = q' * m + r') (h2 : r' < m) : q ≤ q' := sorry
+    (h1 : m * q + r = m * q' + r') (h2 : r' < m) : q ≤ q' := sorry
 
 theorem quot_rem_unique (m q r q' r' : Nat)
-    (h1 : q * m + r = q' * m + r') (h2 : r < m) (h3 : r' < m) :
+    (h1 : m * q + r = m * q' + r') (h2 : r < m) (h3 : r' < m) :
     q = q' ∧ r = r' := sorry
+
+-- 11.
+theorem div_mod_char (m n q r : Nat)
+    (h1 : n = m * q + r) (h2 : r < m) : q = n / m ∧ r = n % m := sorry
 
 /- Section 6.5 -/
 -- 1.

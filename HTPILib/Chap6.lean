@@ -473,16 +473,16 @@ theorem Example_6_3_4 : ∀ (x : Real), x > -1 →
 
 /- Section 6.4 -/
 theorem Example_6_4_1 : ∀ m > 0, ∀ (n : Nat),
-    ∃ (q r : Nat), n = q * m + r ∧ r < m := by
+    ∃ (q r : Nat), n = m * q + r ∧ r < m := by
   fix m : Nat
   assume h1 : m > 0
   by_strong_induc
   fix n : Nat
-  assume ih : ∀ n_1 < n, ∃ (q r : Nat), n_1 = q * m + r ∧ r < m
+  assume ih : ∀ n_1 < n, ∃ (q r : Nat), n_1 = m * q + r ∧ r < m
   by_cases h2 : n < m
   · -- Case 1. h2 : n < m
     apply Exists.intro 0
-    apply Exists.intro n     --Goal : n = 0 * m + n ∧ n < m
+    apply Exists.intro n     --Goal : n = m * 0 + n ∧ n < m
     apply And.intro _ h2
     ring
     done
@@ -490,18 +490,18 @@ theorem Example_6_4_1 : ∀ m > 0, ∀ (n : Nat),
     have h3 : m ≤ n := by linarith
     let k : Nat := n - m
     have h4 : k < n := Nat.sub_lt_of_pos_le m n h1 h3
-    have h5 : ∃ (q r : Nat), k = q * m + r ∧ r < m := ih k h4
+    have h5 : ∃ (q r : Nat), k = m * q + r ∧ r < m := ih k h4
     obtain (q' : Nat)
-      (h6 : ∃ (r : Nat), k = q' * m + r ∧ r < m) from h5
-    obtain (r' : Nat) (h7 : k = q' * m + r' ∧ r' < m) from h6
+      (h6 : ∃ (r : Nat), k = m * q' + r ∧ r < m) from h5
+    obtain (r' : Nat) (h7 : k = m * q' + r' ∧ r' < m) from h6
     apply Exists.intro (q' + 1)
-    apply Exists.intro r'     --Goal : n = (q' + 1) * m + r' ∧ r' < m
+    apply Exists.intro r'     --Goal : n = m * (q' + 1) + r' ∧ r' < m
     apply And.intro _ h7.right
-    show n = (q' + 1) * m + r' from
+    show n = m * (q' + 1) + r' from
       calc n
         _ = k + m := (Nat.sub_add_cancel h3).symm
-        _ = q' * m + r' + m := by rw [h7.left]
-        _ = (q' + 1) * m + r' := by ring
+        _ = m * q' + r' + m := by rw [h7.left]
+        _ = m * (q' + 1) + r' := by ring
     done
   done
 

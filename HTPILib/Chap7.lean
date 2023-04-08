@@ -56,38 +56,11 @@ lemma plus_one_of_ne {n : Nat} (h : n ≠ 0) :
   show n = n - 1 + 1 from (Nat.sub_add_cancel h2).symm
   done
 
-lemma gcd_nonzero (a : Nat) {b : Nat} (h : b ≠ 0) :
+lemma gcd_of_nonzero (a : Nat) {b : Nat} (h : b ≠ 0) :
     gcd a b = gcd b (a % b) := by
   obtain (n : Nat) (h2 : b = n + 1) from plus_one_of_ne h
   rewrite [h2]   --Goal : gcd a (n + 1) = gcd (n + 1) (a % (n + 1))
   rfl
-  done
-
-/- gcd_comm never used? Could skip it, or make it an exercise -/
-lemma gcd_comm_lt {a b : Nat} (h : a < b) : gcd a b = gcd b a := by
-  have h2 : b ≠ 0 := by linarith
-  have h3 : gcd a b = gcd b (a % b) := gcd_nonzero a h2
-  have h4 : a % b = a := Nat.mod_eq_of_lt h
-  rewrite [h4] at h3
-  show gcd a b = gcd b a from h3
-  done
-
-theorem gcd_comm (a b : Nat) : gcd a b = gcd b a := by
-  by_cases h1 : a < b
-  · -- Case 1. h1 : a < b
-    show gcd a b = gcd b a from gcd_comm_lt h1
-    done
-  · -- Case 2. h1 : ¬a < b
-    by_cases h2 : b < a
-    · -- Case 2.1. h2 : b < a
-      show gcd a b = gcd b a from (gcd_comm_lt h2).symm
-      done
-    · -- Case 2.2. h2 : ¬b < a
-      have h3 : a = b := by linarith
-      rewrite [h3]
-      rfl
-      done
-    done
   done
 
 lemma mod_nonzero_lt (a : Nat) {b : Nat} (h : b ≠ 0) : a % b < b := by
@@ -115,7 +88,7 @@ theorem gcd_dvd : ∀ (b a : Nat), (gcd a b) ∣ a ∧ (gcd a b) ∣ b := by
     rfl
     done
   · -- Case 2. h1 : b ≠ 0
-    rewrite [gcd_nonzero a h1]
+    rewrite [gcd_of_nonzero a h1]
       --Goal : gcd b (a % b) ∣ a ∧ gcd b (a % b) ∣ b
     have h2 : a % b < b := mod_nonzero_lt a h1
     have h3 : (gcd b (a % b)) ∣ b ∧ (gcd b (a % b)) ∣ (a % b) :=
@@ -182,7 +155,7 @@ theorem gcd_lin_comb : ∀ (b a : Nat),
     norm_num
     done
   · -- Case 2. h1 : b ≠ 0
-    rewrite [gcd_c1_nonzero a h1, gcd_c2_nonzero a h1, gcd_nonzero a h1]
+    rewrite [gcd_c1_nonzero a h1, gcd_c2_nonzero a h1, gcd_of_nonzero a h1]
     let r : Nat := a % b
     let q : Nat := a / b
     let s : Int := gcd_c1 b r
@@ -1264,14 +1237,19 @@ theorem Theorem_7_3_6_7 {m : Nat} (X : ZMod m) : X * cc m 1 = X := by
       _ = cc m a := by rw [h2]
   done
 
-theorem Exercise_7_2_6 (a b : Nat) : rel_prime a b ↔ ∃ (s t : Int), s * a + t * b = 1 := by
+def invertible {m : Nat} (X : ZMod m) : Prop :=
+  ∃ (Y : ZMod m), X * Y = cc m 1
+
+theorem Exercise_7_2_6 (a b : Nat) :
+    rel_prime a b ↔ ∃ (s t : Int), s * a + t * b = 1 := by
   apply Iff.intro
   · -- (→)
     assume h1 : rel_prime a b
     define at h1
     apply Exists.intro (gcd_c1 a b)
     apply Exists.intro (gcd_c2 a b)
-    have h2 : gcd_c1 a b * ↑a + gcd_c2 a b * ↑b = ↑(gcd a b) := gcd_lin_comb b a
+    have h2 : gcd_c1 a b * ↑a + gcd_c2 a b * ↑b = ↑(gcd a b) :=
+      gcd_lin_comb b a
     rewrite [h1, Nat.cast_one] at h2
     show gcd_c1 a b * ↑a + gcd_c2 a b * ↑b = 1 from h2
     done
@@ -1290,7 +1268,8 @@ theorem Exercise_7_2_6 (a b : Nat) : rel_prime a b ↔ ∃ (s t : Int), s * a + 
       show 1 = ↑g * (s * ↑c + t * ↑d) from
         calc (1 : Int)
           _ = s * ↑a + t * ↑b := h3.symm
-          _ = s * (↑g * ↑c) + t * (↑g * ↑d) := by rw [h6, h7, Nat.cast_mul, Nat.cast_mul]
+          _ = s * (↑g * ↑c) + t * (↑g * ↑d) := by
+              rw [h6, h7, Nat.cast_mul, Nat.cast_mul]
           _ = ↑g * (s * ↑c + t * ↑d) := by ring
       done
     define
@@ -1298,52 +1277,47 @@ theorem Exercise_7_2_6 (a b : Nat) : rel_prime a b ↔ ∃ (s t : Int), s * a + 
     done
   done
 
---def invertible (n : Nat) (a : Int) : Prop := ∃ (b : Int), cc n a * cc n b = cc n 1
-
---def invertible {m : Nat} (X : ZMod m) := ∃ (b : Int), X * cc m b = cc m 1
-
-def invertible {m : Nat} (X : ZMod m) : Prop := ∃ (Y : ZMod m), X * Y = cc m 1
-
 lemma gcd_c2_inv {m a : Nat} [NeZero m] (h1 : rel_prime m a) :
     (cc m a) * (cc m (gcd_c2 m a)) = cc m 1 := by
   let s : Int := gcd_c1 m a
-  have h2 : s * m + (gcd_c2 m a) * a = gcd m a := gcd_lin_comb a m
+  have h2 : s * ↑m + (gcd_c2 m a) * ↑a = ↑(gcd m a) := gcd_lin_comb a m
   define at h1
   rewrite [h1, Nat.cast_one] at h2
   rewrite [mul_class, cc_eq_iff_congr]
   define
   apply Exists.intro (-s)
-  exact
-    calc a * (gcd_c2 m a) - 1
-        = s * m + (gcd_c2 m a) * a + m * (-s) - 1 := by ring
-      _ = 1 + m * (-s) - 1 := by rw [h2]
-      _ = m * (-s) := by ring
+  show ↑a * gcd_c2 m a - 1 = ↑m * -s from
+    calc ↑a * (gcd_c2 m a) - 1
+      _ = s * ↑m + (gcd_c2 m a) * ↑a + ↑m * (-s) - 1 := by ring
+      _ = 1 + ↑m * (-s) - 1 := by rw [h2]
+      _ = ↑m * (-s) := by ring
   done
 
 theorem Theorem_7_3_7 (m a : Nat) [NeZero m] :
     invertible (cc m a) ↔ rel_prime m a := by
   apply Iff.intro
   · -- (→)
-    assume h1
+    assume h1 : invertible (cc m ↑a)
     define at h1
-    obtain Y h2 from h1
-    obtain b h3 from cc_rep Y
+    obtain (Y : ZMod m) (h2 : cc m ↑a * Y = cc m 1) from h1
+    obtain (b : Int) (h3 : Y = cc m b) from cc_rep Y
     rewrite [h3, mul_class, cc_eq_iff_congr] at h2
     define at h2
-    obtain c h4 from h2
+    obtain (c : Int) (h4 : ↑a * b - 1 = ↑m * c) from h2
     rewrite [Exercise_7_2_6]
     apply Exists.intro (-c)
     apply Exists.intro b
-    exact
-      calc (-c) * m + b * a
-          = (-c) * m + (a * b - 1) + 1 := by ring
-        _ = (-c) * m + m * c + 1 := by rw [h4]
+    show -c * ↑m + b * ↑a = 1 from
+      calc (-c) * ↑m + b * ↑a
+        _ = (-c) * ↑m + (↑a * b - 1) + 1 := by ring
+        _ = (-c) * ↑m + ↑m * c + 1 := by rw [h4]
         _ = 1 := by ring
     done
   · -- (←)
-    assume h1
+    assume h1 : rel_prime m a
     define
-    exact Exists.intro (gcd_c2 m a) (gcd_c2_inv h1)
+    show ∃ (Y : ZMod m), cc m ↑a * Y = cc m 1 from
+      Exists.intro (gcd_c2 m a) (gcd_c2_inv h1)
     done
   done
 
@@ -1414,54 +1388,6 @@ lemma congr_nat_mod (m : Nat) [NeZero m] (a : Int) : congr_mod m a (nat_mod m a)
   done
 
 def inv_mod (m a : Nat) : Nat := nat_mod m (gcd_c2 m a)
-
-
-
-/- Old versions with n + 1
-/- This converts mod_lt and congr_mod_mod to Nat -/
-def nat_mod (n : Nat) (a : Int) : Nat := Int.toNat (a % ↑(n + 1))
-
-lemma coe_nat_mod_eq_mod (n : Nat) (a : Int) : (↑(nat_mod n a) : Int) = a % ↑(n + 1) := by
-  have h1 := mod_nonneg n a
-  show ↑(nat_mod n a) = a % ↑(n + 1) from Int.toNat_of_nonneg h1
-  done
-
-lemma nat_mod_lt (n : Nat) (a : Int) : nat_mod n a < n + 1 := by
-  have h1 : a % ↑(n + 1) < ↑(n + 1) := mod_lt n a
-  rewrite [←coe_nat_mod_eq_mod, Nat.cast_lt] at h1
-  show nat_mod n a < n + 1 from h1
-  done
-
-lemma congr_nat_mod (n : Nat) (a : Int) : congr_mod (n + 1) a (nat_mod n a) := by
-  rewrite [coe_nat_mod_eq_mod]
-  exact congr_mod_mod n a
-  done
-
-def inv_mod (n a : Nat) : Nat := nat_mod n (gcd_c2 (n + 1) a)
-
---Don't need this
-theorem val_eq_mod (n : Nat) (a : Int) : (cc n a).val = nat_mod n a := by
-  have h1 := congr_nat_mod n a
-  have h2 := nat_mod_lt n a
-  have h3 := Nat.mod_eq_of_lt h2
-  rewrite [←cc_eq_iff_congr, cc_eq_iff_val_eq, val_nat_eq_mod, h3] at h1
-  exact h1
-  done
--/
-
-/- Say focus on natural numbers in this section?? -/
-/- Stuff that might get replaced
---def inv_mod (n a : Nat) : ZMod (n + 1) := cc n (gcd_c2 (n + 1) a)
-
---theorem inv_mod_def (n a : Nat) : inv_mod n a = cc n (gcd_c2 (n + 1) a) := by rfl
-
---def inv_mod_nat (n a : Nat) : Nat := (inv_mod n a).val
-def inv_mod (n a : Nat) : Nat := nat_mod n (gcd_c2 (n + 1) a)
-
-theorem inv_mod_def (n a : Nat) : inv_mod n a = nat_mod n (gcd_c2 (n + 1) a) := by rfl
-
---theorem cc_inv_mod (n a : Nat) : cc n (inv_mod n a) = inv_mod n a := (cc_val n (inv_mod n a)).symm
--/
 
 lemma cc_eq_nat_mod (m : Nat) [NeZero m] (a : Int) : cc m a = cc m (nat_mod m a) := by
   rewrite [cc_eq_iff_congr]
@@ -2290,8 +2216,8 @@ lemma comp_def {A B C : Type} (f : B → C) (g : A → B) (x : A) : (f ∘ g) x 
 
 lemma FG_rel_prime {m a i : Nat} [NeZero m] (h1 : rel_prime m a) (h2 : rel_prime m i) :
     F m (G m a i) = cc m a * F m i := by
-  have h3 := mod_rel_prime (prod_rel_prime h1 h2)
-  rewrite [G_rel_prime_def h2, F_rel_prime_def h3, ←nat_mod_eq_mod]
+  have h3 : rel_prime m (G m a i) := G_rel_prime h1 h2
+  rewrite [F_rel_prime_def h3, G_rel_prime_def h2, ←nat_mod_eq_mod]
   rewrite [F_rel_prime_def h2, mul_class, ←Nat.cast_mul]
   exact (cc_eq_nat_mod m _).symm
   done
