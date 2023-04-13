@@ -74,3 +74,28 @@ theorem Exercise_7_2_9
 -- 8.
 theorem Exercise_7_2_17a (a b c : Nat) :
     gcd a (b * c) ∣ gcd a b * gcd a c := sorry
+
+/- Section 7.3 -/
+theorem congr_trans_ex {m : Nat} : ∀ {a b c : Int},
+    congr_mod m a b → congr_mod m b c → congr_mod m a c := sorry
+
+theorem Theorem_7_3_6_3 {m : Nat} (X : ZMod m) : X + cc m 0 = X := sorry
+
+theorem Theorem_7_3_6_4 {m : Nat} (X : ZMod m) :
+    ∃ (Y : ZMod m), X + Y = cc m 0 := sorry
+
+theorem Exercise_7_3_4a {m : Nat} (Z1 Z2 : ZMod m)
+    (h1 : ∀ (X : ZMod m), X + Z1 = X)
+    (h2 : ∀ (X : ZMod m), X + Z2 = X) : Z1 = Z2 := sorry
+
+theorem Exercise_7_3_4b {m : Nat} (X Y1 Y2 : ZMod m)
+    (h1 : X + Y1 = cc m 0) (h2 : X + Y2 = cc m 0) : Y1 = Y2 := sorry
+
+theorem Theorem_7_3_10 (m a d : Nat) (b : Int) (h1 : d = gcd m a) :
+    ¬ (↑d : Int) ∣ b → ¬∃ (x : Int), congr_mod m (a * x) b := sorry
+
+theorem Theorem_7_3_11 (m n : Nat) (a b : Int) (h1 : n ≠ 0) :
+    congr_mod (n * m) (n * a) (n * b) ↔  congr_mod m a b := sorry
+
+theorem Exercise_7_3_16 {m : Nat} {a b : Int} (h : congr_mod m a b) :
+    ∀ (n : Nat), congr_mod m (a ^ n) (b ^ n) := sorry

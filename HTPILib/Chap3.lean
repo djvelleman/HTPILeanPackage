@@ -328,3 +328,14 @@ theorem Theorem_3_4_7 :
       Exists.intro (j - k) h6.symm
     done
   done
+
+theorem Example_3_5_4 (x : Real) (h1 : x ≤ x ^ 2) : x ≤ 0 ∨ 1 ≤ x := by
+  or_right with h2     --h2 : ¬x ≤ 0;  Goal : 1 ≤ x
+  have h3 : 0 < x := lt_of_not_le h2
+  have h4 : 1 * x ≤ x * x :=
+    calc 1 * x
+      _ = x := one_mul x
+      _ ≤ x ^ 2 := h1
+      _ = x * x := by ring
+  show 1 ≤ x from le_of_mul_le_mul_right h4 h3
+  done

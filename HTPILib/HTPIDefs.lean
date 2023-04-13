@@ -1135,13 +1135,13 @@ theorem func_from_graph {A B : Type} (F : Set (A × B)) :
   exact h6 (f x) y h3 h4
 
 --Sum of m terms of the form f i, starting with i = k
-def sum_val_from {A : Type} [AddZeroClass A] (m k : Nat) (f : Nat → A) : A :=
+def sum_seq {A : Type} [AddZeroClass A] (m k : Nat) (f : Nat → A) : A :=
   match m with
     | 0 => 0
-    | n + 1 => sum_val_from n k f + f (k + n)
+    | n + 1 => sum_seq n k f + f (k + n)
 
 def sum_from_to {A : Type} [AddZeroClass A] (k n : Nat) (f : Nat → A) : A :=
-  sum_val_from (n + 1 - k) k f
+  sum_seq (n + 1 - k) k f
 
 /- Old versions
 def sum_less {A : Type} [AddZeroClass A] (m : Nat) (f : Nat → A) : A :=
@@ -1166,7 +1166,7 @@ theorem sum_base {A : Type} [AddZeroClass A] {k : Nat} {f : Nat → A} :
     Sum i from k to k, f i = f k := by
   define : Sum i from k to k, f i
   rewrite [Nat.add_sub_cancel_left]
-  unfold sum_val_from; unfold sum_val_from
+  unfold sum_seq; unfold sum_seq
   rewrite [zero_add, add_zero]
   rfl
   done
