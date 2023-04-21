@@ -1,6 +1,7 @@
 import Chap5
 namespace HTPI
 set_option pp.funBinderTypes true
+set_option linter.unusedVariables false
 
 -- Version of finite sets using relations rather than sets of ordered pairs
 
@@ -418,7 +419,7 @@ theorem one_elt_iff_singleton {A : Type} (X : Set A) : numElts X 1 ↔ ∃ (x : 
   · -- (←)
     assume h1
     obtain x h2 from h1
-    let R : Rel Nat A := one_match 1 x
+    set R : Rel Nat A := one_match 1 x
     apply Exists.intro R
     define
     apply And.intro

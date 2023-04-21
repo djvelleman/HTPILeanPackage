@@ -1,6 +1,7 @@
 import Chap7
 namespace HTPI
 set_option pp.funBinderTypes true
+set_option linter.unusedVariables false
 
 /- Section 7.1 -/
 -- 1.
@@ -8,9 +9,9 @@ theorem dvd_a_of_dvd_b_mod_ex {a b d : Nat}
     (h1 : d ∣ b) (h2 : d ∣ (a % b)) : d ∣ a := sorry
 
 -- 2.
-lemma gcd_comm_lt {a b : Nat} (h : a < b) : gcd a b = gcd b a := sorry
+lemma gcd_comm_lt_ex {a b : Nat} (h : a < b) : gcd a b = gcd b a := sorry
 
-theorem gcd_comm (a b : Nat) : gcd a b = gcd b a := sorry
+theorem gcd_comm_ex (a b : Nat) : gcd a b = gcd b a := sorry
 
 -- 3.
 theorem Exercise_7_1_5 (a b d : Nat) (n : Int) (h1 : gcd a b = d) :

@@ -1,6 +1,7 @@
 import Chap3
 namespace HTPI
 set_option pp.funBinderTypes true
+set_option linter.unusedVariables false
 
 /- Sections 3.1 and 3.2 -/
 -- 1.
@@ -169,7 +170,7 @@ theorem Exercise_3_6_10 (U : Type) (A : Set U)
     (h1 : ∀ (F : Set (Set U)), ⋃₀ F = A → A ∈ F) :
     ∃! (x : U), x ∈ A := by
   --Hint:  Start like this:
-  let F0 : Set (Set U) := { X : Set U | X ⊆ A ∧ ∃! (x : U), x ∈ X }
+  set F0 : Set (Set U) := { X : Set U | X ⊆ A ∧ ∃! (x : U), x ∈ X }
   --Now F0 is in the tactic state, with the definition above
   have h2 : ⋃₀ F0 = A := sorry
   
@@ -200,3 +201,8 @@ theorem Exercise_3_4_10 (x y : Int)
 -- 4.
 theorem Exercise_3_4_27a :
     ∀ (n : Int), 15 ∣ n ↔ 3 ∣ n ∧ 5 ∣ n := sorry
+
+-- 5.
+theorem Like_Exercise_3_7_5 (U : Type) (F : Set (Set U))
+    (h1 : 𝒫 (⋃₀ F) ⊆ ⋃₀ { 𝒫 A | A ∈ F }) :
+    ∃ (A : Set U), A ∈ F ∧ ∀ (B : Set U), B ∈ F → B ⊆ A := sorry

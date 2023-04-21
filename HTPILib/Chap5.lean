@@ -1,6 +1,7 @@
 import Chap4
 namespace HTPI
 set_option pp.funBinderTypes true
+set_option linter.unusedVariables false
 
 /- Definitions and theorems in HTPIDefs
 def graph {A B : Type} (f : A → B) : Set (A × B) :=
@@ -74,7 +75,7 @@ example : square1 = square2 := by rfl
 
 theorem Theorem_5_1_5 {A B C : Type} (f : A → B) (g : B → C) :
     ∃ (h : A → C), graph h = comp (graph g) (graph f) := by
-  let h : A → C := fun (x : A) => g (f x)
+  set h : A → C := fun (x : A) => g (f x)
   apply Exists.intro h
   apply Set.ext
   fix (a, c) : A × C
@@ -233,8 +234,8 @@ theorem Theorem_5_3_5 {A B : Type} (f : A → B) (g : B → A)
 /- Section 5.4 -/
 theorem Theorem_5_4_5 {A : Type} (f : A → A) (B : Set A) :
     ∃ (C : Set A), closure f B C := by
-  let F : Set (Set A) := { D : Set A | B ⊆ D ∧ closed f D }
-  let C : Set A := ⋂₀ F
+  set F : Set (Set A) := { D : Set A | B ⊆ D ∧ closed f D }
+  set C : Set A := ⋂₀ F
   apply Exists.intro C    --Goal : closure f B C
   define                  --Goal : C ∈ F ∧ ∀ x ∈ F, C ⊆ x
   apply And.intro

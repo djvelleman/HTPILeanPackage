@@ -1,6 +1,7 @@
 import Chap4
 namespace HTPI
 set_option pp.funBinderTypes true
+set_option linter.unusedVariables false
 
 /- Section 4.2 -/
 -- 1.

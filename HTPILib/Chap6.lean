@@ -1,6 +1,7 @@
-import Chap8Part1  -- Maybe eventually make this Chap8lib, which will import Chap5lib?
+import Chap8Part1
 namespace HTPI
 set_option pp.funBinderTypes true
+set_option linter.unusedVariables false
 
 /- Definitions and theorems in FiniteSets and HTPIDefs
 
@@ -160,6 +161,8 @@ theorem Example_6_1_3 : ∀ n ≥ 5, 2 ^ n > n ^ 2 := by
     show 2 ^ (n + 1) > (n + 1) ^ 2 from
       calc 2 ^ (n + 1)
         _ = 2 * 2 ^ n := by ring
+        _ > 2 * n ^ 2 := by linarith
+        _ ≥ n ^ 2 + 5 * n := by linarith
         _ > n ^ 2 + 2 * n + 1 := by linarith
         _ = (n + 1) ^ 2 := by ring
     done
@@ -250,7 +253,7 @@ theorem Example_6_2_1 {A : Type} (R : BinRel A) (h : partial_order R) :
     assume h3 : numElts B (n + 1)
     have h4 : n + 1 > 0 := by linarith
     obtain (b : A) (h5 : b ∈ B) from nonempty_of_pos_numElts h3 h4
-    let B' : Set A := B \ {b}
+    set B' : Set A := B \ {b}
     have h6 : numElts B' n := remove_one_numElts h3 h5
     obtain (c : A) (h7 : minimalElt R c B') from ih B' h6
     by_cases h8 : R b c
@@ -333,7 +336,7 @@ theorem Exercise_6_2_2 {A : Type} (R : BinRel A) (h : partial_order R) :
     assume h2 : numElts B (n + 1)
     have h3 : n + 1 > 0 := by linarith
     obtain (b : A) (h4 : b ∈ B) from nonempty_of_pos_numElts h2 h3
-    let B' : Set A := B \ {b}
+    set B' : Set A := B \ {b}
     have h5 : numElts B' n := remove_one_numElts h2 h4
     have h6 : ∃ (T : BinRel A), partial_order T ∧
       (∀ (x y : A), R x y → T x y) ∧
@@ -345,7 +348,7 @@ theorem Exercise_6_2_2 {A : Type} (R : BinRel A) (h : partial_order R) :
     have T'extR : ∀ (x y : A), R x y → T' x y := h7.right.left
     have T'compB' : ∀ (x : A), x ∈ B' →
       ∀ (y : A), T' x y ∨ T' y x := h7.right.right
-    let T : BinRel A := extendPO T' b
+    set T : BinRel A := extendPO T' b
     apply Exists.intro T
     apply And.intro (extendPO_is_po T' b T'po)
     apply And.intro
@@ -488,7 +491,7 @@ theorem Example_6_4_1 : ∀ m > 0, ∀ (n : Nat),
     done
   · -- Case 2. h2 : ¬n < m
     have h3 : m ≤ n := by linarith
-    let k : Nat := n - m
+    set k : Nat := n - m
     have h4 : k < n := Nat.sub_lt_of_pos_le m n h1 h3
     have h5 : ∃ (q r : Nat), k = m * q + r ∧ r < m := ih k h4
     obtain (q' : Nat)
@@ -539,38 +542,36 @@ example : ∀ (n : Nat), Fib n < 2 ^ n := by
       have h5 : Fib k < 2 ^ k := ih k h4
       have h6 : k + 1 < n := by linarith
       have h7 : Fib (k + 1) < 2 ^ (k + 1) := ih (k + 1) h6
-      have h8 : 3 ≤ 4 := by linarith
       show Fib n < 2 ^ n from
         calc Fib n
           _ = Fib (k + 2) := by rw [h3]
           _ = Fib k + Fib (k + 1) := by rfl
           _ < 2 ^ k + Fib (k + 1) := add_lt_add_right h5 _
           _ < 2 ^ k + 2 ^ (k + 1) := add_lt_add_left h7 _
-          _ = 2 ^ k * 3 := by ring
-          _ ≤ 2 ^ k * 4 := Nat.mul_le_mul_left _ h8
+          _ ≤ 2 ^ k + 2 ^ (k + 1) + 2 ^ k := Nat.le_add_right _ _
           _ = 2 ^ (k + 2) := by ring
           _ = 2 ^ n := by rw [h3]
       done
     done
   done
 
-theorem well_ord_princ (S : Set Nat) (h1 : ∃ (n : Nat), n ∈ S) :
+theorem well_ord_princ (S : Set Nat) : (∃ (n : Nat), n ∈ S) →
     ∃ (n : Nat), n ∈ S ∧ ∀ (m : Nat), m ∈ S → n ≤ m := by
-  contradict h1 with h2
-    --h2 : ¬∃ (n : Nat), n ∈ S ∧ ∀ (m : Nat), m ∈ S → n ≤ m
+  contrapos
+  assume h1 : ¬∃ (n : Nat), n ∈ S ∧ ∀ (m : Nat), m ∈ S → n ≤ m
   quant_neg                   --Goal : ∀ (n : Nat), ¬n ∈ S
   by_strong_induc
   fix n : Nat
-  assume ih : ∀ n_1 < n, n_1 ∉ S  --Goal : ¬n ∈ S
-  contradict h2 with h3       --h3 : n ∈ S
+  assume ih : ∀ (n_1 : Nat), n_1 < n → ¬n_1 ∈ S  --Goal : ¬n ∈ S
+  contradict h1 with h2       --h2 : n ∈ S
     --Goal : ∃ (n : Nat), n ∈ S ∧ ∀ (m : Nat), m ∈ S → n ≤ m
   apply Exists.intro n
-  apply And.intro h3          --Goal : ∀ (m : Nat), m ∈ S → m ≤ y
+  apply And.intro h2          --Goal : ∀ (m : Nat), m ∈ S → n ≤ m
   fix m : Nat
-  assume h4 : m ∈ S
-  have h5 : m < n → ¬m ∈ S := ih m
-  contrapos at h5             --h5 : m ∈ S → ¬m < n
-  have h6 : ¬m < n := h5 h4
+  assume h3 : m ∈ S
+  have h4 : m < n → ¬m ∈ S := ih m
+  contrapos at h4             --h4 : m ∈ S → ¬m < n
+  have h5 : ¬m < n := h4 h3
   linarith
   done
 
@@ -578,7 +579,7 @@ lemma sq_even_iff_even (n : Nat) : nat_even (n * n) ↔ nat_even n := sorry
 
 theorem sqrt_2_irrat :
     ¬∃ (q p : Nat), p * p = 2 * (q * q) ∧ q ≠ 0 := by
-  let S : Set Nat :=
+  set S : Set Nat :=
     { q : Nat | ∃ (p : Nat), p * p = 2 * (q * q) ∧ q ≠ 0 }
   by_contra h1
   have h2 : ∃ (q : Nat), q ∈ S := h1

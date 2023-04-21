@@ -1,6 +1,7 @@
 import Chap3
 namespace HTPI
 set_option pp.funBinderTypes true
+set_option linter.unusedVariables false
 
 /- Definitions -/
 def Dom {A B : Type} (R : Set (A × B)) : Set A :=
@@ -376,7 +377,7 @@ lemma Lemma_4_5_8 {A : Type} (F : Set (Set A)) (h : partition F) :
 
 theorem Theorem_4_5_6 {A : Type} (F : Set (Set A)) (h: partition F) :
     ∃ (R : BinRel A), equiv_rel R ∧ mod A R = F := by
-  let R : BinRel A := EqRelFromPart F
+  set R : BinRel A := EqRelFromPart F
   apply Exists.intro R               --Goal : equiv_rel R ∧ mod A R = F
   apply And.intro (Lemma_4_5_7 F h)  --Goal : mod A R = F
   apply Set.ext
