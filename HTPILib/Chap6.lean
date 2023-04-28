@@ -464,17 +464,23 @@ theorem Example_6_3_4 : ∀ (x : Real), x > -1 →
           _ ≥ n * 0 := mul_le_mul_of_nonneg_left h4 h5
           _ = 0 := by ring
       done
-    show (1 + x) ^ (n + 1) ≥ 1 + (↑n + 1) * x from
+    show (1 + x) ^ (n + 1) ≥ 1 + (n + 1) * x from
       calc (1 + x) ^ (n + 1)
         _ = (1 + x) * (1 + x) ^ n := by rfl
         _ ≥ (1 + x) * (1 + n * x) := mul_le_mul_of_nonneg_left ih h2
         _ = 1 + x + n * x + n * x * x := by ring
         _ ≥ 1 + x + n * x + 0 := add_le_add_left h3 _
-        _ = 1 + (↑n + 1) * x := by ring
+        _ = 1 + (n + 1) * x := by ring
     done
   done
 
 /- Section 6.4 -/
+lemma exists_eq_add_of_not_lt {n m : Nat} (h : ¬n < m) :
+    ∃ (k : Nat), n = k + m := by
+  have h1 : n ≥ m := by linarith
+  show ∃ (k : Nat), n = k + m from Nat.exists_eq_add_of_le' h1
+  done
+
 theorem Example_6_4_1 : ∀ m > 0, ∀ (n : Nat),
     ∃ (q r : Nat), n = m * q + r ∧ r < m := by
   fix m : Nat
@@ -490,9 +496,8 @@ theorem Example_6_4_1 : ∀ m > 0, ∀ (n : Nat),
     ring
     done
   · -- Case 2. h2 : ¬n < m
-    have h3 : m ≤ n := by linarith
-    set k : Nat := n - m
-    have h4 : k < n := Nat.sub_lt_of_pos_le m n h1 h3
+    obtain (k : Nat) (h3 : n = k + m) from exists_eq_add_of_not_lt h2
+    have h4 : k < n := by linarith
     have h5 : ∃ (q r : Nat), k = m * q + r ∧ r < m := ih k h4
     obtain (q' : Nat)
       (h6 : ∃ (r : Nat), k = m * q' + r ∧ r < m) from h5
@@ -502,12 +507,13 @@ theorem Example_6_4_1 : ∀ m > 0, ∀ (n : Nat),
     apply And.intro _ h7.right
     show n = m * (q' + 1) + r' from
       calc n
-        _ = k + m := (Nat.sub_add_cancel h3).symm
+        _ = k + m := h3
         _ = m * q' + r' + m := by rw [h7.left]
         _ = m * (q' + 1) + r' := by ring
     done
   done
 
+/- Old versions.
 lemma ge_two_of_ne {n : Nat} (h1 : n ≠ 0) (h2 : n ≠ 1) : n ≥ 2 := by
   have h3 : n ≥ 1 := Nat.pos_of_ne_zero h1
   show n ≥ 2 from lt_of_le_of_ne' h3 h2
@@ -520,7 +526,70 @@ lemma plus_two_of_ge {n : Nat} (h : n ≥ 2) : ∃ (k : Nat), n = k + 2 := by
 
 lemma plus_two_of_ne {n : Nat} (h1 : n ≠ 0) (h2 : n ≠ 1) :
     ∃ (k : Nat), n = k + 2 := plus_two_of_ge (ge_two_of_ne h1 h2)
+-/
 
+example : ∀ (n : Nat), Fib n < 2 ^ n := by
+  by_strong_induc
+  fix n : Nat
+  assume ih : ∀ (n_1 : Nat), n_1 < n → Fib n_1 < 2 ^ n_1
+  match n with
+    | 0 => -- Case 1. n = 0.  Goal : Fib 0 < 2 ^ 0
+      norm_num
+      done
+    | 1 => -- Case 2. n = 1.  Goal : Fib 1 < 2 ^ 1
+      norm_num
+      done
+    | k + 2 => -- Case 3. n = k + 2.  Goal : Fib (k + 2) < 2 ^ (k + 2)
+        --ih : ih: ∀ (n_1 : Nat), n_1 < k + 2 → Fib n_1 < 2 ^ n_1
+      have h1 : k < k + 2 := by linarith
+      have h2 : Fib k < 2 ^ k := ih k h1
+      have h3 : k + 1 < k + 2 := by linarith
+      have h4 : Fib (k + 1) < 2 ^ (k + 1) := ih (k + 1) h3
+      show Fib (k + 2) < 2 ^ (k + 2) from
+        calc Fib (k + 2)
+          _ = Fib k + Fib (k + 1) := by rfl
+          _ < 2 ^ k + Fib (k + 1) := add_lt_add_right h2 _
+          _ < 2 ^ k + 2 ^ (k + 1) := add_lt_add_left h4 _
+          _ ≤ 2 ^ k + 2 ^ (k + 1) + 2 ^ k := Nat.le_add_right _ _
+          _ = 2 ^ (k + 2) := by ring
+      done
+  done
+
+/- Old version
+example : ∀ (n : Nat), Fib n < 2 ^ n := by
+  by_strong_induc
+  fix n : Nat
+  assume ih : ∀ (n_1 : Nat), n_1 < n → Fib n_1 < 2 ^ n_1
+  by_cases h1 : n < 2
+  · -- Case 1. h1 : n < 2
+    interval_cases n
+    · -- Case 1.1. n = 0.  Goal : Fib 0 < 2 ^ 0
+      norm_num
+      done
+    · -- Case 1.2. n = 1.  Goal : Fib 1 < 2 ^ 1
+      norm_num
+      done
+    done
+  · -- Case 2. h1 : ¬n < 2
+    obtain (k : Nat) (h2 : n = k + 2) from exists_eq_add_of_not_lt h1
+    have h3 : k < n := by linarith
+    have h4 : Fib k < 2 ^ k := ih k h3
+    have h5 : k + 1 < n := by linarith
+    have h6 : Fib (k + 1) < 2 ^ (k + 1) := ih (k + 1) h5
+    show Fib n < 2 ^ n from
+      calc Fib n
+        _ = Fib (k + 2) := by rw [h2]
+        _ = Fib k + Fib (k + 1) := by rfl
+        _ < 2 ^ k + Fib (k + 1) := add_lt_add_right h4 _
+        _ < 2 ^ k + 2 ^ (k + 1) := add_lt_add_left h6 _
+        _ ≤ 2 ^ k + 2 ^ (k + 1) + 2 ^ k := Nat.le_add_right _ _
+        _ = 2 ^ (k + 2) := by ring
+        _ = 2 ^ n := by rw [h2]
+    done
+  done
+-/
+
+/- Old version
 example : ∀ (n : Nat), Fib n < 2 ^ n := by
   by_strong_induc
   fix n : Nat
@@ -554,6 +623,7 @@ example : ∀ (n : Nat), Fib n < 2 ^ n := by
       done
     done
   done
+-/
 
 theorem well_ord_princ (S : Set Nat) : (∃ (n : Nat), n ∈ S) →
     ∃ (n : Nat), n ∈ S ∧ ∀ (m : Nat), m ∈ S → n ≤ m := by

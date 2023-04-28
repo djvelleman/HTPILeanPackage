@@ -70,16 +70,28 @@ theorem Exercise_4_3_18 {A : Type}
     transitive (RelFromExt (comp (extension R) (extension S))) := sorry
 
 -- 7.
+theorem Exercise_4_3_20 {A : Type} (R : BinRel A) (S : BinRel (Set A))
+    (h : ∀ (X Y : Set A), S X Y ↔ X ≠ ∅ ∧ Y ≠ ∅ ∧
+    ∀ (x y : A), x ∈ X → y ∈ Y → R x y) :
+    transitive R → transitive S := sorry
+
+-- 8.
 --You might not be able to complete this proof
 theorem Exercise_4_3_13b {A : Type}
     (R1 R2 : BinRel A) (h1 : symmetric R1) (h2 : symmetric R2) :
     symmetric (RelFromExt ((extension R1) ∪ (extension R2))) := sorry
 
--- 8.
+-- 9.
 --You might not be able to complete this proof
 theorem Exercise_4_3_13c {A : Type}
     (R1 R2 : BinRel A) (h1 : transitive R1) (h2 : transitive R2) :
     transitive (RelFromExt ((extension R1) ∪ (extension R2))) := sorry
+
+-- 10.
+--You might not be able to complete this proof
+theorem Exercise_4_3_19 {A : Type} (R : BinRel A) (S : BinRel (Set A))
+    (h : ∀ (X Y : Set A), S X Y ↔ ∃ (x y : A), x ∈ X ∧ y ∈ Y ∧ R x y) :
+    transitive R → transitive S := sorry
 
 /- Section 4.4 -/
 -- 1.
