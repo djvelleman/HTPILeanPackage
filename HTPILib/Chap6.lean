@@ -17,10 +17,10 @@ theorem nonempty_of_pos_numElts {A : Type} {X : Set A} {n : Nat}
 theorem remove_one_numElts {A : Type} {X : Set A} {n : Nat} {x : A}
     (h1 : numElts X (n + 1)) (h2 : x ∈ X) : numElts (X \ {x}) n
 
-def sum_less {A : Type} [AddZeroClass A] (m : Nat) (f : Nat → A) : A :=
+def sum_seq {A : Type} [AddZeroClass A] (m k : Nat) (f : Nat → A) : A :=
   match m with
     | 0 => 0
-    | n + 1 => sum_less n f + f n
+    | n + 1 => sum_seq n k f + f (k + n)
 
 theorem sum_base {A : Type} [AddZeroClass A] {k : Nat} {f : Nat → A} :
     Sum i from k to k, f i = f k

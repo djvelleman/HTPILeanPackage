@@ -268,9 +268,12 @@ def unfoldExUn (lev : Level) (v : Name) (t b : Expr) (_ : BinderInfo) : Expr :=
   let body := mkAnd b (mkForall v1 BinderInfo.default t (mkForall `x BinderInfo.default b eqn))
   mkExists lev v BinderInfo.default t body
 
+-- Constants not to unfold except if explicitly asked to
+def dontUnfold : List Name := [``ite, ``dite, ``LT.lt, ``LE.le, ``GT.gt, ``GE.ge]
+
 /- Unfold head in current context--must set local context before call.
 If first = true, then unfold ExistsUnique using my def; else don't unfold it.
-Also, if first = true, then unfold ite and dite; otherwise don't.
+Also, if first = true, then unfold constants in list dontUnfold; otherwise don't.
 If rep = true, unfold repeatedly.
 Let whnfCore handle everything except unfolding of constants.
 Do all normalization up to first unfolding of a definition; on next call do that unfolding
@@ -289,7 +292,9 @@ partial def unfoldHead (e : Expr) (tac : Name) (first rep : Bool) : TacticM Expr
           else
             myFail tac "failed to unfold definition"
         | _ => 
-          if !first && ((c == ``ite) || (c == ``dite)) then
+          if !first && (c ∈ dontUnfold) then
+              --((c == ``ite) || (c == ``dite) || (c == ``LT.lt) ||
+              --(c == ``LE.le) || (c == ``GT.gt) || (c == ``GE.ge)) then
             myFail tac "failed to unfold definition"
           let edo ← Meta.unfoldDefinition? e1
           match edo with

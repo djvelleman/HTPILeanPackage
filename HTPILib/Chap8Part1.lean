@@ -5,7 +5,7 @@ set_option linter.unusedVariables false
 
 -- Version of finite sets using relations rather than sets of ordered pairs
 
-theorem RelExt {A B : Type} (R S : Rel A B)
+theorem relext {A B : Type} (R S : Rel A B)
     (h : ∀ (a : A) (b : B), R a b ↔ S a b) : R = S := by
   apply funext
   fix a
@@ -16,17 +16,77 @@ theorem RelExt {A B : Type} (R S : Rel A B)
 
 def invRel {A B : Type} (R : Rel A B) (b : B) (a : A) : Prop := R a b
 
-theorem invRel_invRel {A B : Type} (R : Rel A B) : invRel (invRel R) = R := by
-  apply RelExt
-  fix a; fix b
-  rfl
-  done
+lemma invRel_invRel {A B : Type} (R : Rel A B) : invRel (invRel R) = R := by rfl
 
 theorem invRel_def {A B : Type} (R : Rel A B) (a : A) (b : B) :
     invRel R b a ↔ R a b := by rfl
 
 /- Basic properties of finite sets -/
+def I (n : Nat) : Set Nat := { k : Nat | k < n }
 
+theorem I_def (k n : Nat) : k ∈ I n ↔ k < n := by rfl
+
+--theorem I_0 {n : Nat} (h : n > 0) : 0 ∈ I n := h
+
+lemma I_0_empty : empty (I 0) := by
+  define
+  by_contra h1
+  obtain x h2 from h1
+  define at h2
+  linarith
+  done
+
+lemma I_1_singleton : I 1 = {0} := by
+  apply Set.ext
+  fix x
+  apply Iff.intro
+  · -- (→)
+    assume h1
+    rewrite [I_def] at h1
+    define
+    linarith
+    done
+  · -- (←)
+    assume h1
+    define at h1
+    rewrite [h1, I_def]
+    linarith
+    done
+  done
+
+lemma I_diff (n : Nat) : I (n + 1) \ {n} = I n := by
+  apply Set.ext
+  fix x
+  apply Iff.intro
+  · -- (→)
+    assume h1
+    define
+    define at h1
+    have h2 := h1.left
+    have h3 := h1.right
+    define at h2
+    define at h3
+    have h4 : x ≤ n := Nat.le_of_lt_succ h2
+    show x < n from Nat.lt_of_le_of_ne h4 h3
+    done
+  · -- (←)
+    assume h1
+    define at h1
+    define
+    apply And.intro
+    · -- Proof that x ∈ I (n + 1)
+      define
+      linarith
+      done
+    · -- Proof that x ∉ {n}
+      by_contra h2
+      define at h2
+      linarith
+      done
+    done
+  done
+
+/- Old versions
 def I (n : Nat) : Set Nat := { k : Nat | 1 ≤ k ∧ k ≤ n }
 
 theorem I_1 {n : Nat} (h : n > 0) : 1 ∈ I n := by
@@ -100,15 +160,16 @@ theorem I_diff (n : Nat) : I (n + 1) \ { n + 1 } = I n := by
       done
     done
   done
+-/
 
-def pairing {A B : Type} (R : Rel A B) (X : Set A) (Y : Set B) : Prop :=
+def rel_on {A B : Type} (R : Rel A B) (X : Set A) (Y : Set B) : Prop :=
     ∀ (x : A) (y : B), R x y → x ∈ X ∧ y ∈ Y
 
-def match_from {A B : Type} (R : Rel A B) (X : Set A) : Prop :=
+def fcnl_on {A B : Type} (R : Rel A B) (X : Set A) : Prop :=
     ∀ x ∈ X, ∃! (y : B), R x y
 
 def matching {A B : Type} (R : Rel A B) (X : Set A) (Y : Set B) : Prop :=
-    pairing R X Y ∧ match_from R X ∧ match_from (invRel R) Y
+    rel_on R X Y ∧ fcnl_on R X ∧ fcnl_on (invRel R) Y
 
 def equinum {A B : Type} (X : Set A) (Y : Set B) : Prop :=
     ∃ (R : Rel A B), matching R X Y
@@ -119,7 +180,7 @@ def numElts {A : Type} (X : Set A) (n : Nat) : Prop :=
 def finite {A : Type} (X : Set A) : Prop :=
     ∃ (n : Nat), numElts X n
 
-theorem match_pair {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B} {a : A} {b : B}
+lemma match_rel_on {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B} {a : A} {b : B}
     (h1 : matching R X Y) (h2 : R a b) : a ∈ X ∧ b ∈ Y := by
   define at h1
   have h3 := h1.left
@@ -127,27 +188,27 @@ theorem match_pair {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B} {a : A} {b
   exact h3 a b h2
   done
 
-theorem match_inv {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B}
+lemma match_inv {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B}
     (h : matching R X Y) : matching (invRel R) Y X := by
   define
   apply And.intro
-  · -- Proof that pairing R Y X
+  · -- Proof that rel_on R Y X
     define
     fix y; fix x
     assume h1
     define at h1
-    have h2 := match_pair h h1
+    have h2 := match_rel_on h h1
     exact And.intro h2.right h2.left
     done
-  · -- proof that match_from (inv R) Y ∧ match_from (inv (inv R)) X
+  · -- proof that fcnl_on (inv R) Y ∧ fcnl_on (inv (inv R)) X
     rewrite [invRel_invRel]
     define at h
     exact And.intro h.right.right h.right.left
     done
   done
 
-theorem match_unique {A B : Type} {R : Rel A B} {X : Set A} {j : A} {u v : B}
-    (h1 : match_from R X) (h2 : j ∈ X) (h3 : R j u) (h4 : R j v) : u = v := by
+theorem fcnl_unique {A B : Type} {R : Rel A B} {X : Set A} {j : A} {u v : B}
+    (h1 : fcnl_on R X) (h2 : j ∈ X) (h3 : R j u) (h4 : R j v) : u = v := by
   define at h1
   have h5 := h1 j h2
   obtain z _h6 h7 from h5
@@ -157,17 +218,17 @@ theorem match_unique {A B : Type} {R : Rel A B} {X : Set A} {j : A} {u v : B}
 def remove_one {A B : Type} (R : Rel A B) (u : A) (v : B) (x : A) (y : B) : Prop :=
     x ≠ u ∧ y ≠ v ∧ (R x y ∨ (R x v ∧ R u y))
 
-theorem remove_one_pair {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B} {x u : A} {y v : B}
+theorem remove_one_rel_on {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B} {x u : A} {y v : B}
     (h1 : matching R X Y) (h2 : remove_one R u v x y) : x ∈ X \ {u} ∧ y ∈ Y \ {v} := by
   define at h2
   have h3 : x ∈ X ∧ y ∈ Y := by
     by_cases on h2.right.right with h3
     · -- Case 1. h3: R x y
-      exact match_pair h1 h3
+      exact match_rel_on h1 h3
       done
     · -- Case 2. h3: R x v ∧ R y u
-      have h4 := match_pair h1 h3.left
-      have h5 := match_pair h1 h3.right
+      have h4 := match_rel_on h1 h3.left
+      have h5 := match_rel_on h1 h3.right
       exact And.intro h4.left h5.right
       done
     done
@@ -176,7 +237,7 @@ theorem remove_one_pair {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B} {x u 
 
 theorem remove_inv_comm {A B : Type} (R : Rel A B) (u : A) (v : B) :
     invRel (remove_one R u v) = remove_one (invRel R) v u := by
-  apply RelExt
+  apply relext
   fix b; fix a
   define : invRel (remove_one R u v) b a
   define : remove_one (invRel R) v u b a
@@ -189,14 +250,14 @@ theorem remove_iff_1 {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B} {x u : A
     (h1 : matching R X Y) (h2 : x ≠ u) (h3 : R x v) :
     ∀ (y : B), remove_one R u v x y ↔ R u y := by
   fix y
-  have h4 := match_pair h1 h3
+  have h4 := match_rel_on h1 h3
   apply Iff.intro
   · -- (→)
     assume h5
     define at h5
     by_cases on h5.right.right with h6
     · -- Case 1. h6: (x, y) ∈ R
-      have h7 := match_unique h1.right.left h4.left h6 h3
+      have h7 := fcnl_unique h1.right.left h4.left h6 h3
       exact absurd h7 h5.right.left
       done
     · -- Case 2. h6: (x, v) ∈ R ∧ (u, y) ∈ R
@@ -210,7 +271,7 @@ theorem remove_iff_1 {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B} {x u : A
     apply And.intro _ (Or.inr (And.intro h3 h5))
     contradict h2 with h6
     rewrite [h6] at h5
-    exact match_unique h1.right.right h4.right h3 h5
+    exact fcnl_unique h1.right.right h4.right h3 h5
     done
   done
 
@@ -255,8 +316,8 @@ theorem unique_in_remove_one {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B} 
   exact h5.right y1
   done
 
-theorem remove_one_match_from {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B} {u : A}
-    (h1 : matching R X Y) (h2 : u ∈ X) (v : B): match_from (remove_one R u v) (X \ {u}) := by
+theorem remove_one_fcnl_on {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B} {u : A}
+    (h1 : matching R X Y) (h2 : u ∈ X) (v : B): fcnl_on (remove_one R u v) (X \ {u}) := by
   define
   fix x
   assume h4
@@ -270,24 +331,24 @@ theorem remove_one_match_from {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B}
     done
   done
 
-theorem remove_one_matching {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B} {u : A} {v : B}
+theorem remove_one_match {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B} {u : A} {v : B}
     (h1 : matching R X Y) (h2 : u ∈ X) (h3 : v ∈ Y) :
     matching (remove_one R u v) (X \ {u}) (Y \ {v}) := by
   define
   apply And.intro
-  · -- Proof of pairing
+  · -- Proof of rel_on
     define
     fix x; fix y
     assume h4
-    exact remove_one_pair h1 h4
+    exact remove_one_rel_on h1 h4
     done
-  · -- Proof of match_froms
-    apply And.intro (remove_one_match_from h1 h2 v)
+  · -- Proof of fcnl_ons
+    apply And.intro (remove_one_fcnl_on h1 h2 v)
     rewrite [remove_inv_comm]
-    exact remove_one_match_from (match_inv h1) h3 u
+    exact remove_one_fcnl_on (match_inv h1) h3 u
   done
 
-theorem empty_match_from {A B : Type} {R : Rel A B} {X : Set A} (h : empty X) : match_from R X := by
+theorem empty_fcnl_on {A B : Type} {R : Rel A B} {X : Set A} (h : empty X) : fcnl_on R X := by
   define
   fix x
   assume h1
@@ -299,8 +360,8 @@ theorem empty_match_from {A B : Type} {R : Rel A B} {X : Set A} (h : empty X) : 
 def one_match {A B : Type} (a : A) (b : B) (x : A) (y : B) : Prop :=
     x = a ∧ y = b
 
-theorem one_elt_match_from {A B : Type} (a : A) (b : B) :
-    match_from (one_match a b) {a} := by
+theorem one_elt_fcnl_on {A B : Type} (a : A) (b : B) :
+    fcnl_on (one_match a b) {a} := by
   define
   fix x
   assume h1
@@ -330,19 +391,48 @@ theorem remove_one_equinum {A B : Type} {X : Set A} {Y : Set B} {x : A} {y : B}
   define
   obtain R h4 from h1
   apply Exists.intro (remove_one R x y)
-  exact remove_one_matching h4 h2 h3
+  exact remove_one_match h4 h2 h3
   done
 
 theorem remove_one_numElts {A : Type} {X : Set A} {n : Nat} {x : A}
     (h1 : numElts X (n + 1)) (h2 : x ∈ X) : numElts (X \ {x}) n := by
-  have h3 : n + 1 ∈ I (n + 1) := I_top (Nat.zero_lt_succ n)
+  have h3 : n ∈ I (n + 1) := by rw [I_def]; linarith
   unfold numElts at h1
   have h4 := remove_one_equinum h1 h3 h2
   rewrite [I_diff] at h4
   exact h4
   done
 
-def empty_match {A B : Type} (a : A) (b : B) : Prop := False
+def emptyRel (A B : Type) (a : A) (b : B) : Prop := False
+
+lemma fcnl_on_empty {A B : Type} (R : Rel A B) {X : Set A} (h : empty X) : fcnl_on R X := by
+  define
+  fix a
+  assume h2
+  contradict h
+  exact Exists.intro a h2
+  done
+
+lemma match_emptyRel {A B : Type} {X : Set A} {Y : Set B} (h1 : empty X) (h2 : empty Y) :
+    matching (emptyRel A B) X Y := by
+  define
+  apply And.intro
+  · -- Proof of rel_on
+    define
+    fix a; fix b
+    assume h
+    define at h
+    exact False.elim h
+    done
+  · -- Proof of fcnl_on
+    apply And.intro
+    · -- Proof of fcnl_on emptyRel
+      exact fcnl_on_empty (emptyRel A B) h1
+      done
+    · -- Proof of fcnl_on (invRel emptyRel)
+      exact fcnl_on_empty (invRel (emptyRel A B)) h2
+      done
+  done
 
 theorem zero_elts_iff_empty {A : Type} (X : Set A) : numElts X 0 ↔ empty X := by
   apply Iff.intro
@@ -353,33 +443,16 @@ theorem zero_elts_iff_empty {A : Type} (X : Set A) : numElts X 0 ↔ empty X := 
     obtain x h3 from h2
     define at h1
     obtain R h4 from h1
-    obtain j h5 _h6 from h4.right.right x h3
+    obtain j h5 h6 from h4.right.right x h3
     define at h5
-    have h7 := match_pair h4 h5
+    have h7 := match_rel_on h4 h5
     contradict I_0_empty
     exact Exists.intro j h7.left
     done
   · -- (←)
     assume h1
     define
-    apply Exists.intro empty_match
-    define
-    apply And.intro
-    · -- Proof of pairing
-      define
-      fix n; fix a
-      assume h2
-      exact False.elim h2
-      done
-    · -- Proofs of match_from
-      apply And.intro
-      · -- Proof of match_from empty_match (I 0)
-        exact empty_match_from I_0_empty
-        done
-      · -- Proof of match_from (invRel empty_match) X
-        exact empty_match_from h1
-        done
-      done
+    exact Exists.intro (emptyRel Nat A) (match_emptyRel I_0_empty h1)
     done
   done
 
@@ -390,9 +463,9 @@ theorem one_elt_iff_singleton {A : Type} (X : Set A) : numElts X 1 ↔ ∃ (x : 
   · -- (→)
     assume h1
     obtain R h2 from h1
-    have h3 : 1 ∈ {1} := by define; rfl
-    obtain x h4 _h5 from h2.right.left 1 h3
-    have h6 := match_pair h2 h4
+    have h3 : 0 ∈ {0} := by define; rfl
+    obtain x h4 _h5 from h2.right.left 0 h3
+    have h6 := match_rel_on h2 h4
     apply Exists.intro x
     apply Set.ext
     fix a
@@ -403,11 +476,11 @@ theorem one_elt_iff_singleton {A : Type} (X : Set A) : numElts X 1 ↔ ∃ (x : 
       have h8 := h2.right.right a h7
       obtain j h9 _h10 from h8
       define at h9
-      have h11 := match_pair h2 h9
+      have h11 := match_rel_on h2 h9
       have h12 := h11.left
       define at h12
       rewrite [h12] at h9
-      exact match_unique h2.right.left h3 h9 h4
+      exact fcnl_unique h2.right.left h3 h9 h4
       done
     · -- (←)
       assume h7
@@ -419,18 +492,18 @@ theorem one_elt_iff_singleton {A : Type} (X : Set A) : numElts X 1 ↔ ∃ (x : 
   · -- (←)
     assume h1
     obtain x h2 from h1
-    set R : Rel Nat A := one_match 1 x
+    set R : Rel Nat A := one_match 0 x
     apply Exists.intro R
     define
     apply And.intro
-    · -- Proof of pairing R {1} X
+    · -- Proof of rel_on R {0} X
       define
       fix n; fix a
       assume h3
       define at h3
       rewrite [h3.left, h3.right, h2]
       apply And.intro
-      · -- Proof that 1 ∈ {1}
+      · -- Proof that 0 ∈ {0}
         define
         rfl
         done
@@ -441,20 +514,20 @@ theorem one_elt_iff_singleton {A : Type} (X : Set A) : numElts X 1 ↔ ∃ (x : 
       done
     · -- Proof of matchings
       apply And.intro
-      · -- Proof that match_from R {1}
-        exact one_elt_match_from 1 x
+      · -- Proof that fcnl_on R {0}
+        exact one_elt_fcnl_on 0 x
         done
-      · -- Proof that match_from (inv R) X
-        have h3 : invRel R = one_match x 1 := by
-          apply RelExt
+      · -- Proof that fcnl_on (inv R) X
+        have h3 : invRel R = one_match x 0 := by
+          apply relext
           fix y; fix n
           define : invRel R y n
-          define : one_match x 1 y n
+          define : one_match x 0 y n
           rewrite [and_comm]
           rfl
           done
         rewrite [h2, h3]     
-        exact one_elt_match_from x 1
+        exact one_elt_fcnl_on x 0
         done
       done
     done
@@ -463,8 +536,8 @@ theorem one_elt_iff_singleton {A : Type} (X : Set A) : numElts X 1 ↔ ∃ (x : 
 theorem nonempty_of_pos_numElts {A : Type} {X : Set A} {n : Nat}
     (h1 : numElts X n) (h2 : n > 0) : ∃ (x : A), x ∈ X := by
   obtain R h3 from h1
-  have h4 : 1 ∈ I n := I_1 h2
-  have h5 := h3.right.left 1 h4
+  have h4 : 0 ∈ I n := h2
+  have h5 := h3.right.left 0 h4
   obtain x h6 _h7 from h5
-  have h8 := match_pair h3 h6
+  have h8 := match_rel_on h3 h6
   exact Exists.intro x h8.right
