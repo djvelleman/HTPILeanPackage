@@ -269,7 +269,9 @@ def unfoldExUn (lev : Level) (v : Name) (t b : Expr) (_ : BinderInfo) : Expr :=
   mkExists lev v BinderInfo.default t body
 
 -- Constants not to unfold except if explicitly asked to
-def dontUnfold : List Name := [``ite, ``dite, ``LT.lt, ``LE.le, ``GT.gt, ``GE.ge]
+def dontUnfold : List Name := [``ite, ``dite]
+def dontUnfoldNum : List Name := [``LT.lt, ``LE.le, ``GT.gt, ``GE.ge]
+def numNames : List Name := [`Nat, `Int, `Rat, `Real]
 
 /- Unfold head in current context--must set local context before call.
 If first = true, then unfold ExistsUnique using my def; else don't unfold it.
@@ -296,6 +298,10 @@ partial def unfoldHead (e : Expr) (tac : Name) (first rep : Bool) : TacticM Expr
               --((c == ``ite) || (c == ``dite) || (c == ``LT.lt) ||
               --(c == ``LE.le) || (c == ``GT.gt) || (c == ``GE.ge)) then
             myFail tac "failed to unfold definition"
+          if !first && (c ∈ dontUnfoldNum) then
+            match args[3]! with
+              | const nc _ => if nc ∈ numNames then myFail tac "failed to unfold definition"
+              | _ => pure ()
           let edo ← Meta.unfoldDefinition? e1
           match edo with
             | some ed => pure ed

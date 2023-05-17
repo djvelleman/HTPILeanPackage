@@ -3,774 +3,7 @@ namespace HTPI
 set_option pp.funBinderTypes true
 set_option linter.unusedVariables false
 
-def compRel {A B C : Type} (S : Rel B C) (R : Rel A B)
-  (a : A) (c : C) : Prop := ∃ (b : B), R a b ∧ S b c
-
-lemma inv_comp {A B C : Type} (R : Rel A B) (S : Rel B C) :
-    invRel (compRel S R) = compRel (invRel R) (invRel S) := by
-  apply relext
-  fix c; fix a
-  apply Iff.intro
-  · -- (→)
-    assume h1
-    define at h1; define
-    obtain b h2 from h1
-    apply Exists.intro b
-    rewrite [invRel_def, invRel_def, and_comm]
-    exact h2
-    done
-  · -- (←)
-    assume h1
-    define at h1; define
-    obtain b h2 from h1
-    apply Exists.intro b
-    rewrite [invRel_def, invRel_def, and_comm] at h2
-    exact h2
-    done
-  done
-
-lemma fcnl_comp {A B C : Type} {R : Rel A B} {S : Rel B C}
-    {X : Set A} {Y : Set B}
-    (h1 : matching R X Y) (h2 : fcnl_on S Y) : fcnl_on (compRel S R) X := by
-  define; define at h1; define at h2
-  have h3 := h1.left
-  have h4 := h1.right.left
-  define at h3; define at h4
-  fix a
-  assume h5 : a ∈ X
-  obtain b h6 h7 from h4 a h5
-  have h8 := h3 a b h6
-  obtain c h9 h10 from h2 b h8.right
-  exists_unique
-  · -- Existence
-    apply Exists.intro c
-    define
-    apply Exists.intro b
-    exact And.intro h6 h9
-    done
-  · -- Uniqueness
-    fix c1; fix c2
-    assume h11; assume h12
-    define at h11; define at h12
-    obtain b1 h13 from h11
-    obtain b2 h14 from h12
-    have h15 := h7 b1 b h13.left h6
-    have h16 := h7 b2 b h14.left h6
-    rewrite [h15] at h13
-    rewrite [h16] at h14
-    exact h10 c1 c2 h13.right h14.right
-    done
-  done
-
-lemma match_comp {A B C : Type} {R : Rel A B} {S : Rel B C}
-    {X : Set A} {Y : Set B} {Z : Set C}
-    (h1 : matching R X Y) (h2 : matching S Y Z) : matching (compRel S R) X Z := by
-  define; define at h1; define at h2
-  apply And.intro
-  · -- Proof of rel_on (compRel S R) X Z
-    define
-    fix a; fix c
-    assume h3 : compRel S R a c
-    define at h3
-    obtain b h4 from h3
-    have h5 := h1.left
-    define at h5
-    have h6 := h2.left
-    define at h6
-    have h7 := h5 a b h4.left
-    have h8 := h6 b c h4.right
-    exact And.intro h7.left h8.right
-    done
-  · -- Proof of fcnl_on statements
-    apply And.intro
-    · -- Proof of fcnl_on (compRel S R) X
-      exact fcnl_comp h1 h2.right.left
-      done
-    · -- Proof of fcnl_on (invRel (compRel S R)) Z
-      rewrite [inv_comp]
-      have h3 := match_inv h1
-      have h4 := match_inv h2
-      define at h3
-      exact fcnl_comp h4 h3.right.left
-      done
-    done
-  done
-
-def id_rel_on {A : Type} (X : Set A) (a b : A) : Prop := a ∈ X ∧ a = b
-
-lemma flip_id {A : Type} {X : Set A} {a b : A}
-    (h : a ∈ X ∧ a = b) : b ∈ X ∧ b = a := by
-  apply And.intro _ h.right.symm
-  rewrite [←h.right]
-  exact h.left
-  done
-
-lemma inv_id {A : Type} (X : Set A) : invRel (id_rel_on X) = id_rel_on X := by
-  apply relext
-  fix a; fix b
-  rewrite [invRel_def]
-  define : id_rel_on X a b
-  define : id_rel_on X b a
-  apply Iff.intro
-  · -- (→)
-    assume h1
-    exact flip_id h1
-    done
-  · -- (←)
-    assume h1
-    exact flip_id h1
-    done
-  done
-
-lemma fcnl_id {A : Type} (X : Set A) : fcnl_on (id_rel_on X) X := by
-  define
-  fix a
-  assume h1
-  exists_unique
-  · -- Existence
-    apply Exists.intro a
-    define
-    apply And.intro h1
-    rfl
-    done
-  · -- Uniqueness
-    fix b1; fix b2
-    assume h2; assume h3
-    define at h2; define at h3
-    rewrite [←h2.right, ←h3.right]
-    rfl
-    done
-  done
-
-lemma match_id {A : Type} (X : Set A) : matching (id_rel_on X) X X := by
-  define
-  apply And.intro
-  · -- Proof of rel_on
-    define
-    fix a; fix b
-    assume h1
-    define at h1
-    apply And.intro h1.left
-    rewrite [←h1.right]
-    exact h1.left
-    done
-  · -- Proof of fcnls
-    apply And.intro
-    · -- Proof of fcnl_on (id_rel_on X) X
-      exact fcnl_id X
-      done
-    · -- Proof of fcnl_on (invRel (id_rel_on X)) X
-      rewrite [inv_id]
-      exact fcnl_id X
-      done
-    done
-  done
-
-theorem Theorem_8_1_3_1 {A : Type} (X : Set A) : equinum X X := by
-  define
-  apply Exists.intro (id_rel_on X)
-  exact match_id X
-  done
-
-theorem Theorem_8_1_3_2 {A B : Type} {X : Set A} {Y : Set B}
-    (h : equinum X Y) : equinum Y X := by
-  define at h; define
-  obtain R h1 from h
-  apply Exists.intro (invRel R)
-  exact match_inv h1
-  done
-
-theorem Theorem_8_1_3_3 {A B C : Type} {X : Set A} {Y : Set B} {Z : Set C}
-    (h1 : equinum X Y) (h2 : equinum Y Z) : equinum X Z := by
-  define at h1; define at h2; define
-  obtain R h3 from h1
-  obtain S h4 from h2
-  apply Exists.intro (compRel S R)
-  exact match_comp h3 h4
-  done
-
-/- Subsets of natural numbers -/
-/- First try
-def Univ (A : Type) : Set A := { x : A | True }
-
-def enum (R : BinRel Nat) (n : Nat) (A : Set Nat) : Prop :=
-  matching R (I n) A ∧ ∀ (a1 a2 b1 b2 : Nat), R a1 b1 → R a2 b2 → a1 < a2 → b1 < b2
-
-def add_one {A B : Type} (R : Rel A B) (u : A) (v : B) (x : A) (y : B) : Prop :=
-    R x y ∨ (x = u ∧ y = v)
-
-lemma add_one_def {A B : Type} (R : Rel A B) (u : A) (v : B) (x : A) (y : B) :
-    add_one R u v x y ↔ R x y ∨ (x = u ∧ y = v) := by rfl
-
-theorem add_one_rel_on {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B} {x u : A} {y v : B}
-    (h1 : u ∈ X) (h2 : v ∈ Y) (h3 : matching R (X \ {u}) (Y \ {v})) (h4 : add_one R u v x y) :
-    x ∈ X ∧ y ∈ Y := by
-  define at h4
-  by_cases on h4
-  · --
-    have h5 := match_rel_on h3 h4
-    exact And.intro h5.left.left h5.right.left
-    done
-  · --
-    rewrite [h4.left, h4.right]
-    exact And.intro h1 h2
-    done
-  done
-
-theorem add_inv_comm {A B : Type} (R : Rel A B) (u : A) (v : B) :
-    invRel (add_one R u v) = add_one (invRel R) v u := by
-  apply relext
-  fix a; fix b
-  rewrite [invRel_def, add_one_def, add_one_def, invRel_def, and_comm]
-  rfl
-  done
-
-theorem add_one_fcnl_on {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B} {u : A} {v : B}
-    (h1 : u ∈ X) (h2 : v ∈ Y) (h3 : matching R (X \ {u}) (Y \ {v})) :
-    fcnl_on (add_one R u v) X := by
-  define
-  fix a
-  assume h4
-  by_cases h5 : a = u
-  · --
-    exists_unique
-    · --
-      apply Exists.intro v
-      define
-      apply Or.inr
-      apply And.intro h5
-      rfl
-      done
-    · --
-      fix b1; fix b2
-      assume h6; assume h7
-      define at h6; define at h7
-      have h8 : ∀ (b : B), ¬R a b := by
-        fix b
-        contradict h5 with h9
-        have h10 := match_rel_on h3 h9
-        exact h10.left.right
-        done
-      disj_syll h6 (h8 b1)
-      disj_syll h7 (h8 b2)
-      rewrite [h6.right, h7.right]
-      rfl
-      done
-    done
-  · --
-    have h6 : a ∈ X \ {u} := And.intro h4 h5
-    define at h3
-    have h7 := h3.right.left
-    define at h7
-    have h8 := h7 a h6
-    obtain b h9 h10 from h8
-    exists_unique
-    · --
-      apply Exists.intro b
-      define
-      exact Or.inl h9
-      done
-    · --
-      fix b1; fix b2
-      assume h11; assume h12
-      have h13 : ∀ (y : B), add_one R u v a y → R a y := by
-        fix y
-        assume h14
-        define at h14
-        contradict h5 with h15
-        disj_syll h14 h15
-        exact h14.left
-        done
-      have h14 := h13 b1 h11
-      have h15 := h13 b2 h12
-      exact h10 b1 b2 h14 h15
-      done
-    done
-  done
-  
-lemma match_add_one {A B : Type} {X : Set A} {Y : Set B} {u : A} {v : B} {R' : Rel A B}
-    (h1 : u ∈ X) (h2 : v ∈ Y) (h3 : matching R' (X \ {u}) (Y \ {v})) : matching (add_one R' u v) X Y := by
-  define
-  apply And.intro
-  · --
-    define
-    fix a; fix b
-    assume h4
-    exact add_one_rel_on h1 h2 h3 h4
-    done
-  · --
-    apply And.intro
-    · --
-      exact add_one_fcnl_on h1 h2 h3
-      done
-    · --
-      rewrite [add_inv_comm]
-      have h4 := match_inv h3
-      exact add_one_fcnl_on h2 h1 h4
-      done
-    done
-  done
-
-lemma bounded_finite : ∀ (n : Nat), ∀ (A : Set Nat),
-    A ⊆ (I n) → ∃ (m : Nat) (R : BinRel Nat), enum R m A := by
-  by_induc
-  · -- Base Case
-    fix A
-    assume h1
-    have h2 : empty A := by
-      define
-      contradict I_0_empty with h3
-      obtain x h4 from h3
-      exact Exists.intro x (h1 h4)
-      done
-    apply Exists.intro 0
-    apply Exists.intro (emptyRel Nat Nat)
-    define
-    apply And.intro (match_emptyRel I_0_empty h2)
-    fix a1; fix a2; fix b1; fix b2
-    assume h3
-    define at h3
-    exact False.elim h3
-    done
-  · -- Induction Step
-    fix n : Nat
-    assume ih
-    fix A : Set Nat
-    assume h1 : A ⊆ I (n + 1)
-    set A' : Set Nat := A \ {n}
-    have h2 : A' ⊆ I n := by
-      fix a : Nat
-      assume h3 : a ∈ A'
-      define at h3
-      rewrite [←I_diff]
-      exact And.intro (h1 h3.left) h3.right
-      done  
-    obtain m h3 from ih A' h2
-    obtain R' h4 from h3
-    by_cases h5 : n ∈ A
-    · -- Case 1. h5 : n ∈ A
-      apply Exists.intro (m + 1)
-      set R : BinRel Nat := add_one R' m n
-      apply Exists.intro R
-      define at h4; define
-      rewrite [←I_diff] at h4
-      have h6 : m ∈ I (m + 1) := by
-        define
-        linarith
-        done
-      apply And.intro (match_add_one h6 h5 h4.left)
-      fix a1; fix a2; fix b1; fix b2
-      assume h7; assume h8; assume h9
-      define at h7; define at h8
-      have h10 : a2 ≤ m := by
-        by_cases on h8
-        · --
-          have h10 := match_rel_on h4.left h8
-          rewrite [I_diff] at h10
-          have h11 := h10.left
-          define at h11
-          linarith
-          done
-        · --
-          linarith
-          done
-        done
-      have h11 : ¬(a1 = m ∧ b1 = n) := by
-        demorgan
-        apply Or.inl
-        linarith
-        done
-      disj_syll h7 h11
-      by_cases on h8
-      · --
-        exact h4.right a1 a2 b1 b2 h7 h8 h9
-        done
-      · --
-        have h12 := match_rel_on h4.left h7
-        have h13 := h2 h12.right
-        define at h13
-        linarith
-        done
-      done
-    · -- Case 2. h5 : n ∉ A
-      have h6 : A = A' := by
-        apply Set.ext
-        fix a
-        apply Iff.intro
-        · -- (→)
-          assume h6
-          define
-          apply And.intro h6
-          define
-          contradict h5 with h7
-          rewrite [h7] at h6
-          exact h6
-          done
-        · -- (←)
-          assume h6
-          define at h6
-          exact h6.left
-          done
-        done
-      rewrite [h6]
-      apply Exists.intro m
-      apply Exists.intro R'
-      exact h4
-      done
-    done
-  done
--/
-
---Try with n + 1 => (n ∈ X ∧ s > 0 ∧ num_elts_below X n (s - 1)) ∨ ...
---Number of elements of X that are below m is s
-/- Old version
-def num_elts_below (X : Set Nat) (m s : Nat) : Prop :=
-  match m with
-    | 0 => s = 0
-    | n + 1 => (n ∈ X ∧ ∃ (t : Nat), num_elts_below X n t ∧ s = t + 1) ∨
-                (n ∉ X ∧ num_elts_below X n s)
-
-lemma neb_base (X : Set Nat) : num_elts_below X 0 s ↔ s = 0 := by rfl
-
-lemma neb_step (X : Set Nat) {n s : Nat} : num_elts_below X (n + 1) s ↔
-    (n ∈ X ∧ ∃ (t : Nat), num_elts_below X n t ∧ s = t + 1) ∨ (n ∉ X ∧ num_elts_below X n s) := by rfl
-
-lemma neb_step_elt {X : Set Nat} {n : Nat} (h1 : n ∈ X) (s : Nat) :
-    num_elts_below X (n + 1) s ↔ ∃ (t : Nat), num_elts_below X n t ∧ s = t + 1 := by
-  rewrite [neb_step]
-  apply Iff.intro
-  · -- (→)
-    assume h3
-    by_cases on h3
-    · --
-      exact h3.right
-      done
-    · --
-      exact absurd h1 h3.left
-      done
-    done
-  · -- (←)
-    assume h2
-    apply Or.inl
-    exact And.intro h1 h2
-    done
-  done
-
-lemma neb_step_not_elt {X : Set Nat} {n : Nat} (h1 : n ∉ X) (s : Nat) :
-    num_elts_below X (n + 1) s ↔ num_elts_below X n s := by
-  rewrite [neb_step]
-  apply Iff.intro
-  · --
-    assume h2
-    by_cases on h2
-    · --
-      exact absurd h2.left h1
-      done
-    · --
-      exact h2.right
-      done
-    done
-  · --
-    assume h2
-    apply Or.inr
-    exact And.intro h1 h2
-    done
-  done
-
-lemma neb_exists (X : Set Nat) : ∀ (n : Nat), ∃ (s : Nat), num_elts_below X n s := by
-  by_induc
-  · -- Base Case
-    apply Exists.intro 0
-    define
-    rfl
-    done
-  · -- Induction Step
-    fix n
-    assume ih
-    obtain t h1 from ih
-    by_cases h2 : n ∈ X
-    · -- Case 1. h2 : n ∈ X
-      apply Exists.intro (t + 1)
-      rewrite [neb_step_elt h2]
-      apply Exists.intro t
-      apply And.intro h1
-      rfl
-      done
-    · -- Case 2. h2 : n ∉ X
-      apply Exists.intro t
-      rewrite [neb_step_not_elt h2]
-      exact h1
-      done
-    done
-  done
-
-lemma neb_unique (X : Set Nat) : ∀ (n : Nat), ∀ (s1 s2 : Nat),
-    num_elts_below X n s1 → num_elts_below X n s2 → s1 = s2 := by
-  by_induc
-  · -- Base Case
-    fix s1; fix s2
-    assume h1; assume h2
-    define at h1; define at h2
-    rewrite [h1, h2]
-    rfl
-  · -- Induction Step
-    fix n
-    assume ih
-    fix s1; fix s2
-    assume h1; assume h2
-    by_cases h3 : n ∈ X
-    · -- Case 1. h3 : n ∈ X
-      rewrite [neb_step_elt h3] at h1
-      rewrite [neb_step_elt h3] at h2
-      obtain t1 h4 from h1
-      obtain t2 h5 from h2
-      have h6 := ih t1 t2 h4.left h5.left
-      rewrite [h4.right, h5.right, h6]
-      rfl
-      done
-    · -- Case 2. h3 : n ∉ X
-      rewrite [neb_step_not_elt h3] at h1
-      rewrite [neb_step_not_elt h3] at h2
-      exact ih s1 s2 h1 h2
-      done
-    done
-  done
-
-/-
---Maybe break this up into existence and uniqueness parts?
-lemma neb_fcnl (X : Set Nat) : ∀ (n : Nat), ∃! (m : Nat), num_elts_below X n m := by
-  by_induc
-  · --
-    define
-    apply Exists.intro 0
-    apply And.intro
-    define
-    rfl
-    fix m
-    assume h
-    define at h
-    exact h
-    done
-  · --
-    fix n
-    assume ih
-    define at ih
-    obtain m h1 from ih
-    define
-    by_cases h2 : n ∈ X
-    · --
-      apply Exists.intro (m + 1)
-      apply And.intro
-      rewrite [neb_step_elt h2]
-      apply Exists.intro m
-      apply And.intro h1.left
-      rfl
-      fix m1
-      assume h3
-      rewrite [neb_step_elt h2] at h3
-      obtain j h4 from h3
-      have h5 := h1.right j h4.left
-      rewrite [h5] at h4
-      exact h4.right
-      done
-    · --
-      apply Exists.intro m
-      apply And.intro
-      rewrite [neb_step_not_elt h2]
-      exact h1.left
-      fix m1
-      assume h3
-      rewrite [neb_step_not_elt h2] at h3
-      exact h1.right m1 h3
-      done
-    done
-  done
--/
-
-def enum (X : Set Nat) (s n : Nat) : Prop := n ∈ X ∧ num_elts_below X n s
-
-lemma neb_increase_ex {X : Set Nat} {n s : Nat} (h1 : enum X s n) :
-    ∀ (m : Nat), m ≥ n + 1 → ∃ (t : Nat), num_elts_below X m t ∧ s < t := by
-  by_induc
-  · -- Base Case
-    apply Exists.intro (s + 1)
-    apply And.intro
-    · -- Proof of num_elts_below X (n + 1) (s + 1)
-      define at h1
-      rewrite [neb_step_elt h1.left]
-      apply Exists.intro s
-      apply And.intro h1.right
-      rfl
-      done
-    · -- Proof that s < s + 1
-      linarith
-      done
-    done
-  · -- Induction Step
-    fix m
-    assume h2
-    assume ih
-    obtain t h3 from ih
-    by_cases h4 : m ∈ X
-    · -- Case 1. h4 : m ∈ X
-      apply Exists.intro (t + 1)
-      rewrite [neb_step_elt h4]
-      apply And.intro
-      · -- Proof of ∃ (t_1 : Nat), num_elts_below X m t_1 ∧ t + 1 = t_1 + 1
-        apply Exists.intro t
-        apply And.intro h3.left
-        rfl
-        done
-      · -- Proof of s < t + 1
-        linarith
-        done
-      done
-    · -- Case 2. h4 : m ∉ X
-      apply Exists.intro t
-      rewrite [neb_step_not_elt h4]
-      exact h3
-      done
-    done
-  done
-
-lemma neb_increase_all {X : Set Nat} {n s : Nat} (h1 : enum X s n) :
-    ∀ (m : Nat), m ≥ n + 1 → ∀ (t : Nat), num_elts_below X m t → s < t := by
-  fix m
-  assume h2
-  obtain t h3 from neb_increase_ex h1 m h2
-  fix t'
-  assume h4
-  have h5 := neb_unique X m t t' h3.left h4
-  rewrite [h5] at h3
-  exact h3.right
-  done
-
-lemma enum_not_skip {X : Set Nat} : ∀ (n s : Nat), num_elts_below X n s →
-    ∀ t < s, ∃ (m : Nat), enum X t m := by
-  by_induc
-  · -- Base Case
-    fix s
-    assume h1
-    rewrite [neb_base] at h1
-    fix t
-    contrapos
-    assume h2
-    linarith
-    done
-  · -- Induction Step
-    fix n
-    assume ih
-    fix s
-    assume h1
-    by_cases h2 : n ∈ X
-    · -- Case 1. h2 : n ∈ X
-      rewrite [neb_step_elt h2] at h1
-      obtain t' h3 from h1
-      have h4 := ih t' h3.left
-      fix t
-      assume h5
-      by_cases h6 : t = t'
-      · -- Case 1.1. h6 : t = t'
-        apply Exists.intro n
-        define
-        apply And.intro h2
-        rewrite [h6]
-        exact h3.left
-        done
-      · -- Case 1.2. h6 : t ≠ t'
-        rewrite [h3.right] at h5
-        have h7 : t ≤ t' := Nat.le_of_lt_succ h5
-        have h8 : t < t' := Nat.lt_of_le_of_ne h7 h6
-        exact h4 t h8
-        done
-      done
-    · -- Case 2. h2 : n ∉ X
-      rewrite [neb_step_not_elt h2] at h1
-      exact ih s h1
-      done
-    done
-  done
-
-lemma bdd_subset_nat {X : Set Nat} {n s : Nat} (h1 : n ∈ X)
-    (h2 : ∀ (k : Nat), k ∈ X → k ≤ n) (h3 : num_elts_below X (n + 1) s) :
-    equinum (I s) X := by
-  define
-  apply Exists.intro (enum X)
-  define
-  apply And.intro
-  · -- Proof of rel_on
-    define
-    fix t; fix m
-    assume h4
-    have h5 := neb_increase_ex h4
-    define at h4
-    apply And.intro _ h4.left
-    have h6 := h2 m h4.left
-    have h7 : n + 1 ≥ m + 1 := by linarith
-    obtain s' h8 from h5 (n + 1) h7
-    have h9 := neb_unique X (n + 1) s s' h3 h8.left
-    rewrite [h9]
-    define
-    exact h8.right
-    done
-  · -- Proof of fcn_ons
-    apply And.intro
-    · -- proof of fcnl_on (enum X)
-      define
-      fix t
-      assume h4
-      define at h4
-      have h5 := enum_not_skip (n + 1) s h3 t h4
-      exists_unique
-      · -- Existence
-        exact h5
-        done
-      · -- Uniqueness
-        fix m1; fix m2
-        assume h6; assume h7
-        have h8 : ¬m1 < m2 := by
-          by_contra h9
-          have h10 : m2 ≥ m1 + 1 := h9
-          have h11 := neb_increase_all h6 m2 h10
-          define at h7
-          have h12 := h11 t h7.right
-          linarith
-          done
-        have h9 : ¬m2 < m1 := by
-          by_contra h9
-          have h10 : m1 ≥ m2 + 1 := h9
-          have h11 := neb_increase_all h7 m1 h10
-          define at h6
-          have h12 := h11 t h6.right
-          linarith
-          done
-        linarith
-        done
-      done
-    · -- Proof of fcnl_on (invRel (enum X))
-      define
-      fix m
-      assume h4
-      have h5 := neb_exists X m
-      obtain t h6 from h5
-      exists_unique
-      · -- Existence
-        apply Exists.intro t
-        define
-        exact And.intro h4 h6
-        done
-      · -- Uniqueness
-        fix t1; fix t2
-        assume h8; assume h9
-        define at h8; define at h9
-        exact neb_unique X m t1 t2 h8.right h9.right
-        done
-      done
-    done
-  done
--/
-
-
+/- Subsets of Nat are finite or denum. -/
 def num_elts_below (X : Set Nat) (m s : Nat) : Prop :=
   match m with
     | 0 => s = 0
@@ -881,57 +114,6 @@ lemma neb_unique (X : Set Nat) : ∀ (n : Nat), ∀ (s1 s2 : Nat),
     done
   done
 
-/-
---Maybe break this up into existence and uniqueness parts?
-lemma neb_fcnl (X : Set Nat) : ∀ (n : Nat), ∃! (m : Nat), num_elts_below X n m := by
-  by_induc
-  · --
-    define
-    apply Exists.intro 0
-    apply And.intro
-    define
-    rfl
-    fix m
-    assume h
-    define at h
-    exact h
-    done
-  · --
-    fix n
-    assume ih
-    define at ih
-    obtain m h1 from ih
-    define
-    by_cases h2 : n ∈ X
-    · --
-      apply Exists.intro (m + 1)
-      apply And.intro
-      rewrite [neb_step_elt h2]
-      apply Exists.intro m
-      apply And.intro h1.left
-      rfl
-      fix m1
-      assume h3
-      rewrite [neb_step_elt h2] at h3
-      obtain j h4 from h3
-      have h5 := h1.right j h4.left
-      rewrite [h5] at h4
-      exact h4.right
-      done
-    · --
-      apply Exists.intro m
-      apply And.intro
-      rewrite [neb_step_not_elt h2]
-      exact h1.left
-      fix m1
-      assume h3
-      rewrite [neb_step_not_elt h2] at h3
-      exact h1.right m1 h3
-      done
-    done
-  done
--/
-
 def enum (X : Set Nat) (s n : Nat) : Prop := n ∈ X ∧ num_elts_below X n s
 
 lemma neb_increase {X : Set Nat} {n s : Nat} (h1 : enum X s n) :
@@ -1023,7 +205,8 @@ lemma enum_not_lt {X : Set Nat} {t n1 n2 : Nat} (h1 : enum X t n1) (h2 : enum X 
   linarith
   done
 
-lemma enum_unique (X : Set Nat) (t : Nat) : ∀ (n1 n2 : Nat), enum X t n1 → enum X t n2 → n1 = n2 := by
+lemma enum_unique (X : Set Nat) (t : Nat) :
+    ∀ (n1 n2 : Nat), enum X t n1 → enum X t n2 → n1 = n2 := by
   fix n1; fix n2
   assume h1; assume h2
   have h3 : ¬n1 < n2 := enum_not_lt h1 h2
@@ -1089,8 +272,6 @@ lemma bdd_subset_nat {X : Set Nat} {m s : Nat} (h1 : ∀ (n : Nat), n ∈ X → 
     done
   done
 
-def Univ (A : Type) : Set A := { x : A | True }
-
 lemma enum_fcnl_of_unbdd {X : Set Nat} (h1 : ∀ (m : Nat), ∃ (n : Nat), n ∈ X ∧ n ≥ m) :
     fcnl_on (enum X) (Univ Nat) := by
   define
@@ -1115,7 +296,7 @@ lemma enum_fcnl_of_unbdd {X : Set Nat} (h1 : ∀ (m : Nat), ∃ (n : Nat), n ∈
     assume h2
     exists_unique
     · -- Existence
-      have h3 : s ∈ Univ Nat := by define; trivial
+      have h3 : s ∈ Univ Nat := elt_Univ s
       obtain m h4 h5 from ih h3
       obtain n h6 from h1 (m + 1)
       obtain t h7 from neb_exists X n
@@ -1139,7 +320,7 @@ lemma enum_fcnl_of_unbdd {X : Set Nat} (h1 : ∀ (m : Nat), ∃ (n : Nat), n ∈
   done
 
 lemma unbdd_subset_nat {X : Set Nat} (h1 : ∀ (m : Nat), ∃ (n : Nat), n ∈ X ∧ n ≥ m) :
-    equinum (Univ Nat) X := by
+    denum X := by
   define
   apply Exists.intro (enum X)
   define
@@ -1149,9 +330,7 @@ lemma unbdd_subset_nat {X : Set Nat} (h1 : ∀ (m : Nat), ∃ (n : Nat), n ∈ X
     fix s; fix n
     assume h2
     define at h2
-    apply And.intro _ h2.left
-    define
-    trivial
+    apply And.intro (elt_Univ s) h2.left
     done
   · -- Proof of fcnl_ons
     apply And.intro
@@ -1163,27 +342,937 @@ lemma unbdd_subset_nat {X : Set Nat} (h1 : ∀ (m : Nat), ∃ (n : Nat), n ∈ X
       done
     done
   done
-  
-/-
-noncomputable def num_elts_below (X : Set Nat) (n : Nat) : Nat :=
-  match n with
-    | 0 => 0
-    | k + 1 => 
-              have : Decidable (k ∈ X) := Classical.propDecidable (k ∈ X)
-              if k ∈ X then num_elts_below X k + 1 else num_elts_below X k
 
+theorem subset_nat_ctble (X : Set Nat) : ctble X := by
+  define
+  by_cases h1 : ∃ (m : Nat), ∀ (n : Nat), n ∈ X → n < m
+  · -- Case 1. h1 : ∃ (m : Nat), ∀ (n : Nat), n ∈ X → n < m
+    apply Or.inl
+    define
+    obtain m h2 from h1
+    obtain s h3 from neb_exists X m
+    apply Exists.intro s
+    exact bdd_subset_nat h2 h3
+    done
+  · -- Case 2. h1 : ¬∃ (m : ℕ), ∀ (n : ℕ), n ∈ X → n < m
+    apply Or.inr
+    push_neg at h1   --Need to explain this tactic?
+    exact unbdd_subset_nat h1
+    /-
+    have h2 :  ∀ (m : ℕ), ∃ (n : ℕ), n ∈ X ∧ n ≥ m := by
+      push_neg at h1
+      fix m
+      quant_neg at h1
+      have h2 := h1 m
+      quant_neg at h2
+      obtain n h3 from h2
+      conditional at h3
+      apply Exists.intro n
+      apply And.intro h3.left
+      linarith
+      done
+    exact unbdd_subset_nat h2
+    -/
+    done
+  done
 
-def equinum2 {A B : Type} (X : Set A) (Y : Set B) : Prop :=
-  ∃ (f : {a : A // a ∈ X} → {b : B // b ∈ Y}), one_to_one f ∧ onto f
+/- Do equivalences for countable here -/
+def unique_val_on_N {A : Type} (R : Rel Nat A) : Prop :=
+  ∀ (n : Nat) (x1 x2 : A), R n x1 → R n x2 → x1 = x2
 
-theorem remove_one_equinum2 {X : Set Nat} {Y : Set Nat} {x y : Nat}
-    (h1 : equinum2 X Y) (h2 : x ∈ X) (h3 : y ∈ Y) : equinum2 (X \ { x }) (Y \ { y }) := by
+def nat_rel_onto {A : Type} (R : Rel Nat A) (X : Set A) : Prop :=
+  ∀ (x : A), x ∈ X → ∃ (n : Nat), R n x
+
+lemma Lemma_8_1_5_12 {A : Type} {I : Set Nat} {X : Set A}
+    (h1 : equinum I X) : ∃ (R : Rel Nat A), unique_val_on_N R ∧ nat_rel_onto R X := by
   define at h1
-  obtain f h4 from h1
-  set xx : {a : Nat // a ∈ X} := ⟨x, h2⟩
-  set yy : {b : Nat // b ∈ Y} := ⟨y, h3⟩
-  obtain uu h5 from h4.right yy
-  set f' : {a : Nat // a ∈ X \ {x}} → {b : Nat // b ∈ Y \ {y}} :=
-    fun a => if a.val = uu.val then f a else f a
+  obtain R h2 from h1
+  define at h2
+  apply Exists.intro R
+  apply And.intro
+  · -- Proof of unique_val_on_N
+    define
+    fix n; fix x1; fix x2
+    assume h3; assume h4
+    have h5 := h2.left
+    have h6 := h2.right.left
+    define at h5; define at h6
+    have h7 := h5 n x1 h3
+    obtain x h8 h9 from h6 n h7.left
+    exact h9 x1 x2 h3 h4
+    done
+  · -- Proof of nat_rel_onto
+    define
+    fix x
+    assume h3
+    have h4 := h2.right.right
+    define at h4
+    obtain n h5 h6 from h4 x h3
+    define at h5
+    exact Exists.intro n h5
+    done
+  done
+
+theorem Theorem_8_1_5_1_to_2 {A : Type} {X : Set A} (h1 : ctble X) :
+    ∃ (R : Rel Nat A), unique_val_on_N R ∧ nat_rel_onto R X := by
+  define at h1
+  by_cases on h1
+  · -- Case 1. h1 : finite X
+    define at h1
+    obtain s h2 from h1
+    exact Lemma_8_1_5_12 h2
+    done
+  · -- Case 2. h1 : denum X
+    rewrite [denum_def] at h1
+    exact Lemma_8_1_5_12 h1
+    done
+  done
+
+/- Old version
+def fcnl_on_nat_onto {A : Type} (R : Rel Nat A) (X : Set A) : Prop :=
+  (∀ (n : Nat), ∃! (x : A), x ∈ X ∧ R n x) ∧ ∀ (x : A), x ∈ X → ∃ (n : Nat), R n x 
+  --rel_on R (Univ Nat) X ∧ fcnl_on R (Univ Nat) ∧ ∀ x ∈ X, ∃ (n : Nat), R n x
+
+def extend_const {A : Type} (S : Rel Nat A) (s : Nat) (a : A)
+  (n : Nat) (x : A) : Prop := S n x ∨ (s ≤ n ∧ x = a)
+
+lemma extend_const_below {A : Type} (S : Rel Nat A) {s : Nat} (a : A) (h : n < s) :
+    ∀ (x : A), extend_const S s a n x ↔ S n x := by
+  fix x
+  apply Iff.intro
+  · -- (→)
+    assume h1
+    define at h1
+    by_cases on h1
+    · -- Case 1. h1 : S n x
+      exact h1
+      done
+    · -- Case 2. h1 : s ≤ n ∧ x = a
+      contradict h1.left with h2
+      linarith
+      done
+    done
+  · -- (←)
+    assume h1
+    define
+    exact Or.inl h1
+    done
+  done
+
+lemma extend_const_above {A : Type} {S : Rel Nat A} {X : Set A} {s : Nat}
+    (a : A) (h1 : rel_on S (I s) X) (h2 : s ≤ n) :
+    ∀ (x : A), extend_const S s a n x ↔ x = a := by
+  fix x
+  apply Iff.intro
+  · -- (→)
+    assume h3
+    define at h3
+    define at h1
+    by_cases on h3
+    · -- Case 1. h3 : S n x
+      contradict (h1 n x h3).left with h4
+      define
+      linarith
+      done
+    · -- Case 2. h3 : s ≤ n ∧ x = a
+      exact h3.right
+      done
+    done
+  · -- (←)
+    assume h3
+    define
+    apply Or.inr
+    exact And.intro h2 h3
+    done
+  done
+
+theorem Theorem_8_1_5_1_to_2 {A : Type} {X : Set A} (h1 : ctble X) :
+    empty X ∨ ∃ (R : Rel Nat A), fcnl_on_nat_onto R X := by
+  define at h1
+  by_cases on h1
+  · -- h1 : finite X
+    define at h1
+    obtain s h2 from h1
+    define at h2
+    obtain S h3 from h2
+    define at h3
+    have h4 := h3.left
+    define at h4
+    or_right with h5
+    obtain a h6 from h5
+    set R : Rel Nat A := extend_const S s a
+    apply Exists.intro R
+    define
+    apply And.intro
+    · -- Proof that ∀ (n : Nat), ∃! (x : A), x ∈ X ∧ R n x
+      fix n : Nat
+      by_cases h7 : n ∈ I s
+      · -- Case 1. h7 : n ∈ I s
+        have h8 := h3.right.left
+        define at h8
+        obtain x h9 h10 from h8 n h7
+        define at h7
+        have h11 : ∀ (x : A), R n x ↔ S n x := extend_const_below S a h7
+        exists_unique
+        · -- Existence
+          apply Exists.intro x
+          have h12 := h4 n x h9
+          apply And.intro h12.right
+          rewrite [h11]
+          exact h9
+          done
+        · -- Uniqueness
+          fix x1; fix x2
+          assume h12; assume h13
+          rewrite [h11] at h12
+          rewrite [h11] at h13
+          exact h10 x1 x2 h12.right h13.right
+          done
+        done
+      · -- Case 2. h7 : ¬n ∈ I s
+        define at h7
+        have h8 : s ≤ n := by linarith
+        have h9 : ∀ (x : A), R n x ↔ x = a := extend_const_above a h4 h8
+        exists_unique
+        · -- Existence
+          apply Exists.intro a
+          apply And.intro h6
+          rewrite [h9]
+          rfl
+          done
+        · -- Uniqueness
+          fix x1; fix x2
+          assume h10; assume h11
+          rewrite [h9] at h10
+          rewrite [h9] at h11
+          rewrite [h10.right, h11.right]
+          rfl
+          done
+        done
+      done
+    · -- Proof that ∀ (x : A), x ∈ X → ∃ (n : Nat), R n x
+      fix x
+      assume h7
+      have h8 := h3.right.right
+      define at h8
+      obtain t h9 h10 from h8 x h7
+      define at h9
+      apply Exists.intro t
+      define
+      exact Or.inl h9
+      done
+    done
+  · -- Case 2. h1 : denum X
+    apply Or.inr
+    define at h1
+    obtain R h2 from h1
+    define at h2
+    apply Exists.intro R
+    define
+    apply And.intro
+    · -- Proof that ∀ (n : Nat), ∃! (x : A), x ∈ X ∧ R n x
+      fix n
+      have h3 := h2.right.left
+      define at h3
+      have h4 : n ∈ Univ Nat := elt_Univ n
+      have h5 := h3 n h4
+      obtain x h6 h7 from h5
+      exists_unique
+      · -- Existence
+        apply Exists.intro x
+        apply And.intro _ h6
+        have h8 := h2.left
+        define at h8
+        exact (h8 n x h6).right
+        done
+      · -- Uniqueness
+        fix x1; fix x2
+        assume h8; assume h9
+        exact h7 x1 x2 h8.right h9.right
+        done
+      done
+    · -- Proof that ∀ (x : A), x ∈ X → ∃ (n : Nat), R n x
+      fix x
+      assume h3
+      have h4 := h2.right.right
+      define at h4
+      obtain n h5 h6 from h4 x h3
+      define at h5
+      exact Exists.intro n h5
+      done
+    done
   done
 -/
+
+def fcnl_one_one_to_nat {A : Type} (R : Rel A Nat) (X : Set A) : Prop :=
+  fcnl_on R X ∧ ∀ (x1 x2 : A) (n : Nat), x1 ∈ X → x2 ∈ X → R x1 n → R x2 n → x1 = x2
+
+def least_witness {A : Type} (S : Rel A Nat) (x : A) (n : Nat) : Prop :=
+  S x n ∧ ∀ (m : Nat), S x m → n ≤ m
+
+theorem Theorem_8_1_5_2_to_3 {A : Type} {X : Set A}
+    (h1 : ∃ (R : Rel Nat A), unique_val_on_N R ∧ nat_rel_onto R X) :
+    ∃ (R : Rel A Nat), fcnl_one_one_to_nat R X := by
+  obtain S h2 from h1
+  set R : Rel A Nat := least_witness (invRel S)
+  apply Exists.intro R
+  define
+  apply And.intro
+  · -- Proof of fcnl on R X
+    define
+    fix x
+    assume h3
+    exists_unique
+    · -- Existence
+      have h4 := h2.right
+      define at h4
+      obtain p h5 from h4 x h3
+      set W : Set Nat := { n : Nat | S n x }
+      have h6 : ∃ (n : Nat), n ∈ W := by
+        apply Exists.intro p
+        define
+        exact h5
+        done
+      obtain n h7 from well_ord_princ W h6
+      apply Exists.intro n
+      define
+      exact h7
+      done
+    · -- Uniqueness
+      fix n1; fix n2
+      assume h4; assume h5
+      define at h4; define at h5
+      have h6 := h4.right n2 h5.left
+      have h7 := h5.right n1 h4.left
+      linarith
+      done
+    done
+  · -- Proof of one_one
+    fix x1; fix x2; fix n
+    assume h3; assume h4; assume h5; assume h6
+    define at h5; define at h6
+    have h7 := h2.left
+    define at h7
+    exact h7 n x1 x2 h5.left h6.left
+    done
+  done
+
+/- Old version
+theorem Theorem_8_1_5_2_to_3 {A : Type} {X : Set A}
+    (h1 : empty X ∨ ∃ (R : Rel Nat A), fcnl_on_nat_onto R X) :
+    ∃ (R : Rel A Nat), fcnl_one_one_to_nat R X := by
+  by_cases on h1
+  · -- Case 1. h1 : empty X
+    apply Exists.intro (emptyRel A Nat)
+    define
+    apply And.intro
+    · --
+      define
+      fix x
+      contrapos
+      assume h2
+      contradict h1 with h3
+      exact Exists.intro x h3
+      done
+    · --
+      fix x1; fix x2; fix n
+      contrapos
+      assume h2
+      contradict h1 with h3
+      exact Exists.intro x1 h3
+    done
+  · -- Case 2. h1 : ∃ (R : Rel Nat A), fcnl_on_nat_onto R X
+    obtain S h2 from h1
+    define at h2
+    set R : Rel A Nat := least_witness (invRel S)
+    apply Exists.intro R
+    define
+    apply And.intro
+    · -- Proof of fcnl_on R X
+      define
+      fix x
+      assume h3
+      exists_unique
+      · -- Existence
+        obtain p h4 from h2.right x h3
+        set W : Set Nat := { n : Nat | S n x }
+        have h5 : ∃ (n : Nat), n ∈ W := by
+          apply Exists.intro p
+          define
+          exact h4
+          done
+        obtain n h6 from well_ord_princ W h5
+        apply Exists.intro n
+        define
+        apply And.intro
+        · -- Proof of InvRel S x n
+          define
+          exact h6.left
+          done
+        · -- Proof of least
+          fix m
+          assume h7
+          define at h7
+          exact h6.right m h7
+          done
+        done
+      · -- Uniqueness
+        fix n1; fix n2
+        assume h4; assume h5
+        define at h4; define at h5
+        have h6 := h4.right n2 h5.left
+        have h7 := h5.right n1 h4.left
+        linarith
+        done
+      done
+    · -- Proof of one-to-one
+      fix x1; fix x2; fix n
+      assume h3; assume h4; assume h5; assume h6
+      define at h5
+      define at h6
+      have h7 := h5.left
+      have h8 := h6.left
+      define at h7
+      define at h8
+      have h9 := And.intro h3 h7
+      have h10 := And.intro h4 h8
+      obtain x h11 h12 from h2.left n
+      exact h12 x1 x2 h9 h10
+      done
+    done
+  done
+-/
+
+def restrict_to {A : Type} (S : Rel A Nat) (X : Set A) (x : A) (n : Nat) : Prop :=
+  x ∈ X ∧ S x n
+
+theorem Theorem_8_1_5_3_to_1 {A : Type} {X : Set A}
+    (h1 : ∃ (R : Rel A Nat), fcnl_one_one_to_nat R X) :
+    ctble X := by
+  obtain S h2 from h1
+  define at h2
+  set Y : Set Nat := { n : Nat | ∃ x ∈ X, S x n }
+  have h3 : equinum X Y := by
+    set R : Rel A Nat := restrict_to S X
+    define
+    apply Exists.intro R
+    define
+    apply And.intro
+    · -- Proof of rel_on R X Y
+      define
+      fix x; fix n
+      assume h3
+      define at h3
+      apply And.intro h3.left
+      define
+      apply Exists.intro x
+      exact h3
+      done
+    · --
+      apply And.intro
+      · -- Proof of fcnl_on R X
+        define
+        fix x
+        assume h3
+        have h4 := h2.left
+        define at h4
+        obtain y h5 h6 from h4 x h3
+        exists_unique
+        · -- Existence
+          apply Exists.intro y
+          define
+          exact And.intro h3 h5
+          done
+        · -- Uniqueness
+          fix y1; fix y2
+          assume h7; assume h8
+          define at h7; define at h8
+          exact h6 y1 y2 h7.right h8.right
+          done
+        done
+      · -- Proof of fcnl_on (invRel R) Y
+        define
+        fix n
+        assume h3
+        define at h3
+        obtain x h4 from h3
+        exists_unique
+        · -- Existence
+          apply Exists.intro x
+          define
+          exact h4
+          done
+        · -- Uniqueness
+          fix x1; fix x2
+          assume h5; assume h6
+          define at h5; define at h6
+          exact h2.right x1 x2 n h5.left h6.left h5.right h6.right
+          done
+        done
+      done
+    done
+  have h4 : equinum Y X := Theorem_8_1_3_2 h3
+  have h5 := subset_nat_ctble Y
+  define
+  define at h5
+  by_cases on h5
+  · -- Case 1. h5 : finite Y
+    apply Or.inl
+    define at h5; define
+    obtain n h6 from h5
+    apply Exists.intro n
+    exact Theorem_8_1_3_3 h6 h4
+    done
+  · -- Case 2. h5 : denum Y
+    apply Or.inr
+    rewrite [denum_def]
+    rewrite [denum_def] at h5
+    exact Theorem_8_1_3_3 h5 h4
+    done
+  done
+
+theorem Theorem_8_1_5_2 {A : Type} (X : Set A) :
+    ctble X ↔ ∃ (R : Rel Nat A), unique_val_on_N R ∧ nat_rel_onto R X := by
+  apply Iff.intro
+  · -- (→)
+    assume h1
+    exact Theorem_8_1_5_1_to_2 h1
+    done
+  · -- (←)
+    assume h1
+    have h2 := Theorem_8_1_5_2_to_3 h1
+    exact Theorem_8_1_5_3_to_1 h2
+    done
+  done
+
+theorem Theorem_8_1_5_3 {A : Type} (X : Set A) :
+    ctble X ↔ ∃ (R : Rel A Nat), fcnl_one_one_to_nat R X := by
+  apply Iff.intro
+  · -- (→)
+    assume h1
+    have h2 := Theorem_8_1_5_1_to_2 h1
+    exact Theorem_8_1_5_2_to_3 h2
+    done
+  · -- (←)
+    assume h1
+    exact Theorem_8_1_5_3_to_1 h1
+    done
+  done
+
+theorem Exercise_6_1_16a1 : ∀ (n : Nat), nat_even n ∨ nat_odd n := sorry
+
+theorem Exercise_6_1_16a2 : ∀ (n : Nat), ¬(nat_even n ∧ nat_odd n) := sorry
+
+def fnz (n : Nat) : Int := if 2 ∣ n then ↑(n / 2) else -↑((n + 1) / 2)
+
+def fzn (a : Int) : Nat := if a ≥ 0 then 2 * Int.toNat a else 2 * Int.toNat (-a) - 1
+
+lemma fnz_2dvd {n : Nat} (h : 2 ∣ n) : fnz n = ↑(n / 2) := by
+  define : fnz n
+  rewrite [if_pos h]
+  rfl
+  done
+
+lemma fnz_not_2dvd {n : Nat} (h : ¬2 ∣ n) : fnz n = -↑((n + 1) / 2) := by
+  define : fnz n
+  rewrite [if_neg h]
+  rfl
+  done
+
+lemma fnz_even (k : Nat) : fnz (2 * k) = ↑k := by
+  have h1 : 2 ∣ 2 * k := by
+    apply Exists.intro k
+    rfl
+    done
+  have h2 : 2 > 0 := by norm_num
+  rewrite [fnz_2dvd h1, Nat.mul_div_cancel_left k h2]
+  rfl
+  done
+
+lemma fnz_odd (k : Nat) : fnz (2 * k + 1) = -↑(k + 1) := by
+  have h1 : nat_odd (2 * k + 1) := by
+    define
+    apply Exists.intro k
+    rfl
+    done
+  have h2 := Exercise_6_1_16a2 (2 * k + 1)
+  demorgan at h2
+  disj_syll h2 h1
+  have h3 : ¬2 ∣ 2 * k + 1 := h2
+  rewrite [fnz_not_2dvd h3]
+  have h4 : 2 > 0 := by norm_num
+  have h5 : (2 * k + 1 + 1) / 2 = k + 1 :=
+    calc (2 * k + 1 + 1) / 2
+      _ = 2 * (k + 1) / 2 := by ring
+      _ =  k + 1 := Nat.mul_div_cancel_left (k + 1) h4
+  rewrite [h5]
+  rfl
+  done
+
+lemma fzn_nonneg {a : Int} (h : a ≥ 0) : fzn a = 2 * Int.toNat a := by
+  define : fzn a
+  rewrite [if_pos h]
+  rfl
+  done
+
+lemma fzn_neg {a : Int} (h : ¬a ≥ 0) : fzn a = 2 * Int.toNat (-a) - 1 := by
+  define : fzn a
+  rewrite [if_neg h]
+  rfl
+  done
+
+lemma fzn_nat (k : Nat) : fzn ↑k = 2 * k := by
+  have h1 : (↑k : Int) ≥ 0 := Nat.cast_nonneg k
+  rewrite [fzn_nonneg h1, Int.toNat_coe_nat]
+  rfl
+  done
+
+lemma fzn_neg_succ_nat (k : Nat) : fzn (-↑(k + 1)) = 2 * k + 1 := by
+  have h1 : ¬(-(↑(k + 1) : Int) ≥ 0) := by
+    by_contra h1
+    have h2 : k + 1 ≥ 1 := by linarith
+    have h3 : (↑(k + 1) : Int) ≥ ↑(1 : Nat) := Nat.cast_le.rtl h2
+    rewrite [Nat.cast_one] at h3
+    have h4 : -(↑(k + 1) : Int) ≤ -1 := Int.neg_le_neg h3
+    linarith 
+    done
+  rewrite [fzn_neg h1, neg_neg, Int.toNat_coe_nat]
+  show 2 * (k + 1) - 1 = 2 * k + 1 :=
+    calc 2 * (k + 1) - 1
+      _ = 2 * k + 1 + 1 - 1 := by ring
+      _ = 2 * k + 1 := Nat.add_sub_cancel _ _
+  done
+
+lemma fzn_fnz : fzn ∘ fnz = id := by
+  apply funext
+  fix n
+  have h1 := Exercise_6_1_16a1 n
+  by_cases on h1
+  · -- Case 1. h1 : nat_even n
+    obtain k h2 from h1
+    rewrite [h2, comp_def, fnz_even, fzn_nat]
+    rfl
+    done
+  · -- Case 2. h1 : nat_odd n
+    obtain k h2 from h1
+    rewrite [h2, comp_def, fnz_odd, fzn_neg_succ_nat]
+    rfl
+    done
+  done
+
+lemma int_eq_nat_or_neg_succ (a : Int) : (∃ (k : Nat), a = ↑k) ∨ ∃ (k : Nat), a = -↑(k + 1) := by
+  by_cases h1 : 0 ≤ a
+  · -- Case 1. h1 : 0 ≤ a
+    apply Or.inl
+    exact Int.eq_ofNat_of_zero_le h1
+    done
+  · -- Case 2. h1 : ¬0 ≤ a
+    have h2 : 0 < -a := by linarith
+    apply Or.inr
+    obtain k h3 from Int.eq_succ_of_zero_lt h2
+    apply Exists.intro k
+    rewrite [←h3, neg_neg]
+    rfl
+    done
+  done
+
+lemma fnz_fzn : fnz ∘ fzn = id  := by
+  apply funext
+  fix a : Int
+  have h1 := int_eq_nat_or_neg_succ a
+  by_cases on h1
+  · -- Case 1. h1 : ∃ (k : Nat), a = ↑k
+    obtain k h2 from h1
+    rewrite [h2, comp_def, fzn_nat, fnz_even]
+    rfl
+    done
+  · -- Case 2. h1 : ∃ (k : Nat), a = -↑(k + 1)
+    obtain k h2 from h1
+    rewrite [h2, comp_def, fzn_neg_succ_nat, fnz_odd]
+    rfl
+    done
+  done
+
+example : one_to_one fnz := by
+  apply Theorem_5_3_3_1 fnz
+  exact Exists.intro fzn fzn_fnz
+  done
+
+example : onto fnz := by
+  apply Theorem_5_3_3_2 fnz
+  exact Exists.intro fzn fnz_fzn
+  done
+
+def tri (k : Nat) : Nat := k * (k + 1) / 2
+
+/- Don't need??
+def lt (n : Nat) : Nat :=
+  match n with
+    | 0 => 0
+    | m + 1 => if tri (lt m + 1) ≤ m + 1 then lt m + 1 else lt m
+-/
+
+def f (a b : Nat) := tri (a + b) + b
+
+lemma tri_even (j : Nat) : tri (2 * j) = j * (2 * j + 1) :=
+  calc tri (2 * j)
+    _ = (2 * j) * (2 * j + 1) / 2 := by rfl
+    _ = 2 * (j * (2 * j + 1)) / 2 := by ring
+    _ = j * (2 * j + 1) := Nat.mul_div_cancel_left _ two_pos
+
+lemma tri_odd (j : Nat) : tri (2 * j + 1) = (2 * j + 1) * (j + 1) :=
+  calc tri (2 * j + 1)
+    _ = (2 * j + 1) * (2 * j + 1 + 1) / 2 := by rfl
+    _ = 2 * ((2 * j + 1) * (j + 1)) / 2 := by ring
+    _ = (2 * j + 1) * (j + 1) := Nat.mul_div_cancel_left _ two_pos
+
+lemma tri_step (k : Nat) : tri (k + 1) = tri k + k + 1 := by
+  have h1 : nat_even k ∨ nat_odd k := Exercise_6_1_16a1 k
+  by_cases on h1
+  · -- Case 1. h1 : nat_even k
+    obtain j h2 from h1
+    rewrite [h2]
+    exact
+      calc tri (2 * j + 1)
+        _ = (2 * j + 1) * (j + 1) := tri_odd j
+        _ = j * (2 * j + 1) + 2 * j + 1 := by ring
+        _ = tri (2 * j) + 2 * j + 1 := by rw [tri_even]
+    done
+  · -- Case 2. h1 : nat_odd k
+    obtain j h2 from h1
+    rewrite [h2]
+    exact
+      calc tri (2 * j + 1 + 1)
+        _ = tri (2 * (j + 1)) := by ring
+        _ = (j + 1) * (2 * (j + 1) + 1) := tri_even (j + 1)
+        _ = (2 * j + 1) * (j + 1) + (2 * j + 1) + 1 := by ring
+        _ = tri (2 * j + 1) + (2 * j + 1) + 1 := by rw [tri_odd]
+    done
+  done
+
+lemma tri_incr (j : Nat) : ∀ k ≥ j + 1, tri j + j + 1 ≤ tri k := by
+  by_induc
+  · -- Base Case
+    rewrite [tri_step]
+    linarith
+    done
+  · -- Induction Step
+    fix k
+    assume ih
+    assume h1
+    rewrite [tri_step]
+    linarith
+    done
+  done
+
+lemma le_of_f_eq {a1 b1 a2 b2 : Nat} (h1 : f a1 b1 = f a2 b2) : a1 + b1 ≤ a2 + b2 := by
+  have h2 : tri (a1 + b1) + b1 = tri (a2 + b2) + b2 := h1
+  by_contra h3
+  have h4 : a2 + b2 + 1 ≤ a1 + b1 := by linarith
+  have h5 := tri_incr (a2 + b2) (a1 + b1) h4
+  have h6 : f a2 b2 < f a1 b1 :=
+    calc f a2 b2
+      _ = tri (a2 + b2) + b2 := by rfl
+      _ < tri (a2 + b2) + (a2 + b2) + 1 := by linarith
+      _ ≤ tri (a1 + b1) := h5
+      _ ≤ tri (a1 + b1) + b1 := by linarith
+      _ = f a1 b1 := by rfl
+  linarith
+  done
+
+lemma f_one_one {a1 b1 a2 b2 : Nat} (h1 : f a1 b1 = f a2 b2) : a1 = a2 ∧ b1 = b2 := by
+  have h2 := le_of_f_eq h1
+  have h3 := le_of_f_eq h1.symm
+  have h4 : a1 + b1 = a2 + b2 := by linarith
+  have h5 : tri (a1 + b1) + b1 = tri (a2 + b2) + b2 := h1
+  rewrite [h4] at h5
+  have h6 : b1 = b2 := Nat.add_left_cancel h5
+  rewrite [h6] at h4
+  have h7 : a1 = a2 := Nat.add_right_cancel h4
+  exact And.intro h7 h6
+  done
+
+lemma f_onto : ∀ (n : Nat), ∃ (a b : Nat), f a b = n := by
+  by_induc
+  · -- Base Case
+    apply Exists.intro 0
+    apply Exists.intro 0
+    rfl
+    done
+  · -- Induction Step
+    fix n
+    assume ih
+    obtain a h1 from ih
+    obtain b h2 from h1
+    by_cases h3 : a = 0
+    · -- Case 1. h3 : a = 0
+      apply Exists.intro (b + 1)
+      apply Exists.intro 0
+      rewrite [h3, f] at h2
+      rewrite [f]
+      have h4 := tri_step b
+      exact
+        calc tri (b + 1 + 0)
+          _ = tri b + b + 1 := h4
+          _ = tri (0 + b) + b + 1 := by ring
+          _ = n + 1 := by rw [h2]
+      done
+    · -- Case 2. h3 : a ≠ 0
+      obtain k (h4 : a = k + 1) from Nat.exists_eq_succ_of_ne_zero h3
+      apply Exists.intro k
+      apply Exists.intro (b + 1)
+      exact
+        calc f k (b + 1)
+          _ = tri (k + (b + 1)) + (b + 1) := by rfl
+          _ = tri (k + 1 + b) + b + 1 := by ring
+          _ = tri (a + b) + b + 1 := by rw [h4]
+          _ = f a b + 1 := by rfl
+          _ = n + 1 := by rw [h2]
+      done
+    done
+  done
+
+-- *** Try using subtypes
+
+def subtype {A : Type} (X : Set A) : Type := { x : A // x ∈ X }
+
+def equinum2 {A B : Type} (X : Set A) (Y : Set B) : Prop :=
+  ∃ (f : (subtype X) → (subtype Y)), one_to_one f ∧ onto f
+
+lemma n_lt_n1 (n : Nat) : n < n + 1 := by linarith
+
+lemma j_lt_n1 {j n : Nat} (h : j ∈ I n) : j < n + 1 := by define at h; linarith
+
+def last_elt (n : Nat) : subtype (I (n + 1)) := ⟨n, n_lt_n1 n⟩ 
+
+def embed_I {n : Nat} (j : subtype (I n)) : subtype (I (n + 1)) := ⟨j.val, j_lt_n1 j.property⟩
+
+lemma rem_one_lemma1 {n : Nat} {A : Type} {X : Set A} (f : (subtype (I (n + 1))) → (subtype X))
+    (h1 : one_to_one f ∧ onto f) {k : subtype (I (n + 1))} {j : subtype (I n)} (h2 : j.val = k.val) :
+    (f (last_elt n)).val ∈ X \ { (f k).val } := by
+  define
+  apply And.intro (f (last_elt n)).property
+  define
+  by_contra h3
+  have h4 : f (last_elt n) = f k := Subtype.eq h3
+  have h5 : last_elt n = k := h1.left (last_elt n) k h4
+  have h6 : k.val < n :=
+    calc k.val
+      _ = j.val := h2.symm
+      _ < n := j.property
+  have h7 : k.val = n :=
+    calc k.val
+      _ = (last_elt n).val := by rw [h5]
+      _ = n := by rfl
+  linarith
+  done
+
+lemma rem_one_lemma2 {n : Nat} {A : Type} {X : Set A} (f : (subtype (I (n + 1))) → (subtype X))
+    (h1 : one_to_one f ∧ onto f) {k : subtype (I (n + 1))} {j : subtype (I n)} (h2 : ¬j.val = k.val) :
+    (f (embed_I j)).val ∈ X \ { (f k).val } := by
+  define
+  apply And.intro (f (embed_I j)).property
+  define
+  by_contra h3
+  have h4 : f (embed_I j) = f k := Subtype.eq h3
+  have h5 : embed_I j = k := h1.left (embed_I j) k h4
+  have h6 : k.val = j.val :=
+    calc k.val
+      _ = (embed_I j).val := by rw [h5]
+      _ = j.val := by rfl
+  exact h2 h6.symm
+  done
+
+def rem_one {n : Nat} {A : Type} {X : Set A} (f : (subtype (I (n + 1))) → (subtype X))
+    (h1 : one_to_one f ∧ onto f) (k : subtype (I (n + 1)))
+    (j : subtype (I n)) : subtype (X \ {(f k).val}) := if h : j.val = k.val then
+    ⟨(f (last_elt n)).val, rem_one_lemma1 f h1 h⟩
+    else ⟨(f (embed_I j)).val, rem_one_lemma2 f h1 h⟩
+
+lemma rem_one_k {n : Nat} {A : Type} {X : Set A} (f : (subtype (I (n + 1))) → (subtype X))
+    (h1 : one_to_one f ∧ onto f) {k : subtype (I (n + 1))}
+    {j : subtype (I n)} (h2 : j.val = k.val) :
+    (rem_one f h1 k j).val = (f (last_elt n)).val := by
+  define : rem_one f h1 k j
+  rewrite [dif_pos h2]
+  rfl
+  done
+
+lemma rem_one_not_k {n : Nat} {A : Type} {X : Set A} (f : (subtype (I (n + 1))) → (subtype X))
+    (h1 : one_to_one f ∧ onto f) {k : subtype (I (n + 1))}
+    {j : subtype (I n)} (h2 : ¬j.val = k.val) :
+    (rem_one f h1 k j).val = (f (embed_I j)).val := by
+  define : rem_one f h1 k j
+  rewrite [dif_neg h2]
+  rfl
+  done
+
+lemma rem_one_k_neq_not_k {n : Nat} {A : Type} {X : Set A} (f : subtype (I (n + 1)) → subtype X)
+    (h1 : one_to_one f ∧ onto f) {k : subtype (I (n + 1))}
+    {j1 j2 : subtype (I n)} (h2 : j1.val = k.val) (h3 : ¬j2.val = k.val) :
+    rem_one f h1 k j1 ≠ rem_one f h1 k j2 := by
+  by_contra h4
+  have h5 : (rem_one f h1 k j1).val = (rem_one f h1 k j2).val := by rw [h4]
+  rewrite [rem_one_k f h1 h2, rem_one_not_k f h1 h3] at h5
+  have h6 : f (last_elt n) = f (embed_I j2) := Subtype.eq h5
+  have h7 := h1.left (last_elt n) (embed_I j2) h6
+  have h8 : j2.val = n :=
+    calc j2.val
+      _ = (embed_I j2).val := by rfl
+      _ = (last_elt n).val := by rw [h7]
+      _ = n := by rfl
+  have h9 : j2.val < n := j2.property
+  linarith
+  done
+
+lemma rem_one_one_one {A : Type} {X : Set A} {n : Nat} (f : subtype (I (n + 1)) → subtype X)
+    (h1 : one_to_one f ∧ onto f) (k : subtype (I (n + 1))) :
+    one_to_one (rem_one f h1 k) := by
+  define
+  fix x1; fix x2
+  assume h2
+  by_cases h3 : x1.val = k.val
+  · -- Case 1. h3 : x1.val = k.val
+    by_cases h4 : x2.val = k.val
+    · -- Case 1.1. h4 : x2.val = k.val
+      rewrite [←h4] at h3
+      show x1 = x2 from Subtype.eq h3
+      done
+    · -- Case 1.2. h4 : ¬x2.val = k.val
+      have h5 := rem_one_k_neq_not_k f h1 h3 h4
+      exact absurd h2 h5
+      done
+    done
+  · -- Case 2. h3 : ¬x1.val = k.val
+    by_cases h4 : x2.val = k.val
+    · -- Case 2.1. h4 : x2.val = k.val
+      have h5 := rem_one_k_neq_not_k f h1 h4 h3
+      exact absurd h2.symm h5
+      done
+    · -- Case 2.2. h4 : x2.val ≠ k.val
+      have h5 : (rem_one f h1 k x1).val = (rem_one f h1 k x2).val := by rw [h2]
+      rewrite [rem_one_not_k f h1 h3, rem_one_not_k f h1 h4] at h5
+      have h6 : f (embed_I x1) = f (embed_I x2) := Subtype.eq h5
+      have h7 := h1.left (embed_I x1) (embed_I x2) h6
+      have h8 : x1.val = x2.val :=
+        calc x1.val
+          _ = (embed_I x1).val := by rfl
+          _ = (embed_I x2).val := by rw [h7]
+          _ = x2.val := by rfl
+      exact Subtype.eq h8
+      done
+    done
+  done
+
+lemma rem_one_onto {A : Type} {X : Set A} {n : Nat} (f : subtype (I (n + 1)) → subtype X)
+    (h1 : one_to_one f ∧ onto f) (k : subtype (I (n + 1))) :
+    onto (rem_one f h1 k) := by
+  define
+  fix y
+  by_cases h2 : y.val = (f (last_elt n)).val
+  · -- Case 1. h2 : y.val = (f (last_elt n)).val
+    have h3 : k.val ≠ n := by
+      
+      done
+    done
+  done

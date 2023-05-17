@@ -74,7 +74,7 @@ def congr_mod (m : Nat) (a b : Int) : Prop := (↑m : Int) ∣ (a - b)
 
 def cc (m : Nat) (a : Int) : ZMod m := (↑a : ZMod m)
 
-notation a " ≡ " b " (MOD " m ")" => congr_mod m a b
+notation:50 a " ≡ " b " (MOD " m ")" => congr_mod m a b
 
 notation:max "["a"]_"m:max => cc m a
 
@@ -1143,7 +1143,7 @@ lemma congr_mod_mod (m : Nat) (a : Int) : a ≡ a % m (MOD m) := by
   done
 
 lemma mod_cmpl_res (m : Nat) [NeZero m] (a : Int) :
-    0 ≤ a % m ∧ a % m < m ∧ a ≡ (a % m) (MOD m) :=
+    0 ≤ a % m ∧ a % m < m ∧ a ≡ a % m (MOD m) :=
   And.intro (mod_nonneg m a) (And.intro (mod_lt m a) (congr_mod_mod m a))
 
 theorem Theorem_7_3_1 (m : Nat) [NeZero m] (a : Int) :
@@ -1151,7 +1151,7 @@ theorem Theorem_7_3_1 (m : Nat) [NeZero m] (a : Int) :
   exists_unique
   · -- Existence
     apply Exists.intro (a % m)
-    show 0 ≤ a % m ∧ a % m < m ∧ a ≡ (a % m) (MOD m) from
+    show 0 ≤ a % m ∧ a % m < m ∧ a ≡ a % m (MOD m) from
       mod_cmpl_res m a
     done
   · -- Uniqueness
@@ -2082,11 +2082,11 @@ lemma Exercise_7_4_5_Nat (m a n : Nat) :
   done
 
 theorem Theorem_7_4_3_Euler's_theorem {m a : Nat} [NeZero m]
-    (h1 : rel_prime m a) : (a ^ (phi m)) ≡ 1 (MOD m) := by
+    (h1 : rel_prime m a) : a ^ (phi m) ≡ 1 (MOD m) := by
   have h2 : [a]_m ^ (phi m) = [1]_m := Theorem_7_4_2 h1
   rewrite [Exercise_7_4_5_Nat m a (phi m)] at h2
     --h2 : [↑(a ^ phi m)]_m = [1]_m
-  show (a ^ (phi m)) ≡ 1 (MOD m) from (cc_eq_iff_congr _ _ _).ltr h2
+  show a ^ (phi m) ≡ 1 (MOD m) from (cc_eq_iff_congr _ _ _).ltr h2
   done
 
 #eval gcd 10 7     --Answer: 1.  So 10 and 7 are relatively prime
@@ -2200,42 +2200,40 @@ theorem Theorem_7_2_2_Int {a c : Nat} {b : Int}
 -/
 
 lemma Lemma_7_4_5 {m n : Nat} (a b : Nat) (h1 : rel_prime m n) :
-    a ≡ b (MOD (m * n)) ↔ a ≡ b (MOD m) ∧ a ≡ b (MOD n) := by
+    a ≡ b (MOD m * n) ↔ a ≡ b (MOD m) ∧ a ≡ b (MOD n) := by
   apply Iff.intro
   · -- (→)
-    assume h2 : a ≡ b (MOD (m * n))
-    obtain (j : Int) (h3 : ↑a - ↑b = ↑(m * n) * j) from h2
-    rewrite [Nat.cast_mul] at h3    --h3 : ↑a - ↑b = ↑m * ↑n * j
+    assume h2 : a ≡ b (MOD m * n)
+    obtain (j : Int) (h3 : a - b = (m * n) * j) from h2
     apply And.intro
     · -- Proof of a ≡ b (MOD m)
-      apply Exists.intro (↑n * j)
-      show ↑a - ↑b = ↑m * (↑n * j) from
+      apply Exists.intro (n * j)
+      show a - b = m * (n * j) from
         calc ↑a - ↑b
-          _ = ↑m * ↑n * j := h3
-          _ = ↑m * (↑n * j) := by ring
+          _ = m * n * j := h3
+          _ = m * (n * j) := by ring
       done
     · -- Proof of a ≡ b (MOD n)
-      apply Exists.intro (↑m * j)
-      show ↑a - ↑b = ↑n * (↑m * j) from
+      apply Exists.intro (m * j)
+      show a - b = n * (m * j) from
         calc ↑a - ↑b
-          _ = ↑m * ↑n * j := h3
-          _ = ↑n * (↑m * j) := by ring
+          _ = m * n * j := h3
+          _ = n * (m * j) := by ring
       done
     done
   · -- (←)
     assume h2 : a ≡ b (MOD m) ∧ a ≡ b (MOD n)
-    obtain (j : Int) (h3 : ↑a - ↑b = ↑m * j) from h2.left
-    have h4 : (↑n : Int) ∣ (↑a : Int) - (↑b : Int) := h2.right
+    obtain (j : Int) (h3 : a - b = m * j) from h2.left
+    have h4 : (↑n : Int) ∣ a - b := h2.right
     rewrite [h3] at h4      --h4 : ↑n ∣ ↑m * j
     have h5 : ↑n ∣ j := Theorem_7_2_2_Int h4 h1
-    obtain (k : Int) (h6 : j = ↑n * k) from h5
+    obtain (k : Int) (h6 : j = n * k) from h5
     apply Exists.intro k    --Goal : ↑a - ↑b = ↑(m * n) * k
-    show ↑a - ↑b = ↑(m * n) * k from
+    show a - b = (m * n) * k from
       calc ↑a - ↑b
-        _ = ↑m * j := h3
-        _ = ↑m * (↑n * k) := by rw [h6]
-        _ = ↑m * ↑n * k := by ring
-        _ = ↑(m * n) * k := by rw [Nat.cast_mul]
+        _ = m * j := h3
+        _ = m * (n * k) := by rw [h6]
+        _ = (m * n) * k := by ring
     done
   done
 
@@ -2283,8 +2281,8 @@ lemma prime_NeZero {p : Nat} (h : prime p) : NeZero p := by
 lemma Lemma_7_5_1 {p e d m c s : Nat} {t : Int}
     (h1 : prime p) (h2 : e * d = (p - 1) * s + 1)
     (h3 : ↑(m ^ e) - ↑c = ↑p * t) :
-    (c ^ d) ≡ m (MOD p) := by
-  have h4 : (m ^ e) ≡ c (MOD p) := Exists.intro t h3
+    c ^ d ≡ m (MOD p) := by
+  have h4 : m ^ e ≡ c (MOD p) := Exists.intro t h3
   have h5 : [m ^ e]_p = [c]_p := (cc_eq_iff_congr _ _ _).rtl h4
   rewrite [←Exercise_7_4_5_Nat] at h5  --h5 : [m]_p ^ e = [c]_p
   by_cases h6 : p ∣ m
@@ -2311,7 +2309,7 @@ lemma Lemma_7_5_1 {p e d m c s : Nat} {t : Int}
         _ = [0 ^ (e * d)]_p := Exercise_7_4_5_Int _ _ _
         _ = [0]_p := by rw [h10]
         _ = [m]_p := by rw [h8]
-    show (c ^ d) ≡ m (MOD p)  from (cc_eq_iff_congr _ _ _).ltr h11
+    show c ^ d ≡ m (MOD p)  from (cc_eq_iff_congr _ _ _).ltr h11
     done
   · -- Case 2. h6 : ¬p ∣ m
     have h7 : rel_prime m p := rel_prime_of_prime_not_dvd h1 h6
@@ -2331,7 +2329,7 @@ lemma Lemma_7_5_1 {p e d m c s : Nat} {t : Int}
         _ = [1]_p * [m]_p := by rw [h10]
         _ = [m]_p * [1]_p := by ring
         _ = [m]_p := Theorem_7_3_6_7 _
-    show (c ^ d) ≡ m (MOD p)  from (cc_eq_iff_congr _ _ _).ltr h11
+    show c ^ d ≡ m (MOD p)  from (cc_eq_iff_congr _ _ _).ltr h11
     done
   done
 
@@ -2340,9 +2338,9 @@ theorem Theorem_7_5_1 (p q n e d k m c : Nat)
     (n_pq : n = p * q) (ed_congr_1 : e * d = k * (p - 1) * (q - 1) + 1)
     (h1 : [m]_n ^ e = [c]_n) : [c]_n ^ d = [m]_n := by
   rewrite [Exercise_7_4_5_Nat, cc_eq_iff_congr] at h1
-    --h1 : (m ^ e) ≡ c (MOD n)
+    --h1 : m ^ e ≡ c (MOD n)
   rewrite [Exercise_7_4_5_Nat, cc_eq_iff_congr]
-    --Goal : (c ^ d) ≡ m (MOD n)
+    --Goal : c ^ d ≡ m (MOD n)
   obtain (j : Int) (h2 : ↑(m ^ e) - ↑c = ↑n * j) from h1
   rewrite [n_pq, Nat.cast_mul] at h2
     --h2 : ↑(m ^ e) - ↑c = ↑p * ↑q * j
@@ -2354,7 +2352,7 @@ theorem Theorem_7_5_1 (p q n e d k m c : Nat)
     rewrite [h2]
     ring
     done
-  have congr_p : (c ^ d) ≡ m (MOD p) := Lemma_7_5_1 p_prime h3 h4
+  have congr_p : c ^ d ≡ m (MOD p) := Lemma_7_5_1 p_prime h3 h4
   have h5 : e * d = (q - 1) * (k * (p - 1)) + 1 := by
     rewrite [ed_congr_1]
     ring
@@ -2363,7 +2361,7 @@ theorem Theorem_7_5_1 (p q n e d k m c : Nat)
     rewrite [h2]
     ring
     done
-  have congr_q : (c ^ d) ≡ m (MOD q) := Lemma_7_5_1 q_prime h5 h6
+  have congr_q : c ^ d ≡ m (MOD q) := Lemma_7_5_1 q_prime h5 h6
   have h7 : ¬q ∣ p := by
     by_contra h8
     have h9 : q = 1 ∨ q = p := dvd_prime p_prime h8
@@ -2372,6 +2370,6 @@ theorem Theorem_7_5_1 (p q n e d k m c : Nat)
     done
   have h8 : rel_prime p q := rel_prime_of_prime_not_dvd q_prime h7
   rewrite [n_pq, Lemma_7_4_5 _ _ h8]
-  show (c ^ d) ≡ m (MOD p) ∧ (c ^ d) ≡ m (MOD q) from
+  show c ^ d ≡ m (MOD p) ∧ c ^ d ≡ m (MOD q) from
     And.intro congr_p congr_q
   done

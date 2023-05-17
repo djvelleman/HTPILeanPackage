@@ -13,78 +13,244 @@ theorem relext {A B : Type} (R S : Rel A B)
   fix b
   rewrite [h]
   rfl
+  --alternative proof:
+  -- ext (a : A) (b : B)  --Can replace all lines above,
+  -- exact h a b
+  done
 
-def invRel {A B : Type} (R : Rel A B) (b : B) (a : A) : Prop := R a b
+def invRel {A B : Type} (R : Rel A B) : Rel B A := RelFromExt (inv (extension R))
 
-lemma invRel_invRel {A B : Type} (R : Rel A B) : invRel (invRel R) = R := by rfl
-
-theorem invRel_def {A B : Type} (R : Rel A B) (a : A) (b : B) :
+lemma invRel_def {A B : Type} (R : Rel A B) (a : A) (b : B) :
     invRel R b a ↔ R a b := by rfl
 
-/- Basic properties of finite sets -/
-def I (n : Nat) : Set Nat := { k : Nat | k < n }
+def compRel {A B C : Type} (S : Rel B C) (R : Rel A B) : Rel A C :=
+    RelFromExt (comp (extension S) (extension R))
 
-theorem I_def (k n : Nat) : k ∈ I n ↔ k < n := by rfl
+lemma compRel_def {A B C : Type} (S : Rel B C) (R : Rel A B) (a : A) (c : C) :
+    compRel S R a c ↔ ∃ (x : B), R a x ∧ S x c := by rfl
 
---theorem I_0 {n : Nat} (h : n > 0) : 0 ∈ I n := h
+lemma inv_inv {A B : Type} (R : Rel A B) : invRel (invRel R) = R := by rfl
 
-lemma I_0_empty : empty (I 0) := by
+#check Theorem_4_2_5_5
+
+lemma inv_comp {A B C : Type} (R : Rel A B) (S : Rel B C) :
+    invRel (compRel S R) = compRel (invRel R) (invRel S) := 
+  calc invRel (compRel S R)
+    _ = RelFromExt (inv (comp (extension S) (extension R))) := by rfl
+    _ = RelFromExt (comp (inv (extension R)) (inv (extension S))) := by rw [Theorem_4_2_5_5]
+    _ = compRel (invRel R) (invRel S) := by rfl
+
+/- Old versions
+def invRel {A B : Type} (R : Rel A B) (b : B) (a : A) : Prop := R a b
+
+lemma invRel_def {A B : Type} (R : Rel A B) (a : A) (b : B) :
+    invRel R b a ↔ R a b := by rfl
+
+lemma invRel_invRel {A B : Type} (R : Rel A B) : invRel (invRel R) = R := by rfl
+-/
+
+def rel_on {A B : Type} (R : Rel A B) (X : Set A) (Y : Set B) : Prop :=
+    ∀ (x : A) (y : B), R x y → x ∈ X ∧ y ∈ Y
+
+def fcnl_on {A B : Type} (R : Rel A B) (X : Set A) : Prop :=
+    ∀ x ∈ X, ∃! (y : B), R x y
+
+def matching {A B : Type} (R : Rel A B) (X : Set A) (Y : Set B) : Prop :=
+    rel_on R X Y ∧ fcnl_on R X ∧ fcnl_on (invRel R) Y
+
+def equinum {A B : Type} (X : Set A) (Y : Set B) : Prop :=
+    ∃ (R : Rel A B), matching R X Y
+
+lemma match_rel_on {A B : Type}
+    {R : Rel A B} {X : Set A} {Y : Set B} {a : A} {b : B}
+    (h1 : matching R X Y) (h2 : R a b) : a ∈ X ∧ b ∈ Y := by
+  define at h1
+  have h3 := h1.left
+  define at h3
+  exact h3 a b h2
+  done
+
+lemma match_inv {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B}
+    (h : matching R X Y) : matching (invRel R) Y X := by
   define
-  by_contra h1
-  obtain x h2 from h1
-  define at h2
-  linarith
-  done
-
-lemma I_1_singleton : I 1 = {0} := by
-  apply Set.ext
-  fix x
-  apply Iff.intro
-  · -- (→)
-    assume h1
-    rewrite [I_def] at h1
+  apply And.intro
+  · -- Proof that rel_on R Y X
     define
-    linarith
-    done
-  · -- (←)
+    fix y; fix x
     assume h1
     define at h1
-    rewrite [h1, I_def]
-    linarith
+    have h2 := match_rel_on h h1
+    exact And.intro h2.right h2.left
+    done
+  · -- proof that fcnl_on (inv R) Y ∧ fcnl_on (inv (inv R)) X
+    rewrite [inv_inv]
+    define at h
+    exact And.intro h.right.right h.right.left
     done
   done
 
-lemma I_diff (n : Nat) : I (n + 1) \ {n} = I n := by
-  apply Set.ext
-  fix x
-  apply Iff.intro
-  · -- (→)
-    assume h1
-    define
-    define at h1
-    have h2 := h1.left
-    have h3 := h1.right
-    define at h2
-    define at h3
-    have h4 : x ≤ n := Nat.le_of_lt_succ h2
-    show x < n from Nat.lt_of_le_of_ne h4 h3
+lemma fcnl_comp {A B C : Type}
+    {R : Rel A B} {S : Rel B C} {X : Set A} {Y : Set B} {Z : Set C}
+    (h1 : matching R X Y) (h2 : matching S Y Z) : fcnl_on (compRel S R) X := by
+  define; define at h1; define at h2
+  have h3 := h1.left
+  have h4 := h1.right.left
+  have h5 := h2.right.left
+  define at h3; define at h4; define at h5
+  fix a
+  assume h6 : a ∈ X
+  obtain b h7 h8 from h4 a h6
+  have h9 := h3 a b h7
+  obtain c h10 h11 from h5 b h9.right
+  exists_unique
+  · -- Existence
+    apply Exists.intro c
+    rewrite [compRel_def]
+    apply Exists.intro b
+    exact And.intro h7 h10
     done
-  · -- (←)
-    assume h1
-    define at h1
-    define
+  · -- Uniqueness
+    fix c1; fix c2
+    assume h12; assume h13
+    rewrite [compRel_def] at h12
+    rewrite [compRel_def] at h13
+    obtain b1 h14 from h12
+    obtain b2 h15 from h13
+    have h16 := h8 b1 b h14.left h7
+    have h17 := h8 b2 b h15.left h7
+    rewrite [h16] at h14
+    rewrite [h17] at h15
+    exact h11 c1 c2 h14.right h15.right
+    done
+  done
+
+lemma match_comp {A B C : Type} {R : Rel A B} {S : Rel B C}
+    {X : Set A} {Y : Set B} {Z : Set C}
+    (h1 : matching R X Y) (h2 : matching S Y Z) : matching (compRel S R) X Z := by
+  define
+  apply And.intro
+  · -- Proof of rel_on (compRel S R) X Z
+    define; define at h1; define at h2
+    fix a; fix c
+    assume h3 : compRel S R a c
+    rewrite [compRel_def] at h3
+    obtain b h4 from h3
+    have h5 := h1.left
+    define at h5
+    have h6 := h2.left
+    define at h6
+    have h7 := h5 a b h4.left
+    have h8 := h6 b c h4.right
+    exact And.intro h7.left h8.right
+    done
+  · -- Proof of fcnl_on statements
     apply And.intro
-    · -- Proof that x ∈ I (n + 1)
-      define
-      linarith
+    · -- Proof of fcnl_on (compRel S R) X
+      exact fcnl_comp h1 h2
       done
-    · -- Proof that x ∉ {n}
-      by_contra h2
-      define at h2
-      linarith
+    · -- Proof of fcnl_on (invRel (compRel S R)) Z
+      rewrite [inv_comp]
+      have h3 := match_inv h1
+      have h4 := match_inv h2
+      exact fcnl_comp h4 h3
       done
     done
   done
+
+def idRel_on {A : Type} (X : Set A) (a b : A) : Prop := a ∈ X ∧ a = b
+
+lemma flip_id {A : Type} {X : Set A} {a b : A}
+    (h : a ∈ X ∧ a = b) : b ∈ X ∧ b = a := by
+  apply And.intro _ h.right.symm
+  rewrite [←h.right]
+  exact h.left
+  done
+
+lemma inv_id {A : Type} (X : Set A) : invRel (idRel_on X) = idRel_on X := by
+  apply relext
+  fix a; fix b
+  rewrite [invRel_def]
+  define : idRel_on X a b
+  define : idRel_on X b a
+  apply Iff.intro
+  · -- (→)
+    assume h1
+    exact flip_id h1
+    done
+  · -- (←)
+    assume h1
+    exact flip_id h1
+    done
+  done
+
+lemma fcnl_id {A : Type} (X : Set A) : fcnl_on (idRel_on X) X := by
+  define
+  fix a
+  assume h1
+  exists_unique
+  · -- Existence
+    apply Exists.intro a
+    define
+    apply And.intro h1
+    rfl
+    done
+  · -- Uniqueness
+    fix b1; fix b2
+    assume h2; assume h3
+    define at h2; define at h3
+    rewrite [←h2.right, ←h3.right]
+    rfl
+    done
+  done
+
+lemma match_id {A : Type} (X : Set A) : matching (idRel_on X) X X := by
+  define
+  apply And.intro
+  · -- Proof of rel_on
+    define
+    fix a; fix b
+    assume h1
+    define at h1
+    apply And.intro h1.left
+    rewrite [←h1.right]
+    exact h1.left
+    done
+  · -- Proof of fcnls
+    apply And.intro
+    · -- Proof of fcnl_on (idRel_on X) X
+      exact fcnl_id X
+      done
+    · -- Proof of fcnl_on (invRel (idRel_on X)) X
+      rewrite [inv_id]
+      exact fcnl_id X
+      done
+    done
+  done
+
+theorem Theorem_8_1_3_1 {A : Type} (X : Set A) : equinum X X := by
+  define
+  apply Exists.intro (idRel_on X)
+  exact match_id X
+  done
+
+theorem Theorem_8_1_3_2 {A B : Type} {X : Set A} {Y : Set B}
+    (h : equinum X Y) : equinum Y X := by
+  define at h; define
+  obtain R h1 from h
+  apply Exists.intro (invRel R)
+  exact match_inv h1
+  done
+
+theorem Theorem_8_1_3_3 {A B C : Type} {X : Set A} {Y : Set B} {Z : Set C}
+    (h1 : equinum X Y) (h2 : equinum Y Z) : equinum X Z := by
+  define at h1; define at h2; define
+  obtain R h3 from h1
+  obtain S h4 from h2
+  apply Exists.intro (compRel S R)
+  exact match_comp h3 h4
+  done
+
+
 
 /- Old versions
 def I (n : Nat) : Set Nat := { k : Nat | 1 ≤ k ∧ k ≤ n }
@@ -162,48 +328,85 @@ theorem I_diff (n : Nat) : I (n + 1) \ { n + 1 } = I n := by
   done
 -/
 
-def rel_on {A B : Type} (R : Rel A B) (X : Set A) (Y : Set B) : Prop :=
-    ∀ (x : A) (y : B), R x y → x ∈ X ∧ y ∈ Y
+/- Finite and Denumerable Sets -/
+def I (n : Nat) : Set Nat := { k : Nat | k < n }
 
-def fcnl_on {A B : Type} (R : Rel A B) (X : Set A) : Prop :=
-    ∀ x ∈ X, ∃! (y : B), R x y
+theorem I_def (k n : Nat) : k ∈ I n ↔ k < n := by rfl
 
-def matching {A B : Type} (R : Rel A B) (X : Set A) (Y : Set B) : Prop :=
-    rel_on R X Y ∧ fcnl_on R X ∧ fcnl_on (invRel R) Y
+def finite {A : Type} (X : Set A) : Prop :=
+  ∃ (n : Nat), equinum (I n) X
 
-def equinum {A B : Type} (X : Set A) (Y : Set B) : Prop :=
-    ∃ (R : Rel A B), matching R X Y
+def Univ (A : Type) : Set A := { x : A | True }
 
+lemma elt_Univ {A : Type} (a : A) : a ∈ Univ A := by define; trivial
+
+def denum {A : Type} (X : Set A) : Prop :=
+  equinum (Univ Nat) X
+
+lemma denum_def {A : Type} (X : Set A) : denum X ↔ equinum (Univ Nat) X := by rfl
+
+def ctble {A : Type} (X : Set A) : Prop :=
+  finite X ∨ denum X
+
+/- Basic theorems about finite sets and number of elements -/
 def numElts {A : Type} (X : Set A) (n : Nat) : Prop :=
     equinum (I n) X
 
-def finite {A : Type} (X : Set A) : Prop :=
-    ∃ (n : Nat), numElts X n
-
-lemma match_rel_on {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B} {a : A} {b : B}
-    (h1 : matching R X Y) (h2 : R a b) : a ∈ X ∧ b ∈ Y := by
-  define at h1
-  have h3 := h1.left
-  define at h3
-  exact h3 a b h2
+lemma I_0_empty : empty (I 0) := by
+  define
+  by_contra h1
+  obtain x h2 from h1
+  define at h2
+  linarith
   done
 
-lemma match_inv {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B}
-    (h : matching R X Y) : matching (invRel R) Y X := by
-  define
-  apply And.intro
-  · -- Proof that rel_on R Y X
+lemma I_1_singleton : I 1 = {0} := by
+  apply Set.ext
+  fix x
+  apply Iff.intro
+  · -- (→)
+    assume h1
+    rewrite [I_def] at h1
     define
-    fix y; fix x
+    linarith
+    done
+  · -- (←)
     assume h1
     define at h1
-    have h2 := match_rel_on h h1
-    exact And.intro h2.right h2.left
+    rewrite [h1, I_def]
+    linarith
     done
-  · -- proof that fcnl_on (inv R) Y ∧ fcnl_on (inv (inv R)) X
-    rewrite [invRel_invRel]
-    define at h
-    exact And.intro h.right.right h.right.left
+  done
+
+lemma I_diff (n : Nat) : I (n + 1) \ {n} = I n := by
+  apply Set.ext
+  fix x
+  apply Iff.intro
+  · -- (→)
+    assume h1
+    define
+    define at h1
+    have h2 := h1.left
+    have h3 := h1.right
+    define at h2
+    define at h3
+    have h4 : x ≤ n := Nat.le_of_lt_succ h2
+    show x < n from Nat.lt_of_le_of_ne h4 h3
+    done
+  · -- (←)
+    assume h1
+    define at h1
+    define
+    apply And.intro
+    · -- Proof that x ∈ I (n + 1)
+      define
+      linarith
+      done
+    · -- Proof that x ∉ {n}
+      by_contra h2
+      define at h2
+      linarith
+      done
     done
   done
 
@@ -384,8 +587,6 @@ theorem one_elt_fcnl_on {A B : Type} (a : A) (b : B) :
     done
   done
 
-/- Basic theorems about finite sets and number of elements -/
-
 theorem remove_one_equinum {A B : Type} {X : Set A} {Y : Set B} {x : A} {y : B}
     (h1 : equinum X Y) (h2 : x ∈ X) (h3 : y ∈ Y) : equinum (X \ { x }) (Y \ { y }) := by
   define
@@ -403,8 +604,6 @@ theorem remove_one_numElts {A : Type} {X : Set A} {n : Nat} {x : A}
   exact h4
   done
 
-def emptyRel (A B : Type) (a : A) (b : B) : Prop := False
-
 lemma fcnl_on_empty {A B : Type} (R : Rel A B) {X : Set A} (h : empty X) : fcnl_on R X := by
   define
   fix a
@@ -412,6 +611,8 @@ lemma fcnl_on_empty {A B : Type} (R : Rel A B) {X : Set A} (h : empty X) : fcnl_
   contradict h
   exact Exists.intro a h2
   done
+
+def emptyRel (A B : Type) (a : A) (b : B) : Prop := False
 
 lemma match_emptyRel {A B : Type} {X : Set A} {Y : Set B} (h1 : empty X) (h2 : empty Y) :
     matching (emptyRel A B) X Y := by
@@ -541,3 +742,105 @@ theorem nonempty_of_pos_numElts {A : Type} {X : Set A} {n : Nat}
   obtain x h6 _h7 from h5
   have h8 := match_rel_on h3 h6
   exact Exists.intro x h8.right
+
+/- First attempt at Nat × Nat equinum with Nat
+lemma div_two_less (m : Nat) (h : 2 ∣ (m + 1)) : (m + 1) / 2 < m + 1 := by
+  obtain k h1 from h
+  have h2 : 0 < 2 := by norm_num
+  rewrite [h1, Nat.mul_div_cancel_left k h2]
+  linarith
+  done
+
+def pow2 (n : Nat) : Nat := 
+  match n with
+    | 0 => 0
+    | m + 1 => if h : 2 ∣ (m + 1) then
+                  have : (m + 1) / 2 < m + 1 := div_two_less m h
+                  pow2 ((m + 1) / 2) + 1
+                else 0
+
+def f1 (n : Nat) : Nat := pow2 (n + 1)
+
+def f2 (n : Nat) : Nat := ((n + 1) / (2 ^ (f1 n)) - 1) / 2
+
+def f (n : Nat) : Nat × Nat := (f1 n, f2 n)
+
+def g (p : Nat × Nat) : Nat := 2 ^ p.1 * (2 * p.2 + 1) - 1
+
+lemma g_def (a b : Nat) : g (a, b) = 2 ^ a * (2 * b + 1) - 1 := by rfl
+
+lemma pos2a2b1 (a b : Nat) : 2 ^ a * (2 * b + 1) > 0 := by
+  have h1 : 2 > 0 := by norm_num
+  have h2 : 2 ^ a > 0 := Nat.pos_pow_of_pos a h1
+  have h3 : 2 * b + 1 > 0 := by linarith
+  exact mul_pos h2 h3
+  done
+
+lemma pow2_val (b : Nat) : ∀ (a : Nat), pow2 (2 ^ a * (2 * b + 1)) = a := by
+  by_induc
+  · -- Base Case
+    have h1 := pos2a2b1 0 b
+    obtain k h2 from Nat.exists_eq_add_of_le' h1
+    rewrite [h2]
+    have h3 : pow2 (k + 1) = if 2 ∣ (k + 1) then pow2 ((k + 1) / 2) + 1 else 0 := by rfl
+    have h4 : ¬2 ∣ (k + 1) := by
+      rewrite [←h2]
+      norm_num
+      by_contra h4
+      obtain j h5 from h4
+      have h6 : ¬2 ∣ 1 := by norm_num
+      have h7 : 2 ∣ 1 := by
+        define
+        apply Exists.intro (j - b)
+        exact
+          calc 1
+            _ = 2 * b + 1 - 2 * b := (Nat.add_sub_cancel_left _ _).symm
+            _ = 2 * j - 2 * b := by rw [h5]
+            _ = 2 * (j - b) := (Nat.mul_sub_left_distrib _ _ _).symm
+        done
+      exact h6 h7
+      done
+    rewrite [if_neg h4] at h3
+    exact h3
+    done
+  · -- Induction Step
+    fix a
+    assume ih
+    have h1 := pos2a2b1 (a + 1) b
+    obtain k h2 from Nat.exists_eq_add_of_le' h1
+    have h3 : 2 ∣ k + 1 := by
+      apply Exists.intro (2 ^ a * (2 * b + 1))
+      rewrite [←h2]
+      ring
+      done
+    rewrite [h2]
+    have h4 : pow2 (k + 1) = if 2 ∣ (k + 1) then pow2 ((k + 1) / 2) + 1 else 0 := by rfl
+    rewrite [if_pos h3] at h4
+    have h5 : 0 < 2 := by norm_num
+    have h6 : (k + 1) / 2 = 2 ^ a * (2 * b + 1) := by
+      rewrite [←h2]
+      exact
+        calc 2 ^ (a + 1) * (2 * b + 1) / 2
+          _ = 2 * (2 ^ a * (2 * b + 1)) / 2 := by ring
+          _ = 2 ^ a * (2 * b + 1) := Nat.mul_div_cancel_left _ h5
+      done
+    rewrite [h6, ih] at h4
+    exact h4
+    done
+  done
+
+theorem fg (a b : Nat) : f (g (a, b)) = (a, b) := by
+  rewrite [g_def, f]
+  have h1 : f1 (2 ^ a * (2 * b + 1) - 1) = a := by
+    rewrite [f1]
+    have h2 := pos2a2b1 a b
+    obtain k h3 from Nat.exists_eq_add_of_le' h2
+    rewrite [h3]
+    norm_num
+    rewrite [←h3]
+    exact pow2_val b a
+    done
+  rewrite [h1]
+  rewrite [f2, h1]
+  done
+-/

@@ -45,9 +45,9 @@ lemma dvd_prime_ex {a p : Nat}
     (h1 : prime p) (h2 : a ∣ p) : a = 1 ∨ a = p := sorry
 
 -- 2.
+-- Hints:  Start with apply List.rec.  You may find mul_ne_zero useful
 theorem prod_nonzero_nonzero : ∀ (l : List Nat),
     (∀ (a : Nat), a ∈ l → a ≠ 0) → prod l ≠ 0 := sorry
--- Hints:  Start with apply List.rec.  You may find mul_ne_zero useful
 
 -- 3.
 theorem rel_prime_iff_no_common_factor (a b : Nat) :
@@ -83,14 +83,14 @@ theorem Exercise_7_2_17a (a b c : Nat) :
 /- Section 7.3 -/
 -- 1.
 theorem congr_trans_ex {m : Nat} : ∀ {a b c : Int},
-    congr_mod m a b → congr_mod m b c → congr_mod m a c := sorry
+    a ≡ b (MOD m) → b ≡ c (MOD m) → a ≡ c (MOD m) := sorry
 
 -- 2.
-theorem Theorem_7_3_6_3 {m : Nat} (X : ZMod m) : X + cc m 0 = X := sorry
+theorem Theorem_7_3_6_3 {m : Nat} (X : ZMod m) : X + [0]_m = X := sorry
 
 -- 3.
 theorem Theorem_7_3_6_4 {m : Nat} (X : ZMod m) :
-    ∃ (Y : ZMod m), X + Y = cc m 0 := sorry
+    ∃ (Y : ZMod m), X + Y = [0]_m := sorry
 
 -- 4.
 theorem Exercise_7_3_4a {m : Nat} (Z1 Z2 : ZMod m)
@@ -99,28 +99,32 @@ theorem Exercise_7_3_4a {m : Nat} (Z1 Z2 : ZMod m)
 
 -- 5.
 theorem Exercise_7_3_4b {m : Nat} (X Y1 Y2 : ZMod m)
-    (h1 : X + Y1 = cc m 0) (h2 : X + Y2 = cc m 0) : Y1 = Y2 := sorry
+    (h1 : X + Y1 = [0]_m) (h2 : X + Y2 = [0]_m) : Y1 = Y2 := sorry
 
 -- 6.
 theorem Theorem_7_3_10 (m a d : Nat) (b : Int) (h1 : d = gcd m a) :
-    ¬(↑d : Int) ∣ b → ¬∃ (x : Int), congr_mod m (a * x) b := sorry
+    ¬(↑d : Int) ∣ b → ¬∃ (x : Int), a * x ≡ b (MOD m) := sorry
 
 -- 7.
 theorem Theorem_7_3_11 (m n : Nat) (a b : Int) (h1 : n ≠ 0) :
-    congr_mod (n * m) (n * a) (n * b) ↔  congr_mod m a b := sorry
+    n * a ≡ n * b (MOD n * m) ↔ a ≡ b (MOD m) := sorry
 
 -- 8.
-theorem Exercise_7_3_16 {m : Nat} {a b : Int} (h : congr_mod m a b) :
-    ∀ (n : Nat), congr_mod m (a ^ n) (b ^ n) := sorry
+theorem Exercise_7_3_16 {m : Nat} {a b : Int} (h : a ≡ b (MOD m)) :
+    ∀ (n : Nat), a ^ n ≡ b ^ n (MOD m) := sorry
+
+-- 9.
+example {m : Nat} [NeZero m] (X : ZMod m) :
+    ∃! (a : Int), 0 ≤ a ∧ a < m ∧ X = [a]_m := sorry
 
 /- Section 7.4 -/
 -- 1.
 --Hint:  Use induction.
---For the base case, compute (cc m a) ^ 0 * (cc m 1) in two ways:
---by Theorem_7_3_6_7, (cc m a) ^ 0 * (cc m 1) = (cc m a) ^ 0
---by ring, (cc m a) ^ 0 * (cc m 1) = cc m 1.
+--For the base case, compute [a]_m ^ 0 * [1]_m in two ways:
+--by Theorem_7_3_6_7, [a] ^ 0 * [1]_m = [a]_m ^ 0
+--by ring, [a]_m ^ 0 * [1]_m = [1]_m.
 lemma Exercise_7_4_5_Int_ex (m : Nat) (a : Int) :
-    ∀ (n : Nat), (cc m a) ^ n = cc m (a ^ n) := sorry
+    ∀ (n : Nat), [a]_m ^ n = [a ^ n]_m := sorry
 
 -- 2.
 lemma left_inv_one_one_below_ex {n : Nat} {g g' : Nat → Nat}
@@ -141,17 +145,17 @@ lemma Lemma_7_4_6 {a b c : Nat} :
 
 -- 6.
 example {m a : Nat} [NeZero m] (h1 : rel_prime m a) :
-    congr_mod m (a ^ (phi m + 1)) a := sorry
+    a ^ (phi m + 1) ≡ a (MOD m) := sorry
 
 -- 7.
 theorem Like_Exercise_7_4_11 {m a p : Nat} [NeZero m]
     (h1 : rel_prime m a) (h2 : p + 1 = phi m) :
-    (cc m a) * (cc m ↑(a ^ p)) = cc m 1 := sorry
+    [a]_m * [a ^ p]_m = [1]_m := sorry
 
 -- 8.
 theorem Like_Exercise_7_4_12 {m a p q k : Nat} [NeZero m]
     (h1 : rel_prime m a) (h2 : p = q + (phi m) * k) :
-    congr_mod m (a ^ p) (a ^ q) := sorry
+    a ^ p ≡ a ^ q (MOD m) := sorry
 
 /- Section 7.5 -/
 -- 1.
@@ -165,7 +169,7 @@ lemma three_prime : prime 3 := sorry
 -- 3.
 --Hint:  Use the previous exercise, Exercise_7_2_7, and Theorem_7_4_2.
 theorem Exercise_7_5_13a (a : Nat) (h1 : rel_prime 561 a) :
-    congr_mod 3 ↑(a ^ 560) 1 := sorry
+    ↑(a ^ 560) ≡ 1 (MOD 3) := sorry
 
 -- 4.
 --Hint:  Imitate the way Theorem_7_2_2_Int was proven from Theorem_7_2_2.
@@ -175,5 +179,5 @@ lemma Theorem_7_2_3_Int {p : Nat} {a b : Int}
 -- 5.
 --Hint:  Use the previous exercise.
 theorem Exercise_7_5_14b (n : Nat) (b : Int)
-    (h1 : prime n) (h2 : congr_mod n (b ^ 2) 1) :
-    congr_mod n b 1 ∨ congr_mod n b (-1) := sorry
+    (h1 : prime n) (h2 : b ^ 2 ≡ 1 (MOD n)) :
+    b ≡ 1 (MOD n) ∨ b ≡ -1 (MOD n) := sorry
