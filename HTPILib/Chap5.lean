@@ -133,6 +133,10 @@ theorem Theorem_5_2_5_1 {A B C : Type} (f : A → B) (g : B → C) :
   show a1 = a2 from h1 a1 a2 h4
   done
 
+
+lemma comp_def {A B C : Type} (f : A → B) (g : B → C) (x : A) :
+    (g ∘ f) x = g (f x) := by rfl
+
 theorem Theorem_5_2_5_2 {A B C : Type} (f : A → B) (g : B → C) :
     onto f → onto g → onto (g ∘ f) := by
   assume h1 : onto f
@@ -144,7 +148,7 @@ theorem Theorem_5_2_5_2 {A B C : Type} (f : A → B) (g : B → C) :
   obtain (b : B) (h3 : g b = c) from h2 c
   obtain (a : A) (h4 : f a = b) from h1 b
   apply Exists.intro a   --Goal : (g ∘ f) a = c
-  define : (g ∘ f) a     --Goal : g (f a) = c
+  rewrite [comp_def]     --Goal : g (f a) = c
   rewrite [←h4] at h3
   show g (f a) = c from h3
   done

@@ -6,7 +6,7 @@ package hTPI {
 }
 
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4.git" @ "7e05f55c01e9f79dbbbec7758e1b93716a988536"
+  "https://github.com/leanprover-community/mathlib4.git" @ "100392f8614e94b2dfeca445f535701502a066c3"
 
 @[default_target]
 lean_lib HTPI {

@@ -1806,9 +1806,6 @@ lemma prod_eq_fun {m : Nat} (f g : Nat → ZMod m) (k : Nat) :
     done
   done
 
-lemma comp_def {A B C : Type} (f : B → C) (g : A → B) (x : A) :
-    (f ∘ g) x = f (g x) := by rfl
-
 lemma swap_prod_eq_prod_below {m u n : Nat} (f : Nat → ZMod m)
     (h1 : u ≤ n) : prod_seq u 0 (f ∘ swap u n) = prod_seq u 0 f := by
   have h2 : ∀ (i : Nat), i < u → (f ∘ swap u n) (0 + i) = f (0 + i) := by
@@ -2199,7 +2196,7 @@ theorem Theorem_7_2_2_Int {a c : Nat} {b : Int}
   done
 -/
 
-lemma Lemma_7_4_5 {m n : Nat} (a b : Nat) (h1 : rel_prime m n) :
+lemma Lemma_7_4_5 {m n : Nat} (a b : Int) (h1 : rel_prime m n) :
     a ≡ b (MOD m * n) ↔ a ≡ b (MOD m) ∧ a ≡ b (MOD n) := by
   apply Iff.intro
   · -- (→)
@@ -2209,14 +2206,14 @@ lemma Lemma_7_4_5 {m n : Nat} (a b : Nat) (h1 : rel_prime m n) :
     · -- Proof of a ≡ b (MOD m)
       apply Exists.intro (n * j)
       show a - b = m * (n * j) from
-        calc ↑a - ↑b
+        calc a - b
           _ = m * n * j := h3
           _ = m * (n * j) := by ring
       done
     · -- Proof of a ≡ b (MOD n)
       apply Exists.intro (m * j)
       show a - b = n * (m * j) from
-        calc ↑a - ↑b
+        calc a - b
           _ = m * n * j := h3
           _ = n * (m * j) := by ring
       done
@@ -2228,9 +2225,9 @@ lemma Lemma_7_4_5 {m n : Nat} (a b : Nat) (h1 : rel_prime m n) :
     rewrite [h3] at h4      --h4 : ↑n ∣ ↑m * j
     have h5 : ↑n ∣ j := Theorem_7_2_2_Int h4 h1
     obtain (k : Int) (h6 : j = n * k) from h5
-    apply Exists.intro k    --Goal : ↑a - ↑b = ↑(m * n) * k
+    apply Exists.intro k    --Goal : a - b = ↑(m * n) * k
     show a - b = (m * n) * k from
-      calc ↑a - ↑b
+      calc a - b
         _ = m * j := h3
         _ = m * (n * k) := by rw [h6]
         _ = (m * n) * k := by ring

@@ -39,8 +39,8 @@ def setOf.unexpander : Lean.PrettyPrinter.Unexpander
         `({ $pat:term : $ty:term | $p:term })
       else
         throw ()
-  -- Next line needed because of bug in Mathlib/Init/Set.lean
-  | `($_ fun ($x:ident : $ty:term) => $p) => `({ $x:ident : $ty:term | $p })
+  -- Next line not needed anymore -- fixed bug in Mathlib/Init/Set.lean
+  --| `($_ fun ($x:ident : $ty:term) => $p) => `({ $x:ident : $ty:term | $p })
   | _ => throw ()
 
 --Make sure Lean understands {x} and ∅ as Sets, not Finsets
@@ -271,7 +271,7 @@ def unfoldExUn (lev : Level) (v : Name) (t b : Expr) (_ : BinderInfo) : Expr :=
 -- Constants not to unfold except if explicitly asked to
 def dontUnfold : List Name := [``ite, ``dite]
 def dontUnfoldNum : List Name := [``LT.lt, ``LE.le, ``GT.gt, ``GE.ge]
-def numNames : List Name := [`Nat, `Int, `Rat, `Real]
+def numNames : List Name := [``Nat, ``Int, ``_root_.Rat, ``Real]
 
 /- Unfold head in current context--must set local context before call.
 If first = true, then unfold ExistsUnique using my def; else don't unfold it.
@@ -294,14 +294,13 @@ partial def unfoldHead (e : Expr) (tac : Name) (first rep : Bool) : TacticM Expr
           else
             myFail tac "failed to unfold definition"
         | _ => 
-          if !first && (c ∈ dontUnfold) then
-              --((c == ``ite) || (c == ``dite) || (c == ``LT.lt) ||
-              --(c == ``LE.le) || (c == ``GT.gt) || (c == ``GE.ge)) then
-            myFail tac "failed to unfold definition"
-          if !first && (c ∈ dontUnfoldNum) then
-            match args[3]! with
-              | const nc _ => if nc ∈ numNames then myFail tac "failed to unfold definition"
-              | _ => pure ()
+          if !first then
+            if c ∈ dontUnfold then
+              myFail tac "failed to unfold definition"
+            if c ∈ dontUnfoldNum then
+              match args[3]! with
+                | const nc _ => if nc ∈ numNames then myFail tac "failed to unfold definition"
+                | _ => pure ()
           let edo ← Meta.unfoldDefinition? e1
           match edo with
             | some ed => pure ed
@@ -318,8 +317,7 @@ partial def unfoldHead (e : Expr) (tac : Name) (first rep : Bool) : TacticM Expr
       catch _ =>
         pure e2
     match e1 with
-      | (app (app (app (app (app (const ``Membership.mem _) _) (app (const ``Set _) _))
-        (app (const ``Set.instMembershipSet _) _)) x) y) =>
+      | (app (app (app (app (app (const ``Membership.mem _) _) (app (const ``Set _) _)) _) x) y) =>
         if (e3 == app y x) then
           myFail tac "failed to unfold definition"  --Don't unfold `x ∈ y` to `y x`
         else

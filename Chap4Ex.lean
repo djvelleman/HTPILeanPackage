@@ -145,7 +145,7 @@ theorem Exercise_4_4_18a {A : Type}
 -- 9.
 theorem Exercise_4_4_22 {A : Type}
     (R : BinRel A) (B1 B2 : Set A) (x1 x2 : A)
-    (h1 : lub R x1 B1) (h2 : lub R x2 B2) :
+    (h1 : partial_order R) (h2 : lub R x1 B1) (h3 : lub R x2 B2) :
     B1 ⊆ B2 → R x1 x2 := sorry
 
 -- 10.
