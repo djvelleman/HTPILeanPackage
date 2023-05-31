@@ -5,22 +5,23 @@ set_option linter.unusedVariables false
 
 /- Definition of equinumerous -/
 
-def invRel {A B : Type} (R : Rel A B) : Rel B A := RelFromExt (inv (extension R))
+def invRel {A B : Type} (R : Rel A B) : Rel B A :=
+  RelFromExt (inv (extension R))
 
 lemma invRel_def {A B : Type} (R : Rel A B) (a : A) (b : B) :
     invRel R b a ↔ R a b := by rfl
 
-def rel_on {A B : Type} (R : Rel A B) (X : Set A) (Y : Set B) : Prop :=
-    ∀ ⦃x : A⦄ ⦃y : B⦄, R x y → x ∈ X ∧ y ∈ Y
+def rel_within {A B : Type} (R : Rel A B) (X : Set A) (Y : Set B) : Prop :=
+  ∀ ⦃x : A⦄ ⦃y : B⦄, R x y → x ∈ X ∧ y ∈ Y
 
 def fcnl_on {A B : Type} (R : Rel A B) (X : Set A) : Prop :=
-    ∀ ⦃x : A⦄, x ∈ X → ∃! (y : B), R x y
+  ∀ ⦃x : A⦄, x ∈ X → ∃! (y : B), R x y
 
 def matching {A B : Type} (R : Rel A B) (X : Set A) (Y : Set B) : Prop :=
-    rel_on R X Y ∧ fcnl_on R X ∧ fcnl_on (invRel R) Y
+  rel_within R X Y ∧ fcnl_on R X ∧ fcnl_on (invRel R) Y
 
 def equinum {A B : Type} (X : Set A) (Y : Set B) : Prop :=
-    ∃ (R : Rel A B), matching R X Y
+  ∃ (R : Rel A B), matching R X Y
 
 notation:50  X:50 " ∼ " Y:50 => equinum X Y
 
@@ -91,7 +92,7 @@ lemma id_fcnl {A : Type} (X : Set A) : fcnl_on (idRel_on X) X := by
 lemma id_match {A : Type} (X : Set A) : matching (idRel_on X) X X := by
   define
   apply And.intro
-  · -- Proof of rel_on
+  · -- Proof of rel_within
     define
     fix a; fix b
     assume h1
@@ -124,7 +125,7 @@ lemma inv_match {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B}
     (h : matching R X Y) : matching (invRel R) Y X := by
   define; define at h
   apply And.intro
-  · -- Proof that rel_on R Y X
+  · -- Proof that rel_within R Y X
     define
     fix y; fix x
     assume h1
@@ -163,7 +164,7 @@ lemma inv_comp {A B C : Type} (R : Rel A B) (S : Rel B C) :
     _ = RelFromExt (comp (inv (extension R)) (inv (extension S))) := by rw [Theorem_4_2_5_5]
     _ = compRel (invRel R) (invRel S) := by rfl
 
-lemma match_rel_on {A B : Type}
+lemma match_rel_within {A B : Type}
     {R : Rel A B} {X : Set A} {Y : Set B} {a : A} {b : B}
     (h1 : matching R X Y) (h2 : R a b) : a ∈ X ∧ b ∈ Y := by
   define at h1
@@ -222,14 +223,14 @@ lemma comp_match {A B C : Type} {R : Rel A B} {S : Rel B C}
     (h1 : matching R X Y) (h2 : matching S Y Z) : matching (compRel S R) X Z := by
   define
   apply And.intro
-  · -- Proof of rel_on (compRel S R) X Z
+  · -- Proof of rel_within (compRel S R) X Z
     define
     fix a; fix c
     assume h3 : compRel S R a c
     rewrite [compRel_def] at h3
     obtain b h4 from h3
-    have h5 := match_rel_on h1 h4.left
-    have h6 := match_rel_on h2 h4.right
+    have h5 := match_rel_within h1 h4.left
+    have h6 := match_rel_within h2 h4.right
     exact And.intro h5.left h6.right
     done
   · -- Proof of fcnl_on statements
@@ -266,7 +267,8 @@ def finite {A : Type} (X : Set A) : Prop :=
 
 def Univ (A : Type) : Set A := { x : A | True }
 
-lemma elt_Univ {A : Type} (a : A) : a ∈ Univ A := by define; trivial
+lemma elt_Univ {A : Type} (a : A) :
+    a ∈ Univ A := by define; trivial
 
 def denum {A : Type} (X : Set A) : Prop :=
   Univ Nat ∼ X
@@ -349,17 +351,17 @@ lemma I_max (n : Nat) : n ∈ I (n + 1) := by
 def remove_one {A B : Type} (R : Rel A B) (u : A) (v : B) (x : A) (y : B) : Prop :=
     x ≠ u ∧ y ≠ v ∧ (R x y ∨ (R x v ∧ R u y))
 
-theorem remove_one_rel_on {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B} {x u : A} {y v : B}
+theorem remove_one_rel_within {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B} {x u : A} {y v : B}
     (h1 : matching R X Y) (h2 : remove_one R u v x y) : x ∈ X \ {u} ∧ y ∈ Y \ {v} := by
   define at h2
   have h3 : x ∈ X ∧ y ∈ Y := by
     by_cases on h2.right.right with h3
     · -- Case 1. h3: R x y
-      exact match_rel_on h1 h3
+      exact match_rel_within h1 h3
       done
     · -- Case 2. h3: R x v ∧ R y u
-      have h4 := match_rel_on h1 h3.left
-      have h5 := match_rel_on h1 h3.right
+      have h4 := match_rel_within h1 h3.left
+      have h5 := match_rel_within h1 h3.right
       exact And.intro h4.left h5.right
       done
     done
@@ -475,11 +477,11 @@ theorem remove_one_match {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B} {u :
     matching (remove_one R u v) (X \ {u}) (Y \ {v}) := by
   define
   apply And.intro
-  · -- Proof of rel_on
+  · -- Proof of rel_within
     define
     fix x; fix y
     assume h4
-    exact remove_one_rel_on h1 h4
+    exact remove_one_rel_within h1 h4
     done
   · -- Proof of fcnl_ons
     apply And.intro (remove_one_fcnl h1 h2 v)
@@ -518,7 +520,7 @@ lemma empty_match {A B : Type} {X : Set A} {Y : Set B} (h1 : empty X) (h2 : empt
     matching (emptyRel A B) X Y := by
   define
   apply And.intro
-  · -- Proof of rel_on
+  · -- Proof of rel_within
     define
     fix a; fix b
     assume h
@@ -625,7 +627,7 @@ theorem one_elt_iff_singleton {A : Type} (X : Set A) : numElts X 1 ↔ ∃ (x : 
     apply Exists.intro R
     define
     apply And.intro
-    · -- Proof of rel_on R {0} X
+    · -- Proof of rel_within R {0} X
       define
       fix n; fix a
       assume h3

@@ -1106,42 +1106,54 @@ def is_func_graph {A B : Type} (G : Set (A × B)) : Prop :=
 theorem func_from_graph {A B : Type} (F : Set (A × B)) :
     (∃ (f : A → B), graph f = F) ↔ is_func_graph F := by
   apply Iff.intro
-  assume h1
-  obtain f h2 from h1
-  define
-  fix x : A
-  rewrite [←h2]
-  exists_unique
-  apply Exists.intro (f x)
-  define
-  rfl
-  fix y1; fix y2
-  assume h3; assume h4
-  define at h3; define at h4
-  rewrite [h3] at h4
-  exact h4
-  assume h1
-  have h2 : ∀ (x : A), Nonempty { y : B // (x, y) ∈ F } := by
-    define at h1
+  · -- (→)
+    assume h1
+    obtain f h2 from h1
+    define
     fix x : A
-    obtain y h2 _h3 from h1 x
-    exact ⟨⟨y, h2⟩⟩
-  let ff : (x : A) → { y : B // (x, y) ∈ F } := fun (x : A) => Classical.choice (h2 x)
-  let f : A → B := fun (x : A) => (ff x).val
-  apply Exists.intro f
-  apply Set.ext
-  fix (x, y) : A × B
-  have h3 : (x, f x) ∈ F := (ff x).property
-  apply Iff.intro
-  assume h4
-  define at h4
-  rewrite [h4] at h3
-  exact h3
-  assume h4
-  define
-  define at h1
-  obtain z _h5 h6 from h1 x
-  exact h6 (f x) y h3 h4
+    rewrite [←h2]
+    exists_unique
+    · -- Existence
+      apply Exists.intro (f x)
+      define
+      rfl
+      done
+    · -- Uniqueness
+      fix y1; fix y2
+      assume h3; assume h4
+      define at h3; define at h4
+      rewrite [h3] at h4
+      exact h4
+      done
+    done
+  · -- (←)
+    assume h1
+    define at h1
+    have h2 : ∀ (x : A), ∃ (y : B), (x, y) ∈ F := by
+      fix x
+      obtain y h3 h4 from h1 x
+      exact Exists.intro y h3
+      done
+    set f : A → B := fun (x : A) => Classical.choose (h2 x)
+    apply Exists.intro f
+    apply Set.ext
+    fix (x, y) : A × B
+    have h3 : (x, f x) ∈ F := Classical.choose_spec (h2 x)
+    apply Iff.intro
+    · -- (→)
+      assume h4
+      define at h4
+      rewrite [h4] at h3
+      exact h3
+      done
+    · -- (←)
+      assume h4
+      define
+      obtain z h5 h6 from h1 x
+      exact h6 (f x) y h3 h4
+      done
+    done
+  done
 
 --Sum of m terms of the form f i, starting with i = k
 def sum_seq {A : Type} [AddZeroClass A] (m k : Nat) (f : Nat → A) : A :=

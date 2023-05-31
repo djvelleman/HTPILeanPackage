@@ -233,6 +233,120 @@ lemma fnnn_onto : onto fnnn := by
     done
   done
 
+def RelWithinFromFunc {A B : Type} (f : A → B) (X : Set A)
+  (x : A) (y : B) : Prop := x ∈ X ∧ f x = y
+
+def one_one_on {A B : Type} (f : A → B) (X : Set A) : Prop :=
+  ∀ ⦃x1 x2 : A⦄, x1 ∈ X → x2 ∈ X → f x1 = f x2 → x1 = x2
+
+theorem equinum_image {A B : Type} {X : Set A} {f : A → B}
+    (h1 : one_one_on f X) : X ∼ image f X := by
+  define   --Goal : ∃ (R : Rel A B), matching R X (image f X)
+  set R : Rel A B := RelWithinFromFunc f X
+  apply Exists.intro R
+  define   --Goal : rel_within R X (image f X) ∧
+           --fcnl_on R X ∧ fcnl_on (invRel R) (image f X)
+  apply And.intro
+  · -- Proof of rel_within
+    define --Goal : ∀ ⦃x : A⦄ ⦃y : B⦄, R x y → x ∈ X ∧ y ∈ image f X
+    fix x : A; fix y : B
+    assume h2 : R x y  --Goal : x ∈ X ∧ y ∈ image f X
+    define at h2       --h2 : x ∈ X ∧ f x = y
+    apply And.intro h2.left
+    define
+    show ∃ (x : A), x ∈ X ∧ f x = y from Exists.intro x h2
+    done
+  · -- Proofs of fcnl_ons
+    apply And.intro
+    · -- Proof of fcnl_on R X
+      define  --Goal : ∀ ⦃x : A⦄, x ∈ X → ∃! (y : B), R x y
+      fix x : A
+      assume h2 : x ∈ X
+      exists_unique
+      · -- Existence
+        apply Exists.intro (f x)
+        define  --Goal : x ∈ X ∧ f x = f x
+        apply And.intro h2
+        rfl
+        done
+      · -- Uniqueness
+        fix y1 : B; fix y2 : B
+        assume h3 : R x y1
+        assume h4 : R x y2   --Goal : y1 = y2
+        define at h3; define at h4
+          --h3 : x ∈ X ∧ f x = y1;  h4 : x ∈ X ∧ f x = y2
+        rewrite [h3.right] at h4
+        show y1 = y2 from h4.right
+        done
+      done
+    · -- Proof of fcnl_on (invRel R) (image f X)
+      define
+      fix y : B
+      assume h2 : y ∈ image f X
+      define at h2
+      obtain (x : A) (h3 : x ∈ X ∧ f x = y) from h2
+      exists_unique
+      · -- Existence
+        apply Exists.intro x
+        define
+        show x ∈ X ∧ f x = y from h3
+        done
+      · -- Uniqueness
+        fix x1 : A; fix x2 : A
+        assume h4 : invRel R y x1
+        assume h5 : invRel R y x2
+        define at h4; define at h5
+        rewrite [←h5.right] at h4
+        show x1 = x2 from h1 h4.left h5.left h4.right
+        done
+      done
+    done
+  done
+
+lemma one_one_on_of_one_one {A B : Type} {f : A → B}
+    (h : one_to_one f) (X : Set A) : one_one_on f X := by
+  define
+  fix x1 : A; fix x2 : A
+  assume h1 : x1 ∈ X
+  assume h2 : x2 ∈ X
+  show f x1 = f x2 → x1 = x2 from h x1 x2
+  done
+
+def Range {A B : Type} (f : A → B) : Set B := image f (Univ A)
+
+theorem equinum_Range {A B : Type} {f : A → B} (h : one_to_one f) :
+    Univ A ∼ Range f := equinum_image (one_one_on_of_one_one h (Univ A))
+
+theorem equinum_Univ {A B : Type} {f : A → B}
+    (h1 : one_to_one f) (h2 : onto f) : Univ A ∼ Univ B := by
+  have h3 : Univ A ∼ Range f := equinum_Range h1
+  have h4 : Range f = Univ B := by
+    apply Set.ext
+    fix b : B
+    apply Iff.intro
+    · -- (→)
+      assume h4 : b ∈ Range f
+      show b ∈ Univ B from elt_Univ b
+      done
+    · -- (←)
+      assume h4 : b ∈ Univ B
+      define at h2
+      obtain (a : A) (h5 : f a = b) from h2 b
+      apply Exists.intro a
+      apply And.intro _ h5
+      show a ∈ Univ A from elt_Univ a
+      done
+    done
+  rewrite [h4] at h3
+  show Univ A ∼ Univ B from h3
+  done
+
+theorem Z_equinum_N : Univ Int ∼ Univ Nat :=
+  equinum_Univ fzn_one_one fzn_onto
+
+theorem NxN_equinum_N : Univ (Nat × Nat) ∼ Univ Nat :=
+  equinum_Univ fnnn_one_one fnnn_onto
+
 /- Theorem 8.1.2 -/
 def Set_prod {A B : Type} (X : Set A) (Y : Set B) : Set (A × B) :=
   { (a, b) : A × B | a ∈ X ∧ b ∈ Y }
@@ -286,7 +400,7 @@ lemma prod_match {A B C D : Type} {U : Set A} {V : Set B} {W : Set C} {X : Set D
     matching (R ×ᵣ S) (U ×ₛ W) (V ×ₛ X) := by
   define; define at h1; define at h2
   apply And.intro
-  · -- Proof of rel_on
+  · -- Proof of rel_within
     define
     fix (a, c)
     fix (b, d)
@@ -347,7 +461,7 @@ lemma union_fcnl_left {A B : Type} {R S : Rel A B} {U W : Set A} {V X : Set B} {
     have h8 : ∀ (y : B), ¬S a y := by
       fix y
       contradict h1 with h9
-      have h10 := match_rel_on h3 h9
+      have h10 := match_rel_within h3 h9
       exact Exists.intro a (And.intro h4 h10.left)
       done
     disj_syll h6 (h8 b1)
@@ -398,18 +512,18 @@ lemma union_match {A B : Type} {U W : Set A} {V X : Set B} {R S : Rel A B}
     matching (R ∪ᵣ S) (U ∪ W) (V ∪ X) := by
   define
   apply And.intro
-  · -- Proof of rel_on
+  · -- Proof of rel_within
     define
     fix a; fix b
     assume h5
     rewrite [Rel_union_def] at h5
     by_cases on h5
     · -- Case 1. h7 : R a b
-      have h6 := match_rel_on h3 h5
+      have h6 := match_rel_within h3 h5
       exact And.intro (Or.inl h6.left) (Or.inl h6.right)
       done
     · -- Case 2. h7 : S a b
-      have h6 := match_rel_on h4 h5
+      have h6 := match_rel_within h4 h5
       exact And.intro (Or.inr h6.left) (Or.inr h6.right)
       done
     done
@@ -675,7 +789,7 @@ lemma bdd_subset_nat {X : Set Nat} {m s : Nat} (h1 : ∀ (n : Nat), n ∈ X → 
   apply Exists.intro (enum X)
   define
   apply And.intro
-  · -- Proof of rel_on
+  · -- Proof of rel_within
     define
     fix t; fix n
     assume h3
@@ -761,7 +875,7 @@ lemma unbdd_subset_nat {X : Set Nat} (h1 : ∀ (m : Nat), ∃ (n : Nat), n ∈ X
   apply Exists.intro (enum X)
   define
   apply And.intro
-  · -- Proof of rel_on
+  · -- Proof of rel_within
     define
     fix s; fix n
     assume h2
@@ -899,8 +1013,8 @@ theorem Theorem_8_1_5_2_to_3 {A : Type} {X : Set A}
     done
   done
 
-def restrict_to {A : Type} (S : Rel A Nat) (X : Set A) (x : A) (n : Nat) : Prop :=
-  x ∈ X ∧ S x n
+def restrict_to {A B : Type} (S : Rel A B) (X : Set A) (x : A) (y : B) : Prop :=
+  x ∈ X ∧ S x y
 
 theorem Theorem_8_1_5_3_to_1 {A : Type} {X : Set A}
     (h1 : ∃ (R : Rel A Nat), fcnl_one_one_to_nat R X) :
@@ -914,7 +1028,7 @@ theorem Theorem_8_1_5_3_to_1 {A : Type} {X : Set A}
     apply Exists.intro R
     define
     apply And.intro
-    · -- Proof of rel_on R X Y
+    · -- Proof of rel_within R X Y
       define
       fix x; fix n
       assume h3
@@ -1028,84 +1142,6 @@ lemma fqn_one_one : one_to_one fqn := by
   exact Rat.ext q1 q2 h4 h3.right
   done
 
-def one_one_on {A B : Type} (f : A → B) (X : Set A) : Prop :=
-  ∀ ⦃x1 x2 : A⦄, x1 ∈ X → x2 ∈ X → f x1 = f x2 → x1 = x2
-
-def RelFromFuncOn {A B : Type} (f : A → B) (X : Set A) (x : A) (y : B) : Prop :=
-  x ∈ X ∧ f x = y
-
-theorem equinum_im {A B : Type} {X : Set A} {f : A → B} (h1 : one_one_on f X) :
-    X ∼ image f X := by
-  define
-  apply Exists.intro (RelFromFuncOn f X)
-  define
-  apply And.intro
-  · -- Proof of rel_on
-    define
-    fix x; fix y
-    assume h2
-    define at h2
-    apply And.intro h2.left
-    define
-    exact Exists.intro x h2
-    done
-  · -- Proofs of fcnl_ons
-    apply And.intro
-    · -- Proof of fcnl_on
-      define
-      fix x
-      assume h2
-      exists_unique
-      · -- Existence
-        apply Exists.intro (f x)
-        define
-        apply And.intro h2
-        rfl
-        done
-      · -- Uniqueness
-        fix y1; fix y2
-        assume h3; assume h4
-        define at h3; define at h4
-        rewrite [h3.right] at h4
-        exact h4.right
-        done
-      done
-    · -- Proof of fcnl_on inv
-      define
-      fix y
-      assume h2
-      define at h2
-      obtain x h3 from h2
-      exists_unique
-      · -- Existence
-        apply Exists.intro x
-        define
-        exact h3
-        done
-      · -- Uniqueness
-        fix x1; fix x2
-        assume h4; assume h5
-        define at h4; define at h5
-        rewrite [←h5.right] at h4
-        exact h1 h4.left h5.left h4.right
-        done
-      done
-    done
-  done
-
-lemma one_one_on_of_one_one {A B : Type} {f : A → B} (h : one_to_one f) (X : Set A) :
-    one_one_on f X := by
-  define
-  fix x1; fix x2
-  assume h1; assume h2
-  exact h x1 x2
-  done
-
-def Range {A B : Type} (f : A → B) : Set B := image f (Univ A)
-
-theorem equinum_Range {A B : Type} {f : A → B} (h : one_to_one f) :
-    Univ A ∼ Range f := equinum_im (one_one_on_of_one_one h (Univ A))
-
 /- Old versions
 def Range {A B : Type} (f : A → B) : Set B := Ran (graph f)
 --def Range {A B : Type} (f : A → B) : Set B := { y : B | ∃ (x : A), f x = y }
@@ -1122,7 +1158,7 @@ theorem equinum_Range {A B : Type} {f : A → B} (h1 : one_to_one f) : equinum (
   apply Exists.intro R
   define
   apply And.intro
-  · -- Proof of rel_on
+  · -- Proof of rel_within
     define
     fix a; fix b
     assume h2
@@ -1288,7 +1324,7 @@ lemma shift_one_one (m : Nat) : one_to_one (shift m) := by
 
 lemma shift_I_equinum (m n : Nat) : I (m + n) \ I m ∼ I n := by
   have h1 : one_one_on (shift m) (I n) := one_one_on_of_one_one (shift_one_one m) (I n)
-  have h2 := equinum_im h1
+  have h2 := equinum_image h1
   have h3 : image (shift m) (I n) = I (m + n) \ I m := by
     apply Set.ext
     fix k
@@ -1332,7 +1368,7 @@ lemma shift_I_equinum (m n : Nat) : I (m + n) \ I m ∼ I n := by
   apply Exists.intro R
   define
   apply And.intro
-  · -- Proof of rel_on
+  · -- Proof of rel_within
     define
     fix a; fix b
     assume h1
@@ -1480,7 +1516,7 @@ lemma prod_singleton_numElts {A B : Type} {X : Set A} {n : Nat}
   rewrite [numElts_def] at h1
   rewrite [numElts_def]
   have h2 := one_one_on_of_one_one (pwc_one_one A b) X
-  have h3 := equinum_im h2
+  have h3 := equinum_image h2
   have h4 : image (pair_with_const A b) X = X ×ₛ {b} := by
     apply Set.ext
     fix (x, y)
@@ -1527,7 +1563,7 @@ lemma prod_singleton_numElts {A B : Type} {X : Set A} {n : Nat} (h1 : numElts X 
     apply Exists.intro (pair_with_const X b)
     define
     apply And.intro
-    · -- Proof of rel_on
+    · -- Proof of rel_within
       define
       fix x
       fix (x', y)
@@ -1878,7 +1914,7 @@ lemma mod_mod_image {m n : Nat} (h1 : rel_prime m n) :
 
 lemma Lemma_7_4_4 {m n : Nat} (h1 : rel_prime m n) :
     Set_rp_below (m * n) ∼ (Set_rp_below m) ×ₛ (Set_rp_below n) := by
-  have h2 := equinum_im (mod_mod_one_one_on h1)
+  have h2 := equinum_image (mod_mod_one_one_on h1)
   rewrite [mod_mod_image h1] at h2
   exact h2
   done
@@ -1891,8 +1927,8 @@ lemma rp_mod_mod_def (m n a b c : Nat) :
     rp_mod_mod m n a (b, c) ↔
       rel_prime (m * n) a ∧ a < m * n ∧ b = a % m ∧ c = a % n := by rfl
 
-lemma rp_mod_mod_rel_on {m n : Nat} (h1 : rel_prime m n) :
-    rel_on (rp_mod_mod m n) (Set_rp_below (m * n))
+lemma rp_mod_mod_rel_within {m n : Nat} (h1 : rel_prime m n) :
+    rel_within (rp_mod_mod m n) (Set_rp_below (m * n))
       (Set_prod (Set_rp_below m) (Set_rp_below n)) := by
   define
   fix a; fix (b, c)
@@ -2000,7 +2036,7 @@ lemma Lemma_7_4_4 {m n : Nat} (h1 : rel_prime m n) :
   define
   apply Exists.intro (rp_mod_mod m n)
   define
-  apply And.intro (rp_mod_mod_rel_on h1)
+  apply And.intro (rp_mod_mod_rel_within h1)
   exact And.intro (rp_mod_mod_fcnl h1) (rp_mod_mod_inv_fcnl h1)
   done
 -/
