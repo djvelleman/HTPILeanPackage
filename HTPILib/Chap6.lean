@@ -399,7 +399,7 @@ theorem Example_6_3_1 : ∀ n ≥ 4, fact n > 2 ^ n := by
     have h2 : n + 1 > 0 := by linarith
     have h3 : n + 1 > 2 := by linarith
     have h4 : 2 > 0 := by linarith
-    have h5 : 2 ^ n > 0 := pow_pos h4 n
+    have h5 : 2 ^ n > 0 := Nat.pos_pow_of_pos n h4
     show fact (n + 1) > 2 ^ (n + 1) from
       calc fact (n + 1)
         _ = (n + 1) * fact n := by rfl

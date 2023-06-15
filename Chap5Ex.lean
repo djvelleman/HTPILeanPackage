@@ -125,15 +125,15 @@ theorem Exercise_5_3_18 {A B C : Type} (f : A → C) (g : B → C)
     ∃ (h : A → B), g ∘ h = f := sorry
 
 -- Definition for next two exercises:
-def conj (A : Type) (f1 f2 : A → A) : Prop :=
+def conjugate (A : Type) (f1 f2 : A → A) : Prop :=
     ∃ (g g' : A → A), (f1 = g' ∘ f2 ∘ g) ∧ (g ∘ g' = id) ∧ (g' ∘ g = id)
 
 -- 7.
-theorem Exercise_5_3_17a {A : Type} : symmetric (conj A) := sorry
+theorem Exercise_5_3_17a {A : Type} : symmetric (conjugate A) := sorry
 
 -- 8.
 theorem Exercise_5_3_17b {A : Type} (f1 f2 : A → A)
-    (h1 : conj A f1 f2) (h2 : ∃ (a : A), f1 a = a) :
+    (h1 : conjugate A f1 f2) (h2 : ∃ (a : A), f1 a = a) :
     ∃ (a : A), f2 a = a := sorry
 
 /- Section 5.4 -/

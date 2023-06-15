@@ -318,13 +318,12 @@ theorem Theorem_3_4_7 :
     obtain (k : Int) (h5 : n = 3 * k) from h3
     have h6 : 6 * (j - k) = n :=
       calc 6 * (j - k)
-        _ = 6 * j - 6 * k :=
-            mul_sub_left_distrib 6 j k
+        _ = 6 * j - 6 * k := Int.mul_sub 6 j k
         _ = 3 * (2 * j) - 2 * (3 * k) := by
             rewrite [←mul_assoc 3 2 j, ←mul_assoc 2 3 k]; rfl
         _ = 3 * n - 2 * n := by rewrite [←h4, ←h5]; rfl
-        _ = (3 - 2) * n := (mul_sub_right_distrib 3 2 n).symm
-        _ = n := one_mul n
+        _ = (3 - 2) * n := (Int.sub_mul 3 2 n).symm
+        _ = n := Int.one_mul n
     show ∃ (c : Int), n = 6 * c from
       Exists.intro (j - k) h6.symm
     done

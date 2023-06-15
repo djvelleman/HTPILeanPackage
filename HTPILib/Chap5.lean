@@ -134,7 +134,7 @@ theorem Theorem_5_2_5_1 {A B C : Type} (f : A → B) (g : B → C) :
   done
 
 
-lemma comp_def {A B C : Type} (f : A → B) (g : B → C) (x : A) :
+lemma comp_def {A B C : Type} (g : B → C) (f : A → B) (x : A) :
     (g ∘ f) x = g (f x) := by rfl
 
 theorem Theorem_5_2_5_2 {A B C : Type} (f : A → B) (g : B → C) :
