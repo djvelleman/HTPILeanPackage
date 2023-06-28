@@ -304,7 +304,7 @@ lemma exists_prime_factor : ∀ (n : Nat), 2 ≤ n →
       have h8 : n ≤ b :=
         calc n
           _ = a * b := h4.left.symm
-          _ ≤ 1 * b := Nat.mul_le_mul_right b h7
+          _ ≤ 1 * b := by rel [h7]
           _ = b := by ring
       linarith        --n ≤ b contradicts b < n
       done
@@ -617,7 +617,7 @@ lemma exists_prime_factorization : ∀ (n : Nat), n ≥ 1 →
         calc m
           _ < m + m := Nat.lt_add_of_pos_right m_pos
           _ = 2 * m := by ring
-          _ ≤ p * m := Nat.mul_le_mul_right m p_prime.left
+          _ ≤ p * m := by rel [p_prime.left]
           _ = n := n_eq_pm.symm
       done
     obtain (L : List Nat) (h6 : prime_factorization m L)
@@ -692,7 +692,7 @@ lemma le_nonzero_prod_left {a b : Nat} (h : a * b ≠ 0) : a ≤ a * b := by
   show a ≤ a * b from
     calc a
         = a * 1 := (mul_one a).symm
-      _ ≤ a * b := Nat.mul_le_mul_left a h2
+      _ ≤ a * b := by rel [h2]
   done
 
 lemma le_nonzero_prod_right {a b : Nat} (h : a * b ≠ 0) : b ≤ a * b := by
@@ -2127,7 +2127,7 @@ lemma num_rp_prime {p : Nat} (h1 : prime p) :
       have h11 : k + 1 ≥ p :=
         calc k + 1
           _ = p * j := h8
-          _ ≥ p * 1 := Nat.mul_le_mul_of_nonneg_left h10
+          _ ≥ p * 1 := by rel [h10]
           _ = p := mul_one _
       linarith
       done

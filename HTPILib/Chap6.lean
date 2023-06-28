@@ -157,7 +157,7 @@ theorem Example_6_1_3 : ∀ n ≥ 5, 2 ^ n > n ^ 2 := by
     fix n : Nat
     assume h1 : n ≥ 5
     assume ih : 2 ^ n > n ^ 2
-    have h2 : n * n ≥ 5 * n := Nat.mul_le_mul_right n h1
+    have h2 : n * n ≥ 5 * n := by rel [h1]
     show 2 ^ (n + 1) > (n + 1) ^ 2 from
       calc 2 ^ (n + 1)
         _ = 2 * 2 ^ n := by ring
@@ -396,15 +396,12 @@ theorem Example_6_3_1 : ∀ n ≥ 4, fact n > 2 ^ n := by
     fix n : Nat
     assume h1 : n ≥ 4
     assume ih : fact n > 2 ^ n
-    have h2 : n + 1 > 0 := by linarith
     have h3 : n + 1 > 2 := by linarith
-    have h4 : 2 > 0 := by linarith
-    have h5 : 2 ^ n > 0 := Nat.pos_pow_of_pos n h4
     show fact (n + 1) > 2 ^ (n + 1) from
       calc fact (n + 1)
         _ = (n + 1) * fact n := by rfl
-        _ > (n + 1) * 2 ^ n := Nat.mul_lt_mul_of_pos_left ih h2
-        _ > 2 * 2 ^ n := Nat.mul_lt_mul_of_pos_right h3 h5
+        _ > (n + 1) * 2 ^ n := by rel [ih]
+        _ > 2 * 2 ^ n := by rel [h3]
         _ = 2 ^ (n + 1) := by ring
     done
   done
@@ -455,21 +452,13 @@ theorem Example_6_3_4 : ∀ (x : Real), x > -1 →
     assume ih : (1 + x) ^ n ≥ 1 + n * x
     rewrite [Nat.cast_succ]
     have h2 : 1 + x ≥ 0 := by linarith
-    have h3 : n * x * x ≥ 0 := by
-      have h4 : x * x ≥ 0 := mul_self_nonneg x
-      have h5 : (↑n : Real) ≥ 0 := Nat.cast_nonneg n
-      show n * x * x ≥ 0 from 
-        calc n * x * x
-          _ = n * (x * x) := mul_assoc _ _ _
-          _ ≥ n * 0 := mul_le_mul_of_nonneg_left h4 h5
-          _ = 0 := by ring
-      done
+    have h3 : n * x ^ 2 ≥ 0 := by positivity
     show (1 + x) ^ (n + 1) ≥ 1 + (n + 1) * x from
       calc (1 + x) ^ (n + 1)
         _ = (1 + x) * (1 + x) ^ n := by rfl
-        _ ≥ (1 + x) * (1 + n * x) := mul_le_mul_of_nonneg_left ih h2
-        _ = 1 + x + n * x + n * x * x := by ring
-        _ ≥ 1 + x + n * x + 0 := add_le_add_left h3 _
+        _ ≥ (1 + x) * (1 + n * x) := by rel [ih]
+        _ = 1 + x + n * x + n * x ^ 2 := by ring
+        _ ≥ 1 + x + n * x + 0 := by rel [h3]
         _ = 1 + (n + 1) * x := by ring
     done
   done
@@ -548,8 +537,8 @@ example : ∀ (n : Nat), Fib n < 2 ^ n := by
       show Fib (k + 2) < 2 ^ (k + 2) from
         calc Fib (k + 2)
           _ = Fib k + Fib (k + 1) := by rfl
-          _ < 2 ^ k + Fib (k + 1) := add_lt_add_right h2 _
-          _ < 2 ^ k + 2 ^ (k + 1) := add_lt_add_left h4 _
+          _ < 2 ^ k + Fib (k + 1) := by rel [h2]
+          _ < 2 ^ k + 2 ^ (k + 1) := by rel [h4]
           _ ≤ 2 ^ k + 2 ^ (k + 1) + 2 ^ k := Nat.le_add_right _ _
           _ = 2 ^ (k + 2) := by ring
       done

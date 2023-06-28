@@ -138,9 +138,9 @@ lemma tri_incr {j k : Nat} (h1 : j ≤ k) : tri j ≤ tri k := by
   have h2 : j + 1 ≤ k + 1 := by linarith
   have h3 : j * (j + 1) ≤ k * (k + 1) :=
     calc j * (j + 1)
-      _ ≤ k * (j + 1) := Nat.mul_le_mul_right _ h1
-      _ ≤ k * (k + 1) := Nat.mul_le_mul_left _ h2
-  show tri j ≤ tri k from Nat.div_le_div_right h3
+      _ ≤ k * (j + 1) := by rel [h1]
+      _ ≤ k * (k + 1) := by rel [h2]
+  show j * (j + 1) / 2 ≤ k * (k + 1) / 2 from by rel [h3]
   done
 
 lemma le_of_fnnn_eq {a1 b1 a2 b2 : Nat}
@@ -1993,7 +1993,7 @@ lemma qr_image (m n : Nat) : image (qr n) (I m ×ₛ I n) = I (m * n) := by
         _ = n * q + r := h4.symm
         _ < n * q + n := by linarith
         _ = (q + 1) * n := by ring
-        _ ≤ m * n := Nat.mul_le_mul_right _ h5
+        _ ≤ m * n := by rel [h5]
     done
   · -- (←)
     assume h1
