@@ -23,10 +23,16 @@ theorem Exercise_6_1_13 :
 theorem Exercise_6_1_15 : ∀ n ≥ 10, 2 ^ n > n ^ 3 := sorry
 
 -- 6.
+lemma nonzero_is_successor :
+    ∀ (n : Nat), n ≠ 0 → ∃ (m : Nat), n = m + 1 := sorry
+
+-- 7.
 theorem Exercise_6_1_16a1 :
     ∀ (n : Nat), nat_even n ∨ nat_odd n := sorry
 
--- 7.
+-- 8.
+--Hint:  You may find the lemma nonzero_is_successor
+--from a previous exercise useful, as well as Nat.add_right_cancel.
 theorem Exercise_6_1_16a2 :
     ∀ (n : Nat), ¬(nat_even n ∧ nat_odd n) := sorry
 

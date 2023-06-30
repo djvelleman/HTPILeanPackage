@@ -104,8 +104,8 @@ theorem Theorem_5_3_2_2_ex {A B : Type} (f : A → B) (g : B → A)
     (h1 : graph g = inv (graph f)) : f ∘ g = id := sorry
 
 -- 2.
-theorem Theorem_5_3_3_2_ex {A B : Type} (f : A → B) :
-    (∃ (g : B → A), f ∘ g = id) → onto f := sorry
+theorem Theorem_5_3_3_2_ex {A B : Type} (f : A → B) (g : B → A)
+    (h1 : f ∘ g = id) : onto f := sorry
 
 -- 3.
 theorem Exercise_5_3_11a {A B : Type} (f : A → B) (g : B → A) :

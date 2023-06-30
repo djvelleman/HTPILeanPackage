@@ -196,31 +196,29 @@ theorem Theorem_5_3_2_1 {A B : Type} (f : A → B) (g : B → A)
 theorem Theorem_5_3_2_2 {A B : Type} (f : A → B) (g : B → A)
     (h1 : graph g = inv (graph f)) : f ∘ g = id := sorry
 
-theorem Theorem_5_3_3_1 {A B : Type} (f : A → B) :
-    (∃ (g : B → A), g ∘ f = id) → one_to_one f := by
-  assume h1 : ∃ (g : B → A), g ∘ f = id
-  obtain (g : B → A) (h2 : g ∘ f = id) from h1
+theorem Theorem_5_3_3_1 {A B : Type} (f : A → B) (g : B → A)
+    (h1 : g ∘ f = id) : one_to_one f := by
   define              --Goal : ∀ (x1 x2 : A), f x1 = f x2 → x1 = x2
   fix a1 : A; fix a2 : A
-  assume h3 : f a1 = f a2
+  assume h2 : f a1 = f a2
   show a1 = a2 from
     calc a1
       _ = id a1 := by rfl
-      _ = (g ∘ f) a1 := by rw [h2]
+      _ = (g ∘ f) a1 := by rw [h1]
       _ = g (f a1) := by rfl
-      _ = g (f a2) := by rw [h3]
+      _ = g (f a2) := by rw [h2]
       _ = (g ∘ f) a2 := by rfl
-      _ = id a2 := by rw [h2]
+      _ = id a2 := by rw [h1]
       _ = a2 := by rfl
   done
 
-theorem Theorem_5_3_3_2 {A B : Type} (f : A → B) :
-    (∃ (g : B → A), f ∘ g = id) → onto f := sorry
+theorem Theorem_5_3_3_2 {A B : Type} (f : A → B) (g : B → A)
+    (h1 : f ∘ g = id) : onto f := sorry
 
 theorem Theorem_5_3_5 {A B : Type} (f : A → B) (g : B → A)
     (h1 : g ∘ f = id) (h2 : f ∘ g = id) : graph g = inv (graph f) := by
-  have h3 : one_to_one f := Theorem_5_3_3_1 f (Exists.intro g h1)
-  have h4 : onto f := Theorem_5_3_3_2 f (Exists.intro g h2)
+  have h3 : one_to_one f := Theorem_5_3_3_1 f g h1
+  have h4 : onto f := Theorem_5_3_3_2 f g h2
   obtain (g' : B → A) (h5 : graph g' = inv (graph f))
     from Theorem_5_3_1 f h3 h4
   have h6 : g' ∘ f = id := Theorem_5_3_2_1 f g' h5

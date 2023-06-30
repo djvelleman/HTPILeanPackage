@@ -117,6 +117,14 @@ theorem Exercise_7_3_16 {m : Nat} {a b : Int} (h : a ≡ b (MOD m)) :
 example {m : Nat} [NeZero m] (X : ZMod m) :
     ∃! (a : Int), 0 ≤ a ∧ a < m ∧ X = [a]_m := sorry
 
+-- 10.
+theorem congr_rel_prime {m a b : Nat} (h1 : a ≡ b (MOD m)) :
+    rel_prime m a ↔ rel_prime m b := sorry
+
+-- 11.
+theorem rel_prime_mod (m a : Nat) :
+    rel_prime m (a % m) ↔ rel_prime m a := sorry
+
 /- Section 7.4 -/
 -- 1.
 --Hint:  Use induction.
