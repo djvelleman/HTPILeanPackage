@@ -44,13 +44,6 @@ def prime (n : Nat) : Prop :=
 
 def prime_factor (p n : Nat) : Prop := prime p ∧ p ∣ n
 
-/- Alternative definition by recursion?
-def all_prime (l : List Nat) : Prop :=
-  match l with
-    | [] => True
-    | n :: L => prime n ∧ all_prime L
--/
-
 def all_prime (l : List Nat) : Prop := ∀ (p : Nat), p ∈ l → prime p
 
 def nondec (l : List Nat) : Prop :=
@@ -110,6 +103,16 @@ def inv_mod (m a : Nat) : Nat := Int.toNat ((gcd_c2 m a) % m)
 
 def swap (u v i : Nat) : Nat :=
   if i = u then v else if i = v then u else i
+
+namespace Euler  --For definitions specific to Euler's theorem
+
+def F (m i : Nat) : ZMod m := if gcd m i = 1 then [i]_m else [1]_m
+
+def G (m a i : Nat) : Nat := (a * i) % m
+
+def Ginv (m a i : Nat) : Nat := G m (inv_mod m a) i
+
+end Euler
 
 /- Section 7.1 -/
 theorem dvd_mod_of_dvd_a_b {a b d : Nat}
@@ -381,58 +384,14 @@ lemma prod_nil : prod [] = 1 := by rfl
 
 lemma prod_cons : prod (n :: L) = n * (prod L) := by rfl
 
-/- Don't need anymore
-def le_list (n : Nat) (l : List Nat) : Prop :=
-  ∀ (m : Nat), m ∈ l → n ≤ m
--/
-
-/- Not needed
-lemma le_list_nil (n : Nat) : le_list n [] := by
-  define
-  fix m : Nat
-  contrapos
-  assume h : ¬n ≤ m
-  show ¬m ∈ [] from List.not_mem_nil m
-  done
-
-lemma le_list_cons (n m : Nat) (l : List Nat) :
-    le_list n (m :: l) ↔ n ≤ m ∧ le_list n l := by
-  apply Iff.intro
-  · -- (→)
-    assume h1 : le_list n (m :: l)
-    define at h1
-    apply And.intro (h1 m (List.mem_cons_self m l))
-    define
-    fix k : Nat
-    assume h2 : k ∈ l
-    show n ≤ k from h1 k (List.mem_cons_of_mem m h2)
-    done
-  · -- (←)
-    assume h1 : n ≤ m ∧ le_list n l
-    define
-    fix k : Nat
-    assume h2 : k ∈ m :: l
-    rewrite [List.mem_cons] at h2
-    by_cases on h2
-    · -- Case 1. h2 : k = m
-      rewrite [h2]
-      show n ≤ m from h1.left
-      done
-    · -- Case 2. h2 : k ∈ l
-      show n ≤ k from h1.right k h2
-      done
-    done
-  done
--/
-
-lemma exists_cons_of_length_eq_succ
-    {l : List Nat} {n : Nat} (h : l.length = n + 1) :
-    ∃ (a : Nat) (L : List Nat), l = a :: L ∧ L.length = n := by
+lemma exists_cons_of_length_eq_succ {A : Type}
+    {l : List A} {n : Nat} (h : l.length = n + 1) :
+    ∃ (a : A) (L : List A), l = a :: L ∧ L.length = n := by
   have h1 : ¬l.length = 0 := by linarith
   rewrite [List.length_eq_zero] at h1
-  obtain (a : Nat) (h2 : ∃ (L : List Nat), l = a :: L) from
+  obtain (a : A) (h2 : ∃ (L : List A), l = a :: L) from
     List.exists_cons_of_ne_nil h1
-  obtain (L : List Nat) (h3 : l = a :: L) from h2
+  obtain (L : List A) (h3 : l = a :: L) from h2
   apply Exists.intro a
   apply Exists.intro L
   apply And.intro h3
@@ -1285,6 +1244,9 @@ theorem Theorem_7_3_7 (m a : Nat) :
   done
 
 /- Section 7.4 -/
+section Euler
+open Euler
+
 lemma num_rp_below_base {m : Nat} :
     num_rp_below m 0 = 0 := by rfl
 
@@ -1337,8 +1299,6 @@ lemma prod_inv_iff_inv {m : Nat} {X : ZMod m}
     done
   done
 
-def F (m i : Nat) : ZMod m := if gcd m i = 1 then [i]_m else [1]_m
-
 lemma F_rp_def {m i : Nat} (h : rel_prime m i) :
     F m i = [i]_m := by
   have h1 : F m i = if gcd m i = 1 then [i]_m else [1]_m := by rfl
@@ -1374,8 +1334,6 @@ lemma prod_one {m : Nat}
   rewrite [prod_seq_step, prod_seq_base, add_zero, mul_comm, Theorem_7_3_6_7]
   rfl
   done
-
-def G (m a i : Nat) : Nat := (a * i) % m
 
 lemma G_def (m a i : Nat) : G m a i = (a * i) % m := by rfl
 
@@ -1559,20 +1517,7 @@ lemma mul_inv_mod_cancel {m a i : Nat} [NeZero m]
       _ = i := Nat.mod_eq_of_lt h2
   done
 
-#eval inv_mod 1 1
-#eval inv_mod 847 34
-#eval (34 * 573) % 847
-#eval inv_mod 847 35
-#eval (35 * 823) % 847
-
-def Ginv (m a i : Nat) : Nat := G m (inv_mod m a) i
-
 lemma Ginv_def {m a i : Nat} : Ginv m a i = G m (inv_mod m a) i := by rfl
-
-#check Nat.mod_eq_of_lt   --(h : a < b) : a % b = a
-#check Nat.mul_mod   --(a b n : ℕ) : a * b % n = a % n * (b % n) % n
-#check Nat.mod_mod   --(a n : ℕ) : a % n % n = a % n
-#check mul_inv_mod_cancel
 
 lemma Ginv_right_inv {m a : Nat} [NeZero m] (h1 : rel_prime m a) :
     ∀ i < m, G m a (Ginv m a i) = i := by
@@ -2089,6 +2034,8 @@ theorem Theorem_7_4_3_Euler's_theorem {m a : Nat} [NeZero m]
 #eval gcd 10 7     --Answer: 1.  So 10 and 7 are relatively prime
 
 #eval 7 ^ phi 10   --Answer: 2401, which is congruent to 1 mod 10.
+
+end Euler
 
 /- Section 7.5 -/
 lemma num_rp_prime {p : Nat} (h1 : prime p) :

@@ -59,51 +59,6 @@ def rep_image {A : Type} (f : A → A) (n : Nat) (B : Set A) : Set A :=
 def cumul_image {A : Type} (f : A → A) (B : Set A) : Set A :=
   { x : A | ∃ (n : Nat), x ∈ rep_image f n B }
 
-def rep_image_family {A : Type}
-    (F : Set (A → A)) (n : Nat) (B : Set A) : Set A :=
-  match n with
-    | 0 => B
-    | k + 1 => { x : A | ∃ f ∈ F, x ∈ image f (rep_image_family F k B) }
-
-def cumul_image_family {A : Type}
-    (F : Set (A → A)) (B : Set A) : Set A :=
-  { x : A | ∃ (n : Nat), x ∈ rep_image_family F n B }
-
-def image2 {A : Type} (f : A → A → A) (B : Set A) : Set A :=
-  { z : A | ∃ (x y : A), x ∈ B ∧ y ∈ B ∧ z = f x y }
-
-def rep_image2 {A : Type}
-    (f : A → A → A) (n : Nat) (B : Set A) : Set A :=
-  match n with
-    | 0 => B
-    | k + 1 => image2 f (rep_image2 f k B)
-
-def cumul_image2 {A : Type} (f : A → A → A) (B : Set A) : Set A :=
-  { x : A | ∃ (n : Nat), x ∈ rep_image2 f n B }
-
-def un_image2 {A : Type} (f : A → A → A) (B : Set A) : Set A :=
-  B ∪ (image2 f B)
-
-def rep_un_image2 {A : Type}
-    (f : A → A → A) (n : Nat) (B : Set A) : Set A :=
-  match n with
-    | 0 => B
-    | k + 1 => un_image2 f (rep_un_image2 f k B)
-
-def cumul_un_image2 {A : Type}
-    (f : A → A → A) (B : Set A) : Set A :=
-  { x : A | ∃ (n : Nat), x ∈ rep_un_image2 f n B }
-
-def idExt (A : Type) : Set (A × A) := { (x, y) : A × A | x = y }
-
-def rep_comp {A : Type} (R : Set (A × A)) (n : Nat) : Set (A × A) :=
-  match n with
-    | 0 => idExt A
-    | k + 1 => comp (rep_comp R k) R
-
-def cumul_comp {A : Type} (R : Set (A × A)) : Set (A × A) :=
-  { (x, y) : A × A | ∃ n ≥ 1, (x, y) ∈ rep_comp R n }
-
 /- Section 6.1 -/
 theorem Like_Example_6_1_2 :
     ∀ (n : Nat), 3 ∣ n ^ 3 + 2 * n := by

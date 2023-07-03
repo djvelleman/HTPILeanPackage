@@ -3,13 +3,9 @@ namespace HTPI
 set_option pp.funBinderTypes true
 set_option linter.unusedVariables false
 
-/- Definition of equinumerous -/
-
+/- Definitions -/
 def invRel {A B : Type} (R : Rel A B) : Rel B A :=
   RelFromExt (inv (extension R))
-
-lemma invRel_def {A B : Type} (R : Rel A B) (a : A) (b : B) :
-    invRel R b a ↔ R a b := by rfl
 
 def rel_within {A B : Type} (R : Rel A B) (X : Set A) (Y : Set B) : Prop :=
   ∀ ⦃x : A⦄ ⦃y : B⦄, R x y → x ∈ X ∧ y ∈ Y
@@ -31,6 +27,36 @@ def RelWithinFromFunc {A B : Type} (f : A → B) (X : Set A)
 def one_one_on {A B : Type} (f : A → B) (X : Set A) : Prop :=
   ∀ ⦃x1 x2 : A⦄, x1 ∈ X → x2 ∈ X → f x1 = f x2 → x1 = x2
 
+def Univ (A : Type) : Set A := { x : A | True }
+
+def compRel {A B C : Type} (S : Rel B C) (R : Rel A B) : Rel A C :=
+  RelFromExt (comp (extension S) (extension R))
+
+def I (n : Nat) : Set Nat := { k : Nat | k < n }
+
+def finite {A : Type} (X : Set A) : Prop :=
+  ∃ (n : Nat), I n ∼ X
+
+def denum {A : Type} (X : Set A) : Prop :=
+  Univ Nat ∼ X
+
+def ctble {A : Type} (X : Set A) : Prop :=
+  finite X ∨ denum X
+
+def numElts {A : Type} (X : Set A) (n : Nat) : Prop := I n ∼ X
+
+def emptyRel (A B : Type) (x : A) (y : B) : Prop := False
+
+def remove_one {A B : Type} (R : Rel A B) (u : A) (v : B)
+  (x : A) (y : B) : Prop := x ≠ u ∧ y ≠ v ∧ (R x y ∨ (R x v ∧ R u y))
+
+def one_match {A B : Type} (a : A) (b : B)
+  (x : A) (y : B) : Prop := x = a ∧ y = b
+
+/- Section 8.1 -/
+lemma invRel_def {A B : Type} (R : Rel A B) (a : A) (b : B) :
+    invRel R b a ↔ R a b := by rfl
+
 theorem equinum_image {A B : Type} {X : Set A} {Y : Set B} {f : A → B}
     (h1 : one_one_on f X) (h2 : image f X = Y) : X ∼ Y := by
   rewrite [←h2]
@@ -44,7 +70,7 @@ theorem equinum_image {A B : Type} {X : Set A} {Y : Set B} {f : A → B}
     define --Goal : ∀ ⦃x : A⦄ ⦃y : B⦄, R x y → x ∈ X ∧ y ∈ image f X
     fix x : A; fix y : B
     assume h3 : R x y  --Goal : x ∈ X ∧ y ∈ image f X
-    define at h3       --h2 : x ∈ X ∧ f x = y
+    define at h3       --h3 : x ∈ X ∧ f x = y
     apply And.intro h3.left
     define
     show ∃ (x : A), x ∈ X ∧ f x = y from Exists.intro x h3
@@ -67,7 +93,7 @@ theorem equinum_image {A B : Type} {X : Set A} {Y : Set B} {f : A → B}
         assume h4 : R x y1
         assume h5 : R x y2   --Goal : y1 = y2
         define at h4; define at h5
-          --h3 : x ∈ X ∧ f x = y1;  h4 : x ∈ X ∧ f x = y2
+          --h4 : x ∈ X ∧ f x = y1;  h5 : x ∈ X ∧ f x = y2
         rewrite [h4.right] at h5
         show y1 = y2 from h5.right
         done
@@ -88,7 +114,7 @@ theorem equinum_image {A B : Type} {X : Set A} {Y : Set B} {f : A → B}
         assume h5 : invRel R y x1
         assume h6 : invRel R y x2
         define at h5; define at h6
-          --h4 : x1 ∈ X ∧ f x1 = y;  h5 : x2 ∈ X ∧ f x2 = y
+          --h5 : x1 ∈ X ∧ f x1 = y;  h6 : x2 ∈ X ∧ f x2 = y
         rewrite [←h6.right] at h5
         show x1 = x2 from h1 h5.left h6.left h5.right
         done
@@ -96,43 +122,6 @@ theorem equinum_image {A B : Type} {X : Set A} {Y : Set B} {f : A → B}
     done
   done
 
-lemma one_one_on_of_one_one {A B : Type} {f : A → B}
-    (h : one_to_one f) (X : Set A) : one_one_on f X := by
-  define
-  fix x1 : A; fix x2 : A
-  assume h1 : x1 ∈ X
-  assume h2 : x2 ∈ X
-  show f x1 = f x2 → x1 = x2 from h x1 x2
-  done
-
-def Univ (A : Type) : Set A := { x : A | True }
-
-lemma elt_Univ {A : Type} (a : A) :
-    a ∈ Univ A := by trivial
-
-theorem equinum_Univ {A B : Type} {f : A → B}
-    (h1 : one_to_one f) (h2 : onto f) : Univ A ∼ Univ B := by
-  have h3 : image f (Univ A) = Univ B := by
-    apply Set.ext
-    fix b : B
-    apply Iff.intro
-    · -- (→)
-      assume h3 : b ∈ image f (Univ A)
-      show b ∈ Univ B from elt_Univ b
-      done
-    · -- (←)
-      assume h3 : b ∈ Univ B
-      obtain (a : A) (h4 : f a = b) from h2 b
-      apply Exists.intro a
-      apply And.intro _ h4
-      show a ∈ Univ A from elt_Univ a
-      done
-    done
-  show Univ A ∼ Univ B from
-    equinum_image (one_one_on_of_one_one h1 (Univ A)) h3
-  done
-
-/- Equinumerous is an equivalence relation -/
 lemma id_one_one_on {A : Type} (X : Set A) : one_one_on id X := by
   define
   fix x1 : A; fix x2 : A
@@ -192,21 +181,6 @@ theorem Theorem_8_1_3_2 {A B : Type} {X : Set A} {Y : Set B}
   show matching (invRel R) Y X from inv_match h1
   done
 
-def compRel {A B C : Type} (S : Rel B C) (R : Rel A B) : Rel A C :=
-  RelFromExt (comp (extension S) (extension R))
-
-lemma compRel_def {A B C : Type}
-    (S : Rel B C) (R : Rel A B) (a : A) (c : C) :
-    compRel S R a c ↔ ∃ (x : B), R a x ∧ S x c := by rfl
-
-lemma inv_comp {A B C : Type} (R : Rel A B) (S : Rel B C) :
-    invRel (compRel S R) = compRel (invRel R) (invRel S) := 
-  calc invRel (compRel S R)
-    _ = RelFromExt (inv (comp (extension S) (extension R))) := by rfl
-    _ = RelFromExt (comp (inv (extension R)) (inv (extension S))) :=
-        by rw [Theorem_4_2_5_5]
-    _ = compRel (invRel R) (invRel S) := by rfl
-
 lemma fcnl_exists {A B : Type} {R : Rel A B} {X : Set A} {x : A}
     (h1 : fcnl_on R X) (h2 : x ∈ X) : ∃ (y : B), R x y := by
   define at h1
@@ -223,6 +197,18 @@ lemma fcnl_unique {A B : Type}
     (h6 : ∀ (y_1 y_2 : B), R x y_1 → R x y_2 → y_1 = y_2) from h1 h2
   show y1 = y2 from h6 y1 y2 h3 h4
   done
+
+lemma compRel_def {A B C : Type}
+    (S : Rel B C) (R : Rel A B) (a : A) (c : C) :
+    compRel S R a c ↔ ∃ (x : B), R a x ∧ S x c := by rfl
+
+lemma inv_comp {A B C : Type} (R : Rel A B) (S : Rel B C) :
+    invRel (compRel S R) = compRel (invRel R) (invRel S) := 
+  calc invRel (compRel S R)
+    _ = RelFromExt (inv (comp (extension S) (extension R))) := by rfl
+    _ = RelFromExt (comp (inv (extension R)) (inv (extension S))) :=
+        by rw [Theorem_4_2_5_5]
+    _ = compRel (invRel R) (invRel S) := by rfl
 
 lemma comp_fcnl {A B C : Type} {R : Rel A B} {S : Rel B C}
     {X : Set A} {Y : Set B} {Z : Set C} (h1 : matching R X Y)
@@ -293,29 +279,13 @@ theorem Theorem_8_1_3_3 {A B C : Type} {X : Set A} {Y : Set B} {Z : Set C}
   show matching (compRel S R) X Z from comp_match h3 h4
   done
 
-/- Definitions of finite and denumerable -/
-def I (n : Nat) : Set Nat := { k : Nat | k < n }
-
 lemma I_def (k n : Nat) : k ∈ I n ↔ k < n := by rfl
-
-def finite {A : Type} (X : Set A) : Prop :=
-  ∃ (n : Nat), I n ∼ X
-
-def denum {A : Type} (X : Set A) : Prop :=
-  Univ Nat ∼ X
 
 lemma denum_def {A : Type} (X : Set A) : denum X ↔ Univ Nat ∼ X := by rfl
 
-def ctble {A : Type} (X : Set A) : Prop :=
-  finite X ∨ denum X
-
-/- Basic theorems about finite sets and number of elements -/
-def numElts {A : Type} (X : Set A) (n : Nat) : Prop := I n ∼ X
-
+/- Section 8.1½ -/
 lemma numElts_def {A : Type} (X : Set A) (n : Nat) :
     numElts X n ↔ I n ∼ X := by rfl
-
-def emptyRel (A B : Type) (a : A) (b : B) : Prop := False
 
 lemma fcnl_on_empty {A B : Type}
     (R : Rel A B) {X : Set A} (h1 : empty X) : fcnl_on R X := by
@@ -409,9 +379,6 @@ theorem relext {A B : Type} {R S : Rel A B}
       _ = S := by rfl
   done
 
-def remove_one {A B : Type} (R : Rel A B) (u : A) (v : B)
-  (x : A) (y : B) : Prop := x ≠ u ∧ y ≠ v ∧ (R x y ∨ (R x v ∧ R u y))
-
 lemma remove_one_def {A B : Type} (R : Rel A B) (u x : A) (v y : B) :
     remove_one R u v x y ↔
       x ≠ u ∧ y ≠ v ∧ (R x y ∨ (R x v ∧ R u y)) := by rfl
@@ -440,97 +407,23 @@ lemma remove_one_rel_within {A B : Type}
 lemma remove_one_inv {A B : Type} (R : Rel A B) (u : A) (v : B) :
     invRel (remove_one R u v) = remove_one (invRel R) v u := by
   apply relext
-  fix b : B; fix a : A
-    --Goal : invRel (remove_one R u v) b a ↔ remove_one (invRel R) v u b a
+  fix y : B; fix x : A
+    --Goal : invRel (remove_one R u v) y x ↔ remove_one (invRel R) v u y x
   rewrite [invRel_def, remove_one_def, remove_one_def]
   rewrite [invRel_def, invRel_def, invRel_def]
   rewrite [←and_assoc, ←and_assoc]
-    --Goal : (a ≠ u ∧ b ≠ v) ∧ (R a b ∨ R a v ∧ R u b) ↔
-    --       (b ≠ v ∧ a ≠ u) ∧ (R a b ∨ R u b ∧ R a v)
-  have h1 : a ≠ u ∧ b ≠ v ↔ b ≠ v ∧ a ≠ u := and_comm
-  have h2 : R a v ∧ R u b ↔ R u b ∧ R a v := and_comm
+    --Goal : (x ≠ u ∧ y ≠ v) ∧ (R x y ∨ R x v ∧ R u y) ↔
+    --       (y ≠ v ∧ x ≠ u) ∧ (R x y ∨ R u y ∧ R x v)
+  have h1 : x ≠ u ∧ y ≠ v ↔ y ≠ v ∧ x ≠ u := and_comm
+  have h2 : R x v ∧ R u y ↔ R u y ∧ R x v := and_comm
   rewrite [h1, h2]
   rfl
-  done
-
-lemma remove_one_Rxv {A B : Type}
-    {R : Rel A B} {X : Set A} {Y : Set B} {x u : A} {v : B}
-    (h1 : matching R X Y) (h2 : x ≠ u) (h3 : R x v) :
-    ∀ (y : B), remove_one R u v x y ↔ R u y := by
-  fix y : B
-  define at h1
-  have h4 : x ∈ X ∧ v ∈ Y := h1.left h3
-  apply Iff.intro
-  · -- (→)
-    assume h5 : remove_one R u v x y
-    define at h5
-    by_cases on h5.right.right with h6
-    · -- Case 1. h6 : R x y
-      have h7 : y = v := fcnl_unique h1.right.left h4.left h6 h3
-      show R u y from absurd h7 h5.right.left
-      done
-    · -- Case 2. h6 : R x v ∧ R u y
-      show R u y from h6.right
-      done
-    done
-  · -- (←)
-    assume h5 : R u y
-    define   --Goal : x ≠ u ∧ y ≠ v ∧ (R x y ∨ R x v ∧ R u y)
-    apply And.intro h2
-    apply And.intro _ (Or.inr (And.intro h3 h5))  --Goal : y ≠ v
-    contradict h2 with h6
-    rewrite [h6] at h5
-    show x = u from fcnl_unique h1.right.right h4.right h3 h5
-    done
-  done
-
-lemma remove_one_not_Rxv {A B : Type}
-    {R : Rel A B} {x u : A} {v : B}
-    (h2 : x ≠ u) (h3 : ¬R x v) :
-    ∀ (y : B), remove_one R u v x y ↔ R x y := by
-  fix y : B
-  apply Iff.intro
-  · -- (→)
-    assume h4 : remove_one R u v x y
-    define at h4
-    by_cases on h4.right.right with h5
-    · -- Case 1. h5 : R x y
-      show R x y from  h5
-      done
-    · -- Case 2. h5 : R x v ∧ R u y
-      show R x y from absurd h5.left h3
-      done
-    done
-  · -- (←)
-    assume h4 : R x y
-    define   --Goal : x ≠ u ∧ y ≠ v ∧ (R x y ∨ R x v ∧ R u y)
-    apply And.intro h2
-    apply And.intro _ (Or.inl h4)  --Goal : y ≠ v
-    contradict h3 with h5
-    rewrite [h5] at h4
-    show R x v from h4
-    done
   done
 
 lemma remove_one_iff {A B : Type}
     {X : Set A} {Y : Set B} {R : Rel A B} (h1 : matching R X Y)
     {u : A} (h2 : u ∈ X) (v : B) {x : A} (h3 : x ∈ X \ {u}) :
-    ∃ (w : A), w ∈ X ∧ ∀ (y : B), remove_one R u v x y ↔ R w y := by
-  define at h3
-  by_cases h4 : R x v
-  · -- Case 1. h4 : R x v
-    apply Exists.intro u
-    apply And.intro h2
-    show ∀ (y : B), remove_one R u v x y ↔ R u y from
-      remove_one_Rxv h1 h3.right h4
-    done
-  · -- Case 2. h4 : ¬R x v
-    apply Exists.intro x
-    apply And.intro h3.left
-    show ∀ (y : B), remove_one R u v x y ↔ R x y from
-      remove_one_not_Rxv h3.right h4
-    done
-  done
+    ∃ (w : A), w ∈ X ∧ ∀ (y : B), remove_one R u v x y ↔ R w y := sorry
 
 theorem remove_one_fcnl {A B : Type}
     {R : Rel A B} {X : Set A} {Y : Set B} {u : A}
@@ -632,71 +525,12 @@ theorem remove_one_numElts {A : Type} {X : Set A} {n : Nat} {x : A}
   rewrite [I_diff] at h4          --h4 : I n ∼ X \ {x}
   show numElts (X \ {x}) n from h4
   done
-
-def one_match {A B : Type} (a : A) (b : B)
-  (x : A) (y : B) : Prop := x = a ∧ y = b
   
 lemma one_match_def {A B : Type} (a x : A) (b y : B) :
     one_match a b x y ↔ x = a ∧ y = b := by rfl
 
-lemma inv_one_match {A B : Type} (a : A) (b : B) :
-    invRel (one_match a b) = one_match b a := by
-  apply relext
-  fix y : B; fix x : A  --Goal: invRel (one_match a b) y x ↔ one_match b a y x
-  rewrite [invRel_def, one_match_def, one_match_def]
-  show x = a ∧ y = b ↔ y = b ∧ x = a from and_comm
-  done
-
-theorem one_match_fcnl {A B : Type} (a : A) (b : B) :
-    fcnl_on (one_match a b) {a} := by
-  define
-  fix x : A
-  assume h1 : x ∈ {a}
-  define at h1
-  rewrite [h1]
-  exists_unique
-  · -- Existence
-    apply Exists.intro b
-    define
-    show a = a ∧ b = b from And.intro (Eq.refl a) (Eq.refl b)
-    done
-  · -- Uniqueness
-    fix b1 : B; fix b2 : B
-    assume h2 : one_match a b a b1
-    assume h3 : one_match a b a b2   --Goal : b1 = b2
-    define at h2; define at h3
-    rewrite [h2.right, h3.right]
-    rfl
-    done
-  done
-
-lemma elt_singleton {A : Type} (a : A) : a ∈ {a} := by
-  define
-  rfl
-  done
-
 lemma one_match_match {A B : Type} (a : A) (b : B) :
-    matching (one_match a b) {a} {b} := by
-  define
-  apply And.intro
-  · -- Proof of rel_within
-    define
-    fix x : A; fix y : B
-    assume h1 : one_match a b x y
-    define at h1
-    rewrite [h1.left, h1.right]
-    show a ∈ {a} ∧ b ∈ {b} from And.intro (elt_singleton a) (elt_singleton b)
-    done
-  · -- Proof of fcnl_ons
-    apply And.intro
-    · -- Proof of fcnl_on (one_match a b)
-      show fcnl_on (one_match a b) {a} from one_match_fcnl a b
-      done
-    · -- Proof of fcnl_on (invRel (one_match a b)) {b}
-      rewrite [inv_one_match]
-      show fcnl_on (one_match b a) {b} from one_match_fcnl b a
-      done
-  done
+    matching (one_match a b) {a} {b} := sorry
 
 lemma I_1_singleton : I 1 = {0} := by
   apply Set.ext
@@ -736,6 +570,13 @@ lemma singleton_of_diff_empty {A : Type} {X : Set A} {x : A}
     done
   done
 
+lemma singleton_one_elt {A : Type} (a : A) : numElts {a} 1 := by
+  define
+  rewrite [I_1_singleton]
+  show ∃ (R : Rel Nat A), matching R {0} {a} from
+    Exists.intro (one_match 0 a) (one_match_match 0 a)
+  done
+
 theorem one_elt_iff_singleton {A : Type} (X : Set A) :
     numElts X 1 ↔ ∃ (x : A), X = {x} := by
   apply Iff.intro
@@ -751,9 +592,7 @@ theorem one_elt_iff_singleton {A : Type} (X : Set A) :
   · -- (←)
     assume h1 : ∃ (x : A), X = {x}
     obtain (x : A) (h2 : X = {x}) from h1
-    define
-    rewrite [I_1_singleton, h2]
-    show ∃ (R : Rel Nat A), matching R {0} {x} from
-      Exists.intro (one_match 0 x) (one_match_match 0 x)
+    rewrite [h2]
+    show numElts {x} 1 from singleton_one_elt x
     done
   done
