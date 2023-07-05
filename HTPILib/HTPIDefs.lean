@@ -980,6 +980,7 @@ elab "fix" w:term " : " t:term : tactic => doFix w (some t)
 /- show tactic: allow either "from" or ":="  Probably best to stick to "from" -/
 macro "show " c:term " from " p:term : tactic => `(tactic| {show $c; exact $p})
 macro "show " c:term " := " p:term : tactic => `(tactic| {show $c; exact $p})
+macro "show " c:term " by " p:tactic : tactic => `(tactic| {show $c; $p})
 
 /- Not needed anymore--use Nat.strongRec' in Mathlib.Data.Nat.Basic.lean
 theorem str_induc (P : Nat → Prop)
@@ -1096,7 +1097,7 @@ elab "by_induc" : tactic => doInduc false
 elab "by_strong_induc" : tactic => doInduc true
 end tactic_defs
 
---Constructing a function from its graph:
+/- Constructing a function from its graph:
 def graph {A B : Type} (f : A → B) : Set (A × B) :=
     { (a, b) : A × B | f a = b }
 
@@ -1157,6 +1158,7 @@ theorem func_from_graph {A B : Type} (F : Set (A × B)) :
       done
     done
   done
+-/
 
 --Sum of m terms of the form f i, starting with i = k
 def sum_seq {A : Type} [AddZeroClass A] (m k : Nat) (f : Nat → A) : A :=
@@ -1190,7 +1192,7 @@ theorem sum_base {A : Type} [AddZeroClass A] {k : Nat} {f : Nat → A} :
     Sum i from k to k, f i = f k := by
   define : Sum i from k to k, f i
   rewrite [Nat.add_sub_cancel_left]
-  unfold sum_seq; unfold sum_seq
+  rewrite [sum_seq, sum_seq]
   rewrite [zero_add, add_zero]
   rfl
   done
@@ -1200,7 +1202,8 @@ theorem sum_step {A : Type} [AddZeroClass A] {k n : Nat} {f : Nat → A}
   define : Sum i from k to (n + 1), f i
   obtain j h1 from Nat.le.dest h
   have h2 : n + 1 + 1 - k = n + 1 - k + 1 := by
-    rewrite [←h1, add_assoc, add_assoc, Nat.add_sub_cancel_left, add_assoc, Nat.add_sub_cancel_left, add_assoc]
+    rewrite [←h1, add_assoc, add_assoc, Nat.add_sub_cancel_left,
+      add_assoc, Nat.add_sub_cancel_left, add_assoc]
     rfl
   have h3 : f (n + 1) = f (k + (n + 1 - k)) := by
     rewrite [←h1, add_assoc, Nat.add_sub_cancel_left]

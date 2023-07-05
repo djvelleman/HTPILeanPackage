@@ -57,6 +57,14 @@ theorem Exercise_8_1_5 {A B : Type} {X : Set A} {Y : Set B}
 theorem Exercise_8_1_17 {A : Type} {X Y : Set A}
     (h1 : X ⊆ Y) (h2 : ctble Y) : ctble X := sorry
 
+-- 13.
+theorem ctble_of_onto_func_from_N {A : Type} {X : Set A} {f : Nat → A}
+    (h1 : ∀ x ∈ X, ∃ (n : Nat), f n = x) : ctble X := sorry
+
+-- 14.
+theorem ctble_of_one_one_func_to_N {A : Type} {X : Set A} {f : A → Nat}
+    (h1 : one_one_on f X) : ctble X := sorry
+
 /- Section 8.1½ -/
 -- 1.
 lemma remove_one_iff {A B : Type}

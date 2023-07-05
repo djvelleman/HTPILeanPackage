@@ -1855,7 +1855,6 @@ theorem func_from_graph_rtl {A B : Type} (F : Set (A × B)) :
     done
   done
 
-/- Theorem 8.2.4 -/
 def seq {A : Type} (X : Set A) : Set (List A) :=
   { l : List A | ∀ (x : A), x ∈ l → x ∈ X }
 
@@ -1905,7 +1904,8 @@ lemma seq_cons_one_one (A : Type) : one_to_one (seq_cons A) := by
   done
 
 lemma seq_cons_image {A : Type} (X : Set A) (n : Nat) :
-    image (seq_cons A) (X ×ₛ (seq_by_length X n)) = seq_by_length X (n + 1) := by
+    image (seq_cons A) (X ×ₛ (seq_by_length X n)) =
+      seq_by_length X (n + 1) := by
   apply Set.ext
   fix l : List A
   apply Iff.intro
@@ -1983,7 +1983,7 @@ lemma Lemma_8_2_4_2 {A : Type} {X : Set A} (h1 : ctble X) :
     apply Or.inl         --Goal : finite {[]}
     define
     apply Exists.intro 1 --Goal : I 1 ∼ {[]}
-    show I 1 ∼ {[]} from singleton_one_elt ([] : List A)
+    show I 1 ∼ {[]} from singleton_one_elt []
     done
   · -- Induction Step
     fix n : Nat
@@ -1996,43 +1996,60 @@ lemma Lemma_8_2_4_2 {A : Type} {X : Set A} (h1 : ctble X) :
   done
 
 def sbl_set {A : Type} (X : Set A) : Set (Set (List A)) :=
-  { S : Set (List A) | ∃ (n : Nat), S = seq_by_length X n }
+  { S : Set (List A) | ∃ (n : Nat), seq_by_length X n = S }
 
-lemma Lemma_8_2_4_3 {A : Type} (X : Set A) : seq X = ⋃₀ (sbl_set X) := by
+lemma Lemma_8_2_4_3 {A : Type} (X : Set A) : ⋃₀ (sbl_set X) = seq X := by
   apply Set.ext
   fix l : List A
   apply Iff.intro
   · -- (→)
-    assume h1 : l ∈ seq X
-    --define at h1
-    define
-    apply Exists.intro (seq_by_length X l.length)
-    apply And.intro
-    · -- Proof of seq_by_length X (List.length l) ∈ sbl_set X
-      define
-      apply Exists.intro l.length
-      rfl
-      done
-    · -- Proof of l ∈ seq_by_length X (List.length l)
-      define
-      apply And.intro h1
-      rfl
-      done
-    done
-  · -- (←)
     assume h1 : l ∈ ⋃₀ (sbl_set X)
     define at h1
     obtain (S : Set (List A)) (h2 :  S ∈ sbl_set X ∧ l ∈ S) from h1
     have h3 : S ∈ sbl_set X := h2.left
     define at h3
-    obtain (n : Nat) (h4 : S = seq_by_length X n) from h3
+    obtain (n : Nat) (h4 : seq_by_length X n = S) from h3
     have h5 : l ∈ S := h2.right
-    rewrite [h4] at h5
+    rewrite [←h4] at h5
     define at h5
     show l ∈ seq X from h5.left
     done
+  · -- (←)
+    assume h1 : l ∈ seq X
+    define
+    set n : Nat := l.length
+    apply Exists.intro (seq_by_length X n)
+    apply And.intro
+    · -- Proof of seq_by_length X n ∈ sbl_set X
+      define
+      apply Exists.intro n
+      rfl
+      done
+    · -- Proof of l ∈ seq_by_length X n
+      define
+      apply And.intro h1
+      rfl
+      done
+    done
   done
 
+theorem ctble_of_onto_func_from_N {A : Type} {X : Set A} {f : Nat → A}
+    (h1 : ∀ x ∈ X, ∃ (n : Nat), f n = x) : ctble X := sorry
+
+def enum_sbl_sets {A : Type} (X : Set A) (n : Nat) : Set (List A) :=
+  seq_by_length X n
+
+lemma Lemma_8_2_4_4 {A : Type} (X : Set A) : ctble (sbl_set X) := by
+  have h1 : ∀ S ∈ sbl_set X, ∃ (n : Nat), enum_sbl_sets X n = S := by
+    fix S : Set (List A)
+    assume h1 : S ∈ sbl_set X
+    define at h1
+    show ∃ (n : ℕ), enum_sbl_sets X n = S from h1
+    done
+  show ctble (sbl_set X) from ctble_of_onto_func_from_N h1
+  done
+
+/- Old version
 def enum_sbl_sets {A : Type} (X : Set A)
     (n : Nat) (S : Set (List A)) : Prop := S = seq_by_length X n
 
@@ -2063,18 +2080,50 @@ lemma Lemma_8_2_4_4 {A : Type} (X : Set A) : ctble (sbl_set X) := by
     show S = seq_by_length X n from h2
     done
   done
+-/
 
-theorem Theorem_8_2_4 {A : Type} {X : Set A} (h1 : ctble X) : ctble (seq X) := by
+theorem Theorem_8_2_4 {A : Type} {X : Set A}
+    (h1 : ctble X) : ctble (seq X) := by
   set F : Set (Set (List A)) := sbl_set X
   have h2 : ctble F := Lemma_8_2_4_4 X
-  have h3 : ∀ (S : Set (List A)), S ∈ F → ctble S := by
+  have h3 : ∀ S ∈ F, ctble S := by
     fix S : Set (List A)
     assume h3 : S ∈ F
     define at h3
-    obtain (n : Nat) (h4 : S = seq_by_length X n) from h3
-    rewrite [h4]
+    obtain (n : Nat) (h4 : seq_by_length X n = S) from h3
+    rewrite [←h4]
     show ctble (seq_by_length X n) from Lemma_8_2_4_2 h1 n
     done
-  rewrite [Lemma_8_2_4_3 X]
+  rewrite [←Lemma_8_2_4_3 X]
   show ctble (⋃₀ sbl_set X) from Theorem_8_2_2 h2 h3
+  done
+
+theorem Theorem_8_2_5 : ¬ctble (Univ (Set Nat)) := by
+  by_contra h1
+  rewrite [Theorem_8_1_5_2] at h1
+  obtain (R : Rel Nat (Set Nat))
+    (h2 : fcnl_onto_from_nat R (Univ (Set ℕ))) from h1
+  define at h2
+  have h3 : unique_val_on_N R := h2.left
+  have h4 : nat_rel_onto R (Univ (Set Nat)) := h2.right
+  set D : Set Nat := { n : Nat | ∃ (X : Set Nat), R n X ∧ n ∉ X }
+  have h5 : D ∈ Univ (Set Nat) := elt_Univ D
+  define at h4
+  obtain (n : Nat) (h6 : R n D) from h4 h5
+  by_cases h7 : n ∈ D
+  · -- Case 1. h7 : n ∈ D
+    contradict h7
+    define at h7
+    obtain (X : Set Nat) (h8 : R n X ∧ ¬n ∈ X) from h7
+    define at h3
+    have h9 : D = X := h3 h6 h8.left
+    rewrite [h9]
+    show ¬n ∈ X from h8.right
+    done
+  · -- Case 2. h7 : n ∉ D
+    contradict h7
+    define
+    show ∃ (X : Set ℕ), R n X ∧ ¬n ∈ X from
+      Exists.intro D (And.intro h6 h7)
+    done
   done

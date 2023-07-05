@@ -3,18 +3,13 @@ namespace HTPI
 set_option pp.funBinderTypes true
 set_option linter.unusedVariables false
 
-/- Definitions and theorems in HTPIDefs
+/- Definitions -/
 def graph {A B : Type} (f : A → B) : Set (A × B) :=
-  { (a, b) : A × B | f a = b }
+    { (a, b) : A × B | f a = b }
 
 def is_func_graph {A B : Type} (G : Set (A × B)) : Prop :=
-  ∀ (x : A), ∃! (y : B), (x, y) ∈ G
+    ∀ (x : A), ∃! (y : B), (x, y) ∈ G
 
-theorem func_from_graph {A B : Type} (F : Set (A × B)) :
-    (∃ (f : A → B), graph f = F) ↔ is_func_graph F := by
--/
-
-/- Definitions -/
 def onto {A B : Type} (f : A → B) : Prop :=
   ∀ (y : B), ∃ (x : A), f x = y
 
@@ -47,6 +42,61 @@ def inverse_image {A B : Type} (f : A → B) (Y : Set B) : Set A :=
 /- Section 5.1 -/
 theorem graph_def {A B : Type} (f : A → B) (a : A) (b : B) :
     (a, b) ∈ graph f ↔ f a = b := by rfl
+
+theorem func_from_graph {A B : Type} (F : Set (A × B)) :
+    (∃ (f : A → B), graph f = F) ↔ is_func_graph F := by
+  apply Iff.intro
+  · -- (→)
+    assume h1 : ∃ (f : A → B), graph f = F
+    obtain (f : A → B) (h2 : graph f = F) from h1
+    define
+    fix x : A
+    rewrite [←h2]
+    exists_unique
+    · -- Existence
+      apply Exists.intro (f x)
+      define
+      rfl
+      done
+    · -- Uniqueness
+      fix y1 : B; fix y2 : B
+      assume h3 : (x, y1) ∈ graph f
+      assume h4 : (x, y2) ∈ graph f
+      define at h3; define at h4
+      rewrite [h3] at h4
+      show y1 = y2 from h4
+      done
+    done
+  · -- (←)
+    assume h1 : is_func_graph F
+    define at h1
+    have h2 : ∀ (x : A), ∃ (y : B), (x, y) ∈ F := by
+      fix x : A
+      obtain (y : B) (h3 : (x, y) ∈ F)
+        (h4 : ∀ (y1 y2 : B), (x, y1) ∈ F → (x, y2) ∈ F → y1 = y2) from h1 x
+      show ∃ (y : B), (x, y) ∈ F from Exists.intro y h3
+      done
+    set f : A → B := fun (x : A) => Classical.choose (h2 x)
+    apply Exists.intro f
+    apply Set.ext
+    fix (x, y) : A × B
+    have h3 : (x, f x) ∈ F := Classical.choose_spec (h2 x)
+    apply Iff.intro
+    · -- (→)
+      assume h4 : (x, y) ∈ graph f
+      define at h4
+      rewrite [h4] at h3
+      show (x, y) ∈ F from h3
+      done
+    · -- (←)
+      assume h4 : (x, y) ∈ F
+      define
+      obtain (z : B) (h5 : (x, z) ∈ F)
+        (h6 : ∀ (y1 y2 : B), (x, y1) ∈ F → (x, y2) ∈ F → y1 = y2) from h1 x
+      show f x = y from h6 (f x) y h3 h4
+      done
+    done
+  done
 
 theorem Theorem_5_1_4 {A B : Type} (f g : A → B) :
     (∀ (a : A), f a = g a) → f = g := funext

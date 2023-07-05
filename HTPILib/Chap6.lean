@@ -3,7 +3,7 @@ namespace HTPI
 set_option pp.funBinderTypes true
 set_option linter.unusedVariables false
 
-/- Definitions and theorems in FiniteSets and HTPIDefs
+/- Definitions and theorems in Chap8Part1 and HTPIDefs
 
 theorem zero_elts_iff_empty {A : Type} (X : Set A) :
     numElts X 0 ↔ empty X
