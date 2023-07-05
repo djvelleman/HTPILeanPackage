@@ -1,5 +1,5 @@
 import Chap6
-namespace HTPI
+namespace HTPI.Exercises
 set_option pp.funBinderTypes true
 set_option linter.unusedVariables false
 
@@ -38,20 +38,20 @@ theorem Exercise_6_1_16a2 :
 
 /- Section 6.2 -/
 -- 1.
-lemma Lemma_6_2_1_2_ex {A : Type} {R : BinRel A} {B : Set A} {b c : A}
+lemma Lemma_6_2_1_2 {A : Type} {R : BinRel A} {B : Set A} {b c : A}
     (h1 : partial_order R) (h2 : b ∈ B) (h3 : minimalElt R c (B \ {b}))
     (h4 : ¬R b c) : minimalElt R c B := sorry
 
 -- 2.
-lemma extendPO_is_ref_ex {A : Type} (R : BinRel A) (b : A)
+lemma extendPO_is_ref {A : Type} (R : BinRel A) (b : A)
     (h : partial_order R) : reflexive (extendPO R b) := sorry
 
 -- 3.
-lemma extendPO_is_trans_ex {A : Type} (R : BinRel A) (b : A)
+lemma extendPO_is_trans {A : Type} (R : BinRel A) (b : A)
     (h : partial_order R) : transitive (extendPO R b) := sorry
 
 -- 4.
-lemma extendPO_is_antisymm_ex {A : Type} (R : BinRel A) (b : A)
+lemma extendPO_is_antisymm {A : Type} (R : BinRel A) (b : A)
     (h : partial_order R) : antisymmetric (extendPO R b) := sorry
 
 -- 5.
@@ -123,7 +123,7 @@ theorem Exercise_6_3_16 : ∀ (n : Nat),
 /- Section 6.4 -/
 -- 1.
 --Hint: Use Exercise_6_1_16a1 and Exercise_6_1_16a2
-lemma sq_even_iff_even_ex (n : Nat) :
+lemma sq_even_iff_even (n : Nat) :
     nat_even (n * n) ↔ nat_even n := sorry
 
 -- 2.

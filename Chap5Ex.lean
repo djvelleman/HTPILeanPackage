@@ -1,5 +1,5 @@
 import Chap5
-namespace HTPI
+namespace HTPI.Exercises
 set_option pp.funBinderTypes true
 set_option linter.unusedVariables false
 
@@ -100,11 +100,11 @@ theorem Exercise_5_2_21b {A B C : Type} (f : B → C) (a : A)
 
 /- Section 5.3 -/
 -- 1.
-theorem Theorem_5_3_2_2_ex {A B : Type} (f : A → B) (g : B → A)
+theorem Theorem_5_3_2_2 {A B : Type} (f : A → B) (g : B → A)
     (h1 : graph g = inv (graph f)) : f ∘ g = id := sorry
 
 -- 2.
-theorem Theorem_5_3_3_2_ex {A B : Type} (f : A → B) (g : B → A)
+theorem Theorem_5_3_3_2 {A B : Type} (f : A → B) (g : B → A)
     (h1 : f ∘ g = id) : onto f := sorry
 
 -- 3.
@@ -162,7 +162,7 @@ theorem Exercise_5_4_10b {A : Type} (f : A → A) (B1 B2 C1 C2 : Set A)
     closure f (B1 ∪ B2) (C1 ∪ C2) := sorry
 
 -- 6.
-theorem Theorem_5_4_9_ex {A : Type} (f : A → A → A) (B : Set A) :
+theorem Theorem_5_4_9 {A : Type} (f : A → A → A) (B : Set A) :
     ∃ (C : Set A), closure2 f B C := sorry
 
 -- 7.

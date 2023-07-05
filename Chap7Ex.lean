@@ -1,17 +1,17 @@
 import Chap7
-namespace HTPI
+namespace HTPI.Exercises
 set_option pp.funBinderTypes true
 set_option linter.unusedVariables false
 
 /- Section 7.1 -/
 -- 1.
-theorem dvd_a_of_dvd_b_mod_ex {a b d : Nat}
+theorem dvd_a_of_dvd_b_mod {a b d : Nat}
     (h1 : d ∣ b) (h2 : d ∣ (a % b)) : d ∣ a := sorry
 
 -- 2.
-lemma gcd_comm_lt_ex {a b : Nat} (h : a < b) : gcd a b = gcd b a := sorry
+lemma gcd_comm_lt {a b : Nat} (h : a < b) : gcd a b = gcd b a := sorry
 
-theorem gcd_comm_ex (a b : Nat) : gcd a b = gcd b a := sorry
+theorem gcd_comm (a b : Nat) : gcd a b = gcd b a := sorry
 
 -- 3.
 theorem Exercise_7_1_5 (a b d : Nat) (n : Int) (h1 : gcd a b = d) :
@@ -41,7 +41,7 @@ theorem Exercise_7_1_10 (a b n : Nat) :
 
 /- Section 7.2 -/
 -- 1.
-lemma dvd_prime_ex {a p : Nat}
+lemma dvd_prime {a p : Nat}
     (h1 : prime p) (h2 : a ∣ p) : a = 1 ∨ a = p := sorry
 
 -- 2.
@@ -54,7 +54,7 @@ theorem rel_prime_iff_no_common_factor (a b : Nat) :
     rel_prime a b ↔ ¬∃ (p : Nat), prime p ∧ p ∣ a ∧ p ∣ b := sorry
 
 -- 4.
-theorem rel_prime_symm_ex {a b : Nat} (h : rel_prime a b) :
+theorem rel_prime_symm {a b : Nat} (h : rel_prime a b) :
     rel_prime b a := sorry
 
 -- 5.
@@ -63,7 +63,7 @@ theorem Exercise_7_2_5 {a b : Nat} {l m : List Nat}
     rel_prime a b ↔ (¬∃ (p : Nat), p ∈ l ∧ p ∈ m) := sorry
 
 -- 6.
-theorem Exercise_7_2_6_ex (a b : Nat) :
+theorem Exercise_7_2_6 (a b : Nat) :
     rel_prime a b ↔ ∃ (s t : Int), s * a + t * b = 1 := sorry
 
 -- 7.
@@ -82,7 +82,7 @@ theorem Exercise_7_2_17a (a b c : Nat) :
 
 /- Section 7.3 -/
 -- 1.
-theorem congr_trans_ex {m : Nat} : ∀ {a b c : Int},
+theorem congr_trans {m : Nat} : ∀ {a b c : Int},
     a ≡ b (MOD m) → b ≡ c (MOD m) → a ≡ c (MOD m) := sorry
 
 -- 2.
@@ -131,20 +131,20 @@ theorem rel_prime_mod (m a : Nat) :
 --For the base case, compute [a]_m ^ 0 * [1]_m in two ways:
 --by Theorem_7_3_6_7, [a] ^ 0 * [1]_m = [a]_m ^ 0
 --by ring, [a]_m ^ 0 * [1]_m = [1]_m.
-lemma Exercise_7_4_5_Int_ex (m : Nat) (a : Int) :
+lemma Exercise_7_4_5_Int (m : Nat) (a : Int) :
     ∀ (n : Nat), [a]_m ^ n = [a ^ n]_m := sorry
 
 -- 2.
-lemma left_inv_one_one_below_ex {n : Nat} {g g' : Nat → Nat}
+lemma left_inv_one_one_below {n : Nat} {g g' : Nat → Nat}
     (h1 : ∀ i < n, g' (g i) = i) : one_one_below n g := sorry
 
 -- 3.
-lemma comp_perm_below_ex {n : Nat} {f g : Nat → Nat}
+lemma comp_perm_below {n : Nat} {f g : Nat → Nat}
     (h1 : perm_below n f) (h2 : perm_below n g) :
     perm_below n (f ∘ g) := sorry
 
 -- 4.
-lemma perm_below_fixed_ex {n : Nat} {g : Nat → Nat}
+lemma perm_below_fixed {n : Nat} {g : Nat → Nat}
     (h1 : perm_below (n + 1) g) (h2 : g n = n) : perm_below n g := sorry
 
 -- 5.
@@ -168,7 +168,7 @@ theorem Like_Exercise_7_4_12 {m a p q k : Nat} [NeZero m]
 /- Section 7.5 -/
 -- 1.
 --Hint:  Use induction.
-lemma num_rp_prime_ex {p : Nat} (h1 : prime p) :
+lemma num_rp_prime {p : Nat} (h1 : prime p) :
     ∀ (k : Nat), k < p → num_rp_below p (k + 1) = k := sorry
 
 -- 2.

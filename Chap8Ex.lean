@@ -1,24 +1,24 @@
 import Chap8Part2
-namespace HTPI
+namespace HTPI.Exercises
 set_option pp.funBinderTypes true
 set_option linter.unusedVariables false
 
 /- Section 8.1 -/
 -- 1.
 --Hint:  Use Exercise_6_1_16a2 from the exercises of Section 6.1
-lemma fnz_odd_ex (k : Nat) : fnz (2 * k + 1) = -↑(k + 1) := sorry
+lemma fnz_odd (k : Nat) : fnz (2 * k + 1) = -↑(k + 1) := sorry
 
 -- 2.
-lemma fnz_fzn_ex : fnz ∘ fzn = id  := sorry
+lemma fnz_fzn : fnz ∘ fzn = id  := sorry
 
 -- 3.
-lemma tri_step_ex (k : Nat) : tri (k + 1) = tri k + k + 1 := sorry
+lemma tri_step (k : Nat) : tri (k + 1) = tri k + k + 1 := sorry
 
 -- 4.
-lemma tri_incr_ex {j k : Nat} (h1 : j ≤ k) : tri j ≤ tri k := sorry
+lemma tri_incr {j k : Nat} (h1 : j ≤ k) : tri j ≤ tri k := sorry
 
 -- 5.
-lemma ctble_of_equinum_ctble_ex {A B : Type} {X : Set A} {Y : Set B}
+lemma ctble_of_equinum_ctble {A B : Type} {X : Set A} {Y : Set B}
     (h1 : X ∼ Y) (h2 : ctble X) : ctble Y := sorry
 
 -- 6.
@@ -54,12 +54,12 @@ theorem Exercise_8_1_5 {A B : Type} {X : Set A} {Y : Set B}
     (h1 : X ∼ Y) : 𝒫 X ∼ 𝒫 Y := sorry
 
 -- 12.
-theorem Exercise_8_1_17_ex {A : Type} {X Y : Set A}
+theorem Exercise_8_1_17 {A : Type} {X Y : Set A}
     (h1 : X ⊆ Y) (h2 : ctble Y) : ctble X := sorry
 
 /- Section 8.1½ -/
 -- 1.
-lemma remove_one_iff_ex {A B : Type}
+lemma remove_one_iff {A B : Type}
     {X : Set A} {Y : Set B} {R : Rel A B} (h1 : matching R X Y)
     {u : A} (h2 : u ∈ X) (v : B) {x : A} (h3 : x ∈ X \ {u}) :
     ∃ (w : A), w ∈ X ∧ ∀ (y : B), remove_one R u v x y ↔ R w y := sorry
@@ -74,11 +74,11 @@ theorem one_match_fcnl {A B : Type} (a : A) (b : B) :
 
 -- 4.
 --Hint:  Use the previous two exercises.
-lemma one_match_match_ex {A B : Type} (a : A) (b : B) :
+lemma one_match_match {A B : Type} (a : A) (b : B) :
     matching (one_match a b) {a} {b} := sorry
 
 -- 5.
-lemma neb_nrpb_ex (m : Nat) : ∀ ⦃k : Nat⦄, k ≤ m →
+lemma neb_nrpb (m : Nat) : ∀ ⦃k : Nat⦄, k ≤ m →
     num_elts_below (Set_rp_below m) k (num_rp_below m k) := sorry
 
 -- 6.
@@ -88,7 +88,7 @@ lemma prod_fcnl {A B C D : Type} {R : Rel A B} {S : Rel C D}
 
 -- 7.
 --Hint:  Use the previous exercise.
-lemma prod_match_ex {A B C D : Type}
+lemma prod_match {A B C D : Type}
     {U : Set A} {V : Set B} {W : Set C} {X : Set D}
     {R : Rel A B} {S : Rel C D}
     (h1 : matching R U V) (h2 : matching S W X) :
@@ -97,7 +97,7 @@ lemma prod_match_ex {A B C D : Type}
 -- 8.
 --Hint:  You might find it helpful to apply the theorem div_mod_char
 --from the exercises of Section 6.4.
-lemma qr_image_ex (m n : Nat) :
+lemma qr_image (m n : Nat) :
     image (qr n) (I (m * n)) = I m ×ₛ I n := sorry
 
 -- 9.

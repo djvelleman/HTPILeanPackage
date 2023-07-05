@@ -1,5 +1,5 @@
 import Chap4
-namespace HTPI
+namespace HTPI.Exercises
 set_option pp.funBinderTypes true
 set_option linter.unusedVariables false
 
@@ -155,24 +155,24 @@ theorem Exercise_4_4_24 (A : Type) (R : Set (A × A)) :
 
 /- Section 4.5 -/
 -- 1.
-lemma overlap_implies_equal_ex {A : Type}
+lemma overlap_implies_equal {A : Type}
     (F : Set (Set A)) (h : partition F) :
     ∀ X ∈ F, ∀ Y ∈ F, ∀ (x : A), x ∈ X → x ∈ Y → X = Y := sorry
 
 -- 2.
-lemma Lemma_4_5_7_ref_ex {A : Type} (F : Set (Set A)) (h : partition F):
+lemma Lemma_4_5_7_ref {A : Type} (F : Set (Set A)) (h : partition F):
     reflexive (EqRelFromPart F) := sorry
 
 -- 3.
-lemma Lemma_4_5_7_symm_ex {A : Type} (F : Set (Set A)) (h : partition F):
+lemma Lemma_4_5_7_symm {A : Type} (F : Set (Set A)) (h : partition F):
     symmetric (EqRelFromPart F) := sorry
 
 -- 4.
-lemma Lemma_4_5_7_trans_ex {A : Type} (F : Set (Set A)) (h : partition F):
+lemma Lemma_4_5_7_trans {A : Type} (F : Set (Set A)) (h : partition F):
     transitive (EqRelFromPart F) := sorry
 
 -- 5.
-lemma Lemma_4_5_8_ex {A : Type} (F : Set (Set A)) (h : partition F) :
+lemma Lemma_4_5_8 {A : Type} (F : Set (Set A)) (h : partition F) :
     ∀ X ∈ F, ∀ x ∈ X, equivClass (EqRelFromPart F) x = X := sorry
 
 -- 6.
