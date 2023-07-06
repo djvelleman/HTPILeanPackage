@@ -129,3 +129,43 @@ theorem equinum_sub {A B : Type} {X U : Set A} {Y : Set B}
 -- 13.
 theorem Exercise_8_1_8b {A : Type} {X U : Set A}
     (h1 : finite X) (h2 : U ⊆ X) : finite U := sorry
+
+/- Section 8.2 -/
+-- 1.
+lemma pair_ctble {A : Type} (a b : A) : ctble {a, b} := sorry
+
+-- 2.
+--Hint:  Use the previous exercise and Theorem_8_2_2
+theorem Theorem_8_2_1_2 {A : Type} {X Y : Set A}
+    (h1 : ctble X) (h2 : ctble Y) : ctble (X ∪ Y) := sorry
+
+-- 3.
+lemma seq_cons_image {A : Type} (X : Set A) (n : Nat) :
+    image (seq_cons A) (X ×ₛ (seq_by_length X n)) =
+      seq_by_length X (n + 1) := sorry
+
+-- 4.
+--Hint:  Use induction on the size of X
+lemma set_to_list {A : Type} {X : Set A} (h : finite X) :
+    ∃ (l : List A), ∀ (x : A), x ∈ l ↔ x ∈ X := sorry
+
+-- 5.
+--Hint:  Use the previous exercise and Theorem_8_2_4
+theorem Like_Exercise_8_2_4 {A : Type} {X : Set A} (h : ctble X) :
+    ctble { Y : Set A | Y ⊆ X ∧ finite Y } := sorry
+
+-- 6.
+theorem Exercise_8_2_6b (A B C : Type) :
+    equinum (Univ (A × B → C)) (Univ (A → B → C)) := sorry
+
+-- 7.
+theorem Like_Exercise_8_2_7 : ∃ (P : Set (Set Nat)),
+    partition P ∧ ctble P ∧ ∀ X ∈ P, ctble X := sorry
+
+-- 8.
+theorem unctbly_many_inf_set_nat :
+    ¬ctble { X : Set Nat | ¬finite X } := sorry
+
+-- 9.
+theorem Exercise_8_2_8 {A : Type} {X Y : Set A}
+    (h : empty (X ∩ Y)) : 𝒫 (X ∪ Y) ∼ 𝒫 X ×ₛ 𝒫 Y := sorry

@@ -1905,69 +1905,7 @@ lemma seq_cons_one_one (A : Type) : one_to_one (seq_cons A) := by
 
 lemma seq_cons_image {A : Type} (X : Set A) (n : Nat) :
     image (seq_cons A) (X ×ₛ (seq_by_length X n)) =
-      seq_by_length X (n + 1) := by
-  apply Set.ext
-  fix l : List A
-  apply Iff.intro
-  · -- (→)
-    assume h1 : l ∈ image (seq_cons A) (X ×ₛ (seq_by_length X n))
-    define at h1
-    obtain ((a, L) : A × List A)
-      (h2 : (a, L) ∈ X ×ₛ seq_by_length X n ∧ seq_cons A (a, L) = l) from h1
-    have h3 : (a, L) ∈ X ×ₛ seq_by_length X n := h2.left
-    define at h3      --h3 : a ∈ X ∧ L ∈ seq_by_length X n
-    have h4 : L ∈ seq_by_length X n := h3.right
-    define at h4      --h4 : L ∈ seq X ∧ List.length L = n
-    have h5 : seq_cons A (a, L) = l := h2.right
-    rewrite [seq_cons_def] at h5   --h5 : a :: L = l
-    rewrite [←h5]
-    define
-    apply And.intro
-    · -- Proof that a :: L ∈ seq X
-      define
-      fix b : A
-      assume h6 : b ∈ a :: L
-      rewrite [List.mem_cons] at h6  --h6 : b = a ∨ b ∈ L
-      by_cases on h6
-      · -- Case 1. h6 : b = a
-        rewrite [h6]
-        show a ∈ X from h3.left
-        done
-      · -- Case 2. h6 : b ∈ L
-        rewrite [seq_def] at h4
-        show b ∈ X from h4.left b h6
-        done
-      done
-    · -- Proof that List.length (a :: L) = n + 1
-      rewrite [←h4.right]
-      show List.length (a :: L) = List.length L + 1 from
-        List.length_cons a L
-      done
-    done
-  · -- (←)
-    assume h1 : l ∈ seq_by_length X (n + 1)
-    define at h1   --h1 : l ∈ seq X ∧ List.length l = n + 1
-    define
-    obtain (a : A) (h2 : ∃ (L : List A), l = a :: L ∧ List.length L = n)
-      from exists_cons_of_length_eq_succ h1.right
-    obtain (L : List A) (h3 : l = a :: L ∧ List.length L = n) from h2
-    apply Exists.intro (a, L)
-      --Goal : (a, L) ∈ X ×ₛ seq_by_length X n ∧ seq_cons A (a, L) = l
-    rewrite [Set_prod_def, seq_cons_def]
-      --Goal : (a ∈ X ∧ L ∈ seq_by_length X n) ∧ a :: L = l
-    apply And.intro _ h3.left.symm
-    have h4 : l ∈ seq X := h1.left
-    rewrite [h3.left, seq_def] at h4
-      --h4 : ∀ (x : A), x ∈ a :: L → x ∈ X
-    apply And.intro (h4 a (List.mem_cons_self a L))
-    define    --Goal : L ∈ seq X ∧ List.length L = n
-    apply And.intro _ h3.right
-    define    --Goal : ∀ (x : A), x ∈ L → x ∈ X
-    fix b : A
-    assume h5 : b ∈ L
-    show b ∈ X from h4 b (List.mem_cons_of_mem a h5)
-    done
-  done
+      seq_by_length X (n + 1) := sorry
 
 lemma Lemma_8_2_4_1 {A : Type} (X : Set A) (n : Nat) :
     X ×ₛ (seq_by_length X n) ∼ seq_by_length X (n + 1) :=
