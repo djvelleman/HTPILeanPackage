@@ -287,6 +287,9 @@ lemma denum_def {A : Type} (X : Set A) : denum X ↔ Univ Nat ∼ X := by rfl
 lemma numElts_def {A : Type} (X : Set A) (n : Nat) :
     numElts X n ↔ I n ∼ X := by rfl
 
+lemma finite_def {A : Type} (X : Set A) :
+    finite X ↔ ∃ (n : Nat), numElts X n := by rfl
+
 lemma fcnl_on_empty {A B : Type}
     (R : Rel A B) {X : Set A} (h1 : empty X) : fcnl_on R X := by
   define

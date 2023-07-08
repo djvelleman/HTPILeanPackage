@@ -1919,9 +1919,9 @@ lemma Lemma_8_2_4_2 {A : Type} {X : Set A} (h1 : ctble X) :
     rewrite [sbl_base]   --Goal : ctble {[]}
     define
     apply Or.inl         --Goal : finite {[]}
-    define
-    apply Exists.intro 1 --Goal : I 1 ∼ {[]}
-    show I 1 ∼ {[]} from singleton_one_elt []
+    rewrite [finite_def]
+    apply Exists.intro 1 --Goal : numElts {[]} 1
+    show numElts {[]} 1 from singleton_one_elt []
     done
   · -- Induction Step
     fix n : Nat
@@ -2036,7 +2036,7 @@ theorem Theorem_8_2_4 {A : Type} {X : Set A}
   show ctble (⋃₀ sbl_set X) from Theorem_8_2_2 h2 h3
   done
 
-theorem Theorem_8_2_5 : ¬ctble (Univ (Set Nat)) := by
+theorem Cantor's_theorem : ¬ctble (Univ (Set Nat)) := by
   by_contra h1
   rewrite [Theorem_8_1_5_2] at h1
   obtain (R : Rel Nat (Set Nat))
@@ -2063,5 +2063,199 @@ theorem Theorem_8_2_5 : ¬ctble (Univ (Set Nat)) := by
     define
     show ∃ (X : Set ℕ), R n X ∧ ¬n ∈ X from
       Exists.intro D (And.intro h6 h7)
+    done
+  done
+
+/- Section 8.3 -/
+def rep_image_two_rel {A B : Type} (R S : Rel A B) (Z : Set A) (n : Nat) : Set A :=
+  match n with
+    | 0 => Z
+    | m + 1 => { a : A | ∃ (x : A), x ∈ rep_image_two_rel R S Z m ∧ ∃ (y : B), R x y ∧ S a y }
+
+def cum_rep_image {A B : Type} (R S : Rel A B) (Z : Set A) : Set A :=
+  { a : A | ∃ (n : Nat), a ∈ rep_image_two_rel R S Z n }
+
+def csb_match {A B : Type} (R S : Rel A B) (Z : Set A)
+    (x : A) (y : B) : Prop := x ∈ cum_rep_image R S Z ∧ R x y ∨ x ∉ cum_rep_image R S Z ∧ S x y
+
+lemma csb_match_cri {A B : Type} {R S : Rel A B} {Z : Set A} {x : A} {y : B}
+    (h1 : csb_match R S Z x y) (h2 : x ∈ cum_rep_image R S Z) : R x y := by
+  by_cases on h1
+  · -- Case 1. h1 : x ∈ W ∧ R x y
+    exact h1.right
+    done
+  · -- Case 2. h1 : ¬x ∈ W ∧ S x y
+    exact absurd h2 h1.left
+    done
+  done
+
+lemma csb_match_not_cri {A B : Type} {R S : Rel A B} {Z : Set A} {x : A} {y : B}
+    (h1 : csb_match R S Z x y) (h2 : x ∉ cum_rep_image R S Z) : S x y := by
+  by_cases on h1
+  · -- Case 1. h1 : x ∈ W ∧ R x y
+    exact absurd h1.left h2
+    done
+  · -- Case 2. h1 : ¬x ∈ W ∧ S x y
+    exact h1.right
+    done
+  done
+
+lemma csb_cri_of_cri {A B : Type} {R S : Rel A B} {Z : Set A} {x1 x2 : A} {y : B}
+    (h1 : csb_match R S Z x1 y) (h2 : csb_match R S Z x2 y)
+    (h3 : x1 ∈ cum_rep_image R S Z) : x2 ∈ cum_rep_image R S Z := by
+  have h4 := csb_match_cri h1 h3
+  by_contra h5
+  have h6 := csb_match_not_cri h2 h5
+  contradict h5
+  define at h3
+  define
+  obtain n h7 from h3
+  apply Exists.intro (n + 1)
+  define
+  apply Exists.intro x1
+  apply And.intro h7
+  apply Exists.intro y
+  exact And.intro h4 h6
+  done
+
+theorem Cantor_Schroeder_Bernstein_theorem {A B : Type} {X U : Set A} {Y V : Set B}
+    (h1 : U ⊆ X) (h2 : V ⊆ Y) (h3 : X ∼ V) (h4 : U ∼ Y) : X ∼ Y := by
+  obtain R h5 from h3
+  obtain S h6 from h4
+  define at h5; define at h6
+  set Z : Set A := X \ U
+  set W : Set A := cum_rep_image R S Z
+  set T : Rel A B := csb_match R S Z
+  have U_of_not_W : X \ W ⊆ U := by
+    fix x : A
+    assume h7 : x ∈ X \ W
+    contradict h7.right with h8
+    define
+    apply Exists.intro 0
+    define
+    exact And.intro h7.left h8
+    done
+  define
+  apply Exists.intro T
+  define
+  apply And.intro
+  · -- Proof of rel_within T X Y
+    define
+    fix x : A; fix y : B
+    assume h7 : T x y
+    define at h7
+    by_cases on h7
+    · -- Case 1. h7 : x ∈ W ∧ R x y
+      have h8 : x ∈ X ∧ y ∈ V := h5.left h7.right
+      exact And.intro h8.left (h2 h8.right)
+      done
+    · -- Case 2. h7 : x ∉ W ∧ S x y
+      have h8 : x ∈ U ∧ y ∈ Y := h6.left h7.right
+      exact And.intro (h1 h8.left) h8.right
+      done
+    done
+  · -- Proof of fcnl_ons
+    apply And.intro
+    · -- Proof of fcnl_on T X
+      define
+      fix a
+      assume h7
+      exists_unique
+      · -- Existence
+        by_cases h8 : a ∈ W
+        · -- Case 1. h8 : a ∈ W
+          obtain b h9 from fcnl_exists h5.right.left h7
+          apply Exists.intro b
+          define
+          exact Or.inl (And.intro h8 h9)
+          done
+        · -- Case 2. h8 : a ∉ W
+          have h9 : a ∈ U := U_of_not_W (And.intro h7 h8)
+          obtain b h10 from fcnl_exists h6.right.left h9
+          apply Exists.intro b
+          define
+          exact Or.inr (And.intro h8 h10)
+          done
+        done
+      · -- Uniqueness
+        fix b1 : B; fix b2 : B
+        assume h8; assume h9
+        by_cases h10 : a ∈ W
+        · -- Case 1. h10 : a ∈ W
+          have h11 : R a b1 := csb_match_cri h8 h10
+          have h12 : R a b2 := csb_match_cri h9 h10
+          show b1 = b2 from fcnl_unique h5.right.left h7 h11 h12
+          done
+        · -- Case 2. h10 : ¬a ∈ W
+          have h11 : S a b1 := csb_match_not_cri h8 h10
+          have h12 : S a b2 := csb_match_not_cri h9 h10
+          have h13 : a ∈ U := U_of_not_W (And.intro h7 h10)
+          show b1 = b2 from fcnl_unique h6.right.left h13 h11 h12
+          done
+        done
+      done
+    · -- Proof of fcnl_on (invRel T) Y
+      define
+      fix b : B
+      assume h7
+      obtain u h8 from fcnl_exists h6.right.right h7
+      have h9 : u ∈ U := (h6.left h8).left
+      exists_unique
+      · -- Existence
+        by_cases h11 : u ∈ W
+        · -- Case 1. h11 : u ∈ W
+          define at h11
+          obtain n h12 from h11
+          have h13 : n ≠ 0 := by
+            by_contra h13
+            rewrite [h13] at h12
+            define at h12
+            exact h12.right h9
+            done
+          obtain m h14 from exists_eq_add_one_of_ne_zero h13
+          rewrite [h14] at h12
+          define at h12
+          obtain x (h15 : x ∈ rep_image_two_rel R S Z m ∧ ∃ (y : B), R x y ∧ S u y) from h12
+          apply Exists.intro x
+          define
+          apply Or.inl
+          obtain y h16 from h15.right
+          have h17 : y = b := fcnl_unique h6.right.left h9 h16.right h8
+          rewrite [h17] at h16
+          apply And.intro _ h16.left
+          define
+          exact Exists.intro m h15.left
+          done
+        · -- Case 2. h9 : ¬u ∈ W
+          apply Exists.intro u
+          define
+          exact Or.inr (And.intro h11 h8)
+          done
+        done
+      · -- Uniqueness
+        fix a1; fix a2
+        assume h11; assume h12
+        rewrite [invRel_def] at h11
+        rewrite [invRel_def] at h12
+        --define at h11; define at h12
+        by_cases h13 : a1 ∈ W
+        · -- Case 1. h13 : a1 ∈ W
+          have h14 : a2 ∈ W := csb_cri_of_cri h11 h12 h13
+          have h15 := csb_match_cri h11 h13
+          have h16 := csb_match_cri h12 h14
+          have h17 : b ∈ V := (h5.left h15).right
+          show a1 = a2 from fcnl_unique h5.right.right h17 h15 h16
+          done
+        · -- Case 2. h13 : a1 ∉ W
+          have h14 : a2 ∉ W := by
+            by_contra h14
+            exact h13 (csb_cri_of_cri h12 h11 h14)
+            done
+          have h15 := csb_match_not_cri h11 h13
+          have h16 := csb_match_not_cri h12 h14
+          show a1 = a2 from fcnl_unique h6.right.right h7 h15 h16
+          done
+        done
+      done
     done
   done

@@ -602,7 +602,7 @@ theorem well_ord_princ (S : Set Nat) : (∃ (n : Nat), n ∈ S) →
 
 lemma sq_even_iff_even (n : Nat) : nat_even (n * n) ↔ nat_even n := sorry
 
-theorem sqrt_2_irrat :
+theorem Theorem_6_4_5 :
     ¬∃ (q p : Nat), p * p = 2 * (q * q) ∧ q ≠ 0 := by
   set S : Set Nat :=
     { q : Nat | ∃ (p : Nat), p * p = 2 * (q * q) ∧ q ≠ 0 }

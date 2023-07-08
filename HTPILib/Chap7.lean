@@ -895,7 +895,7 @@ theorem Theorem_7_2_5 : ∀ (l1 l2 : List Nat),
     done
   done
 
-theorem Theorem_7_2_6_Fund_Thm_Arith (n : Nat) (h : n ≥ 1) :
+theorem fund_thm_arith (n : Nat) (h : n ≥ 1) :
     ∃! (l : List Nat), prime_factorization n l := by
   exists_unique
   · -- Existence
@@ -2023,7 +2023,7 @@ lemma Exercise_7_4_5_Nat (m a n : Nat) :
   rfl
   done
 
-theorem Theorem_7_4_3_Euler's_theorem {m a : Nat} [NeZero m]
+theorem Euler's_theorem {m a : Nat} [NeZero m]
     (h1 : rel_prime m a) : a ^ (phi m) ≡ 1 (MOD m) := by
   have h2 : [a]_m ^ (phi m) = [1]_m := Theorem_7_4_2 h1
   rewrite [Exercise_7_4_5_Nat m a (phi m)] at h2

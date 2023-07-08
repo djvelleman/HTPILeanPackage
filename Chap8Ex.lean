@@ -130,6 +130,14 @@ theorem equinum_sub {A B : Type} {X U : Set A} {Y : Set B}
 theorem Exercise_8_1_8b {A : Type} {X U : Set A}
     (h1 : finite X) (h2 : U ⊆ X) : finite U := sorry
 
+-- 14.
+--Hint:  Use Like_Exercise_6_2_16 from the exercises of Section 6.2
+lemma N_not_finite : ¬finite (Univ Nat) := sorry
+
+-- 15.
+theorem denum_not_finite {A : Type} {X : Set A}
+    (h : denum X) : ¬finite X := sorry
+
 /- Section 8.2 -/
 -- 1.
 lemma pair_ctble {A : Type} (a b : A) : ctble {a, b} := sorry
