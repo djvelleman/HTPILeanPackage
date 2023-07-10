@@ -4,117 +4,117 @@ set_option pp.funBinderTypes true
 set_option linter.unusedVariables false
 
 /- Definitions -/
-def invRel {A B : Type} (R : Rel A B) : Rel B A :=
+def invRel {U V : Type} (R : Rel U V) : Rel V U :=
   RelFromExt (inv (extension R))
 
-def rel_within {A B : Type} (R : Rel A B) (X : Set A) (Y : Set B) : Prop :=
-  ∀ ⦃x : A⦄ ⦃y : B⦄, R x y → x ∈ X ∧ y ∈ Y
+def rel_within {U V : Type} (R : Rel U V) (A : Set U) (B : Set V) : Prop :=
+  ∀ ⦃x : U⦄ ⦃y : V⦄, R x y → x ∈ A ∧ y ∈ B
 
-def fcnl_on {A B : Type} (R : Rel A B) (X : Set A) : Prop :=
-  ∀ ⦃x : A⦄, x ∈ X → ∃! (y : B), R x y
+def fcnl_on {U V : Type} (R : Rel U V) (A : Set U) : Prop :=
+  ∀ ⦃x : U⦄, x ∈ A → ∃! (y : V), R x y
 
-def matching {A B : Type} (R : Rel A B) (X : Set A) (Y : Set B) : Prop :=
-  rel_within R X Y ∧ fcnl_on R X ∧ fcnl_on (invRel R) Y
+def matching {U V : Type} (R : Rel U V) (A : Set U) (B : Set V) : Prop :=
+  rel_within R A B ∧ fcnl_on R A ∧ fcnl_on (invRel R) B
 
-def equinum {A B : Type} (X : Set A) (Y : Set B) : Prop :=
-  ∃ (R : Rel A B), matching R X Y
+def equinum {U V : Type} (A : Set U) (B : Set V) : Prop :=
+  ∃ (R : Rel U V), matching R A B
 
-notation:50  X:50 " ∼ " Y:50 => equinum X Y
+notation:50  A:50 " ∼ " B:50 => equinum A B
 
-def RelWithinFromFunc {A B : Type} (f : A → B) (X : Set A)
-  (x : A) (y : B) : Prop := x ∈ X ∧ f x = y
+def RelWithinFromFunc {U V : Type} (f : U → V) (A : Set U)
+  (x : U) (y : V) : Prop := x ∈ A ∧ f x = y
 
-def one_one_on {A B : Type} (f : A → B) (X : Set A) : Prop :=
-  ∀ ⦃x1 x2 : A⦄, x1 ∈ X → x2 ∈ X → f x1 = f x2 → x1 = x2
+def one_one_on {U V : Type} (f : U → V) (A : Set U) : Prop :=
+  ∀ ⦃x1 x2 : U⦄, x1 ∈ A → x2 ∈ A → f x1 = f x2 → x1 = x2
 
-def Univ (A : Type) : Set A := { x : A | True }
+def Univ (U : Type) : Set U := { x : U | True }
 
-def compRel {A B C : Type} (S : Rel B C) (R : Rel A B) : Rel A C :=
+def compRel {U V W : Type} (S : Rel V W) (R : Rel U V) : Rel U W :=
   RelFromExt (comp (extension S) (extension R))
 
 def I (n : Nat) : Set Nat := { k : Nat | k < n }
 
-def finite {A : Type} (X : Set A) : Prop :=
-  ∃ (n : Nat), I n ∼ X
+def finite {U : Type} (A : Set U) : Prop :=
+  ∃ (n : Nat), I n ∼ A
 
-def denum {A : Type} (X : Set A) : Prop :=
-  Univ Nat ∼ X
+def denum {U : Type} (A : Set U) : Prop :=
+  Univ Nat ∼ A
 
-def ctble {A : Type} (X : Set A) : Prop :=
-  finite X ∨ denum X
+def ctble {U : Type} (A : Set U) : Prop :=
+  finite A ∨ denum A
 
-def numElts {A : Type} (X : Set A) (n : Nat) : Prop := I n ∼ X
+def numElts {U : Type} (A : Set U) (n : Nat) : Prop := I n ∼ A
 
-def emptyRel (A B : Type) (x : A) (y : B) : Prop := False
+def emptyRel (U V : Type) (x : U) (y : V) : Prop := False
 
-def remove_one {A B : Type} (R : Rel A B) (u : A) (v : B)
-  (x : A) (y : B) : Prop := x ≠ u ∧ y ≠ v ∧ (R x y ∨ (R x v ∧ R u y))
+def remove_one {U V : Type} (R : Rel U V) (u : U) (v : V)
+  (x : U) (y : V) : Prop := x ≠ u ∧ y ≠ v ∧ (R x y ∨ (R x v ∧ R u y))
 
-def one_match {A B : Type} (a : A) (b : B)
-  (x : A) (y : B) : Prop := x = a ∧ y = b
+def one_match {U V : Type} (a : U) (b : V)
+  (x : U) (y : V) : Prop := x = a ∧ y = b
 
 /- Section 8.1 -/
-lemma invRel_def {A B : Type} (R : Rel A B) (a : A) (b : B) :
-    invRel R b a ↔ R a b := by rfl
+lemma invRel_def {U V : Type} (R : Rel U V) (u : U) (v : V) :
+    invRel R v u ↔ R u v := by rfl
 
-theorem equinum_image {A B : Type} {X : Set A} {Y : Set B} {f : A → B}
-    (h1 : one_one_on f X) (h2 : image f X = Y) : X ∼ Y := by
+theorem equinum_image {U V : Type} {A : Set U} {B : Set V} {f : U → V}
+    (h1 : one_one_on f A) (h2 : image f A = B) : A ∼ B := by
   rewrite [←h2]
-  define   --Goal : ∃ (R : Rel A B), matching R X (image f X)
-  set R : Rel A B := RelWithinFromFunc f X
+  define   --Goal : ∃ (R : Rel U V), matching R A (image f A)
+  set R : Rel U V := RelWithinFromFunc f A
   apply Exists.intro R
-  define   --Goal : rel_within R X (image f X) ∧
-           --fcnl_on R X ∧ fcnl_on (invRel R) (image f X)
+  define   --Goal : rel_within R A (image f A) ∧
+           --fcnl_on R A ∧ fcnl_on (invRel R) (image f A)
   apply And.intro
   · -- Proof of rel_within
-    define --Goal : ∀ ⦃x : A⦄ ⦃y : B⦄, R x y → x ∈ X ∧ y ∈ image f X
-    fix x : A; fix y : B
-    assume h3 : R x y  --Goal : x ∈ X ∧ y ∈ image f X
-    define at h3       --h3 : x ∈ X ∧ f x = y
+    define --Goal : ∀ ⦃x : U⦄ ⦃y : V⦄, R x y → x ∈ A ∧ y ∈ image f A
+    fix x : U; fix y : V
+    assume h3 : R x y  --Goal : x ∈ A ∧ y ∈ image f A
+    define at h3       --h3 : x ∈ A ∧ f x = y
     apply And.intro h3.left
     define
-    show ∃ (x : A), x ∈ X ∧ f x = y from Exists.intro x h3
+    show ∃ (x : U), x ∈ A ∧ f x = y from Exists.intro x h3
     done
   · -- Proofs of fcnl_ons
     apply And.intro
-    · -- Proof of fcnl_on R X
-      define  --Goal : ∀ ⦃x : A⦄, x ∈ X → ∃! (y : B), R x y
-      fix x : A
-      assume h3 : x ∈ X
+    · -- Proof of fcnl_on R A
+      define  --Goal : ∀ ⦃x : U⦄, x ∈ A → ∃! (y : V), R x y
+      fix x : U
+      assume h3 : x ∈ A
       exists_unique
       · -- Existence
         apply Exists.intro (f x)
-        define  --Goal : x ∈ X ∧ f x = f x
+        define  --Goal : x ∈ A ∧ f x = f x
         apply And.intro h3
         rfl
         done
       · -- Uniqueness
-        fix y1 : B; fix y2 : B
+        fix y1 : V; fix y2 : V
         assume h4 : R x y1
         assume h5 : R x y2   --Goal : y1 = y2
         define at h4; define at h5
-          --h4 : x ∈ X ∧ f x = y1;  h5 : x ∈ X ∧ f x = y2
+          --h4 : x ∈ A ∧ f x = y1;  h5 : x ∈ A ∧ f x = y2
         rewrite [h4.right] at h5
         show y1 = y2 from h5.right
         done
       done
-    · -- Proof of fcnl_on (invRel R) (image f X)
-      define  --Goal : ∀ ⦃x : B⦄, x ∈ image f X → ∃! (y : A), invRel R x y
-      fix y : B
-      assume h3 : y ∈ image f X
-      obtain (x : A) (h4 : x ∈ X ∧ f x = y) from h3
+    · -- Proof of fcnl_on (invRel R) (image f A)
+      define  --Goal : ∀ ⦃x : V⦄, x ∈ image f A → ∃! (y : U), invRel R x y
+      fix y : V
+      assume h3 : y ∈ image f A
+      obtain (x : U) (h4 : x ∈ A ∧ f x = y) from h3
       exists_unique
       · -- Existence
         apply Exists.intro x
         define
-        show x ∈ X ∧ f x = y from h4
+        show x ∈ A ∧ f x = y from h4
         done
       · -- Uniqueness
-        fix x1 : A; fix x2 : A
+        fix x1 : U; fix x2 : U
         assume h5 : invRel R y x1
         assume h6 : invRel R y x2
         define at h5; define at h6
-          --h5 : x1 ∈ X ∧ f x1 = y;  h6 : x2 ∈ X ∧ f x2 = y
+          --h5 : x1 ∈ A ∧ f x1 = y;  h6 : x2 ∈ A ∧ f x2 = y
         rewrite [←h6.right] at h5
         show x1 = x2 from h1 h5.left h6.left h5.right
         done
@@ -122,87 +122,88 @@ theorem equinum_image {A B : Type} {X : Set A} {Y : Set B} {f : A → B}
     done
   done
 
-lemma id_one_one_on {A : Type} (X : Set A) : one_one_on id X := by
+lemma id_one_one_on {U : Type} (A : Set U) : one_one_on id A := by
   define
-  fix x1 : A; fix x2 : A
-  assume h1 : x1 ∈ X; assume h2 : x2 ∈ X
+  fix x1 : U; fix x2 : U
+  assume h1 : x1 ∈ A
+  assume h2 : x2 ∈ A
   assume h3 : id x1 = id x2
   show x1 = x2 from h3
   done
 
-lemma image_id {A : Type} (X : Set A) : image id X = X := by
+lemma image_id {U : Type} (A : Set U) : image id A = A := by
   apply Set.ext
-  fix x : A
+  fix x : U
   apply Iff.intro
   · -- (→)
-    assume h1 : x ∈ image id X
-    obtain (y : A) (h2 : y ∈ X ∧ id y = x) from h1
+    assume h1 : x ∈ image id A
+    obtain (y : U) (h2 : y ∈ A ∧ id y = x) from h1
     rewrite [←h2.right]
-    show id y ∈ X from h2.left
+    show id y ∈ A from h2.left
     done
   · -- (←)
-    assume h1 : x ∈ X
-    apply Exists.intro x  --Goal : x ∈ X ∧ id x = x
+    assume h1 : x ∈ A
+    apply Exists.intro x  --Goal : x ∈ A ∧ id x = x
     apply And.intro h1
     rfl
     done
   done
 
-theorem Theorem_8_1_3_1 {A : Type} (X : Set A) : X ∼ X :=
-  equinum_image (id_one_one_on X) (image_id X)
+theorem Theorem_8_1_3_1 {U : Type} (A : Set U) : A ∼ A :=
+  equinum_image (id_one_one_on A) (image_id A)
 
-lemma inv_inv {A B : Type} (R : Rel A B) : invRel (invRel R) = R := by rfl
+lemma inv_inv {U V : Type} (R : Rel U V) : invRel (invRel R) = R := by rfl
 
-lemma inv_match {A B : Type} {R : Rel A B} {X : Set A} {Y : Set B}
-    (h : matching R X Y) : matching (invRel R) Y X := by
-  define       --Goal : rel_within (invRel R) Y X ∧
-               --fcnl_on (invRel R) Y ∧ fcnl_on (invRel (invRel R)) X
-  define at h  --h : rel_within R X Y ∧ fcnl_on R X ∧ fcnl_on (invRel R) Y
+lemma inv_match {U V : Type} {R : Rel U V} {A : Set U} {B : Set V}
+    (h : matching R A B) : matching (invRel R) B A := by
+  define       --Goal : rel_within (invRel R) B A ∧
+               --fcnl_on (invRel R) B ∧ fcnl_on (invRel (invRel R)) A
+  define at h  --h : rel_within R A B ∧ fcnl_on R A ∧ fcnl_on (invRel R) B
   apply And.intro
-  · -- Proof that rel_within R Y X
-    define     --Goal : ∀ ⦃x : B⦄ ⦃y : A⦄, invRel R x y → x ∈ Y ∧ y ∈ X
-    fix y : B; fix x : A
+  · -- Proof that rel_within (invRel R) B A
+    define     --Goal : ∀ ⦃x : V⦄ ⦃y : U⦄, invRel R x y → x ∈ B ∧ y ∈ A
+    fix y : V; fix x : U
     assume h1 : invRel R y x
     define at h1  --h1 : R x y
-    have h2 : x ∈ X ∧ y ∈ Y := h.left h1
-    show y ∈ Y ∧ x ∈ X from And.intro h2.right h2.left
+    have h2 : x ∈ A ∧ y ∈ B := h.left h1
+    show y ∈ B ∧ x ∈ A from And.intro h2.right h2.left
     done
-  · -- proof that fcnl_on (inv R) Y ∧ fcnl_on (inv (inv R)) X
+  · -- proof that fcnl_on (inv R) B ∧ fcnl_on (inv (inv R)) A
     rewrite [inv_inv]
-    show fcnl_on (invRel R) Y ∧ fcnl_on R X from
+    show fcnl_on (invRel R) B ∧ fcnl_on R A from
       And.intro h.right.right h.right.left
     done
   done
 
-theorem Theorem_8_1_3_2 {A B : Type} {X : Set A} {Y : Set B}
-    (h : X ∼ Y) : Y ∼ X := by
-  obtain (R : Rel A B) (h1 : matching R X Y) from h
+theorem Theorem_8_1_3_2 {U V : Type} {A : Set U} {B : Set V}
+    (h : A ∼ B) : B ∼ A := by
+  obtain (R : Rel U V) (h1 : matching R A B) from h
   apply Exists.intro (invRel R)
-  show matching (invRel R) Y X from inv_match h1
+  show matching (invRel R) B A from inv_match h1
   done
 
-lemma fcnl_exists {A B : Type} {R : Rel A B} {X : Set A} {x : A}
-    (h1 : fcnl_on R X) (h2 : x ∈ X) : ∃ (y : B), R x y := by
+lemma fcnl_exists {U V : Type} {R : Rel U V} {A : Set U} {x : U}
+    (h1 : fcnl_on R A) (h2 : x ∈ A) : ∃ (y : V), R x y := by
   define at h1
-  obtain (y : B) (h3 : R x y)
-    (h4 : ∀ (y_1 y_2 : B), R x y_1 → R x y_2 → y_1 = y_2) from h1 h2
-  show ∃ (y : B), R x y from Exists.intro y h3
+  obtain (y : V) (h3 : R x y)
+    (h4 : ∀ (y_1 y_2 : V), R x y_1 → R x y_2 → y_1 = y_2) from h1 h2
+  show ∃ (y : V), R x y from Exists.intro y h3
   done
 
-lemma fcnl_unique {A B : Type}
-    {R : Rel A B} {X : Set A} {x : A} {y1 y2 : B} (h1 : fcnl_on R X)
-    (h2 : x ∈ X) (h3 : R x y1) (h4 : R x y2) : y1 = y2 := by
+lemma fcnl_unique {U V : Type}
+    {R : Rel U V} {A : Set U} {x : U} {y1 y2 : V} (h1 : fcnl_on R A)
+    (h2 : x ∈ A) (h3 : R x y1) (h4 : R x y2) : y1 = y2 := by
   define at h1
-  obtain (z : B) (h5 : R x z)
-    (h6 : ∀ (y_1 y_2 : B), R x y_1 → R x y_2 → y_1 = y_2) from h1 h2
+  obtain (z : V) (h5 : R x z)
+    (h6 : ∀ (y_1 y_2 : V), R x y_1 → R x y_2 → y_1 = y_2) from h1 h2
   show y1 = y2 from h6 y1 y2 h3 h4
   done
 
-lemma compRel_def {A B C : Type}
-    (S : Rel B C) (R : Rel A B) (a : A) (c : C) :
-    compRel S R a c ↔ ∃ (x : B), R a x ∧ S x c := by rfl
+lemma compRel_def {U V W : Type}
+    (S : Rel V W) (R : Rel U V) (u : U) (w : W) :
+    compRel S R u w ↔ ∃ (x : V), R u x ∧ S x w := by rfl
 
-lemma inv_comp {A B C : Type} (R : Rel A B) (S : Rel B C) :
+lemma inv_comp {U V W : Type} (R : Rel U V) (S : Rel V W) :
     invRel (compRel S R) = compRel (invRel R) (invRel S) := 
   calc invRel (compRel S R)
     _ = RelFromExt (inv (comp (extension S) (extension R))) := by rfl
@@ -210,29 +211,29 @@ lemma inv_comp {A B C : Type} (R : Rel A B) (S : Rel B C) :
         by rw [Theorem_4_2_5_5]
     _ = compRel (invRel R) (invRel S) := by rfl
 
-lemma comp_fcnl {A B C : Type} {R : Rel A B} {S : Rel B C}
-    {X : Set A} {Y : Set B} {Z : Set C} (h1 : matching R X Y)
-    (h2 : matching S Y Z) : fcnl_on (compRel S R) X := by
+lemma comp_fcnl {U V W : Type} {R : Rel U V} {S : Rel V W}
+    {A : Set U} {B : Set V} {C : Set W} (h1 : matching R A B)
+    (h2 : matching S B C) : fcnl_on (compRel S R) A := by
   define; define at h1; define at h2
-  fix a : A
-  assume h3 : a ∈ X
-  obtain (b : B) (h4 : R a b) from fcnl_exists h1.right.left h3
-  have h5 : a ∈ X ∧ b ∈ Y := h1.left h4
-  obtain (c : C) (h6 : S b c) from fcnl_exists h2.right.left h5.right
+  fix a : U
+  assume h3 : a ∈ A
+  obtain (b : V) (h4 : R a b) from fcnl_exists h1.right.left h3
+  have h5 : a ∈ A ∧ b ∈ B := h1.left h4
+  obtain (c : W) (h6 : S b c) from fcnl_exists h2.right.left h5.right
   exists_unique
   · -- Existence
     apply Exists.intro c
     rewrite [compRel_def]
-    show ∃ (x : B), R a x ∧ S x c from Exists.intro b (And.intro h4 h6)
+    show ∃ (x : V), R a x ∧ S x c from Exists.intro b (And.intro h4 h6)
     done
   · -- Uniqueness
-    fix c1 : C; fix c2 : C
+    fix c1 : W; fix c2 : W
     assume h7 : compRel S R a c1
     assume h8 : compRel S R a c2    --Goal : c1 = c2
     rewrite [compRel_def] at h7
     rewrite [compRel_def] at h8
-    obtain (b1 : B) (h9 : R a b1 ∧ S b1 c1) from h7
-    obtain (b2 : B) (h10 : R a b2 ∧ S b2 c2) from h8
+    obtain (b1 : V) (h9 : R a b1 ∧ S b1 c1) from h7
+    obtain (b2 : V) (h10 : R a b2 ∧ S b2 c2) from h8
     have h11 : b1 = b := fcnl_unique h1.right.left h3 h9.left h4
     have h12 : b2 = b := fcnl_unique h1.right.left h3 h10.left h4
     rewrite [h11] at h9
@@ -242,71 +243,71 @@ lemma comp_fcnl {A B C : Type} {R : Rel A B} {S : Rel B C}
     done
   done
 
-lemma comp_match {A B C : Type} {R : Rel A B} {S : Rel B C}
-    {X : Set A} {Y : Set B} {Z : Set C} (h1 : matching R X Y)
-    (h2 : matching S Y Z) : matching (compRel S R) X Z := by
+lemma comp_match {U V W : Type} {R : Rel U V} {S : Rel V W}
+    {A : Set U} {B : Set V} {C : Set W} (h1 : matching R A B)
+    (h2 : matching S B C) : matching (compRel S R) A C := by
   define
   apply And.intro
-  · -- Proof of rel_within (compRel S R) X Z
+  · -- Proof of rel_within (compRel S R) A C
     define
-    fix a : A; fix c : C
+    fix a : U; fix c : W
     assume h3 : compRel S R a c
     rewrite [compRel_def] at h3
-    obtain (b : B) (h4 : R a b ∧ S b c) from h3
-    have h5 : a ∈ X ∧ b ∈ Y := h1.left h4.left
-    have h6 : b ∈ Y ∧ c ∈ Z := h2.left h4.right
-    show a ∈ X ∧ c ∈ Z from And.intro h5.left h6.right
+    obtain (b : V) (h4 : R a b ∧ S b c) from h3
+    have h5 : a ∈ A ∧ b ∈ B := h1.left h4.left
+    have h6 : b ∈ B ∧ c ∈ C := h2.left h4.right
+    show a ∈ A ∧ c ∈ C from And.intro h5.left h6.right
     done
   · -- Proof of fcnl_on statements
     apply And.intro
-    · -- Proof of fcnl_on (compRel S R) X
-      show fcnl_on (compRel S R) X from comp_fcnl h1 h2
+    · -- Proof of fcnl_on (compRel S R) A
+      show fcnl_on (compRel S R) A from comp_fcnl h1 h2
       done
     · -- Proof of fcnl_on (invRel (compRel S R)) Z
       rewrite [inv_comp]
-      have h3 : matching (invRel R) Y X := inv_match h1
-      have h4 : matching (invRel S) Z Y := inv_match h2
-      show fcnl_on (compRel (invRel R) (invRel S)) Z from comp_fcnl h4 h3
+      have h3 : matching (invRel R) B A := inv_match h1
+      have h4 : matching (invRel S) C B := inv_match h2
+      show fcnl_on (compRel (invRel R) (invRel S)) C from comp_fcnl h4 h3
       done
     done
   done
 
-theorem Theorem_8_1_3_3 {A B C : Type} {X : Set A} {Y : Set B} {Z : Set C}
-    (h1 : X ∼ Y) (h2 : Y ∼ Z) : X ∼ Z := by
-  obtain (R : Rel A B) (h3 : matching R X Y) from h1
-  obtain (S : Rel B C) (h4 : matching S Y Z) from h2
+theorem Theorem_8_1_3_3 {U V W : Type} {A : Set U} {B : Set V} {C : Set W}
+    (h1 : A ∼ B) (h2 : B ∼ C) : A ∼ C := by
+  obtain (R : Rel U V) (h3 : matching R A B) from h1
+  obtain (S : Rel V W) (h4 : matching S B C) from h2
   apply Exists.intro (compRel S R)
-  show matching (compRel S R) X Z from comp_match h3 h4
+  show matching (compRel S R) A C from comp_match h3 h4
   done
 
 lemma I_def (k n : Nat) : k ∈ I n ↔ k < n := by rfl
 
-lemma denum_def {A : Type} (X : Set A) : denum X ↔ Univ Nat ∼ X := by rfl
+lemma denum_def {U : Type} (A : Set U) : denum A ↔ Univ Nat ∼ A := by rfl
 
 /- Section 8.1½ -/
-lemma numElts_def {A : Type} (X : Set A) (n : Nat) :
-    numElts X n ↔ I n ∼ X := by rfl
+lemma numElts_def {U : Type} (A : Set U) (n : Nat) :
+    numElts A n ↔ I n ∼ A := by rfl
 
-lemma finite_def {A : Type} (X : Set A) :
-    finite X ↔ ∃ (n : Nat), numElts X n := by rfl
+lemma finite_def {U : Type} (A : Set U) :
+    finite A ↔ ∃ (n : Nat), numElts A n := by rfl
 
-lemma fcnl_on_empty {A B : Type}
-    (R : Rel A B) {X : Set A} (h1 : empty X) : fcnl_on R X := by
+lemma fcnl_on_empty {U V : Type}
+    (R : Rel U V) {A : Set U} (h1 : empty A) : fcnl_on R A := by
   define
-  fix a : A
-  assume h2 : a ∈ X      --Goal : ∃! (y : B), R a y
-  contradict h1 with h3  --Goal : ∃ (x : A), x ∈ X
-  show ∃ (x : A), x ∈ X from Exists.intro a h2
+  fix a : U
+  assume h2 : a ∈ A      --Goal : ∃! (y : V), R a y
+  contradict h1 with h3  --Goal : ∃ (x : U), x ∈ A
+  show ∃ (x : U), x ∈ A from Exists.intro a h2
   done
 
-lemma empty_match {A B : Type} {X : Set A} {Y : Set B}
-    (h1 : empty X) (h2 : empty Y) : matching (emptyRel A B) X Y := by
+lemma empty_match {U V : Type} {A : Set U} {B : Set V}
+    (h1 : empty A) (h2 : empty B) : matching (emptyRel U V) A B := by
   define
   apply And.intro
   · -- Proof of rel_within
     define
-    fix a : A; fix b : B
-    assume h3 : emptyRel A B a b   --Goal : a ∈ X ∧ b ∈ Y
+    fix a : U; fix b : V
+    assume h3 : emptyRel U V a b   --Goal : a ∈ A ∧ b ∈ B
     by_contra h4                   --Goal : False
     define at h3
     show False from h3
@@ -314,11 +315,11 @@ lemma empty_match {A B : Type} {X : Set A} {Y : Set B}
   · -- Proof of fcnl_ons
     apply And.intro
     · -- Proof of fcnl_on emptyRel
-      show fcnl_on (emptyRel A B) X from fcnl_on_empty (emptyRel A B) h1
+      show fcnl_on (emptyRel U V) A from fcnl_on_empty (emptyRel U V) h1
       done
     · -- Proof of fcnl_on (invRel emptyRel)
-      show fcnl_on (invRel (emptyRel A B)) Y from
-        fcnl_on_empty (invRel (emptyRel A B)) h2
+      show fcnl_on (invRel (emptyRel U V)) B from
+        fcnl_on_empty (invRel (emptyRel U V)) h2
       done
   done
 
@@ -330,50 +331,50 @@ lemma I_0_empty : empty (I 0) := by
   linarith
   done
 
-theorem zero_elts_iff_empty {A : Type} (X : Set A) :
-    numElts X 0 ↔ empty X := by
+theorem zero_elts_iff_empty {U : Type} (A : Set U) :
+    numElts A 0 ↔ empty A := by
   apply Iff.intro
   · -- (→)
-    assume h1 : numElts X 0
+    assume h1 : numElts A 0
     define
-    by_contra h2         --h2 : ∃ (x : A), x ∈ X
-    obtain (x : A) (h3 : x ∈ X) from h2
+    by_contra h2         --h2 : ∃ (x : U), x ∈ A
+    obtain (x : U) (h3 : x ∈ A) from h2
     define at h1
-    obtain (R : Rel Nat A) (h4 : matching R (I 0) X) from h1
+    obtain (R : Rel Nat U) (h4 : matching R (I 0) A) from h1
     define at h4
-      --h4 : rel_within R (I 0) X ∧ fcnl_on R (I 0) ∧ fcnl_on (invRel R) X
+      --h4 : rel_within R (I 0) A ∧ fcnl_on R (I 0) ∧ fcnl_on (invRel R) A
     obtain (j : Nat) (h5 : invRel R x j) from
       fcnl_exists h4.right.right h3
     define at h5         --h5 : R j x
-    have h6 : j ∈ I 0 ∧ x ∈ X := h4.left h5
+    have h6 : j ∈ I 0 ∧ x ∈ A := h4.left h5
     contradict I_0_empty --Goal : ∃ (x : Nat), x ∈ I 0
     show ∃ (x : Nat), x ∈ I 0 from Exists.intro j h6.left
     done
   · -- (←)
-    assume h1 : empty X
-    show ∃ (R : Rel Nat A), matching R (I 0) X from
-      Exists.intro (emptyRel Nat A) (empty_match I_0_empty h1)
+    assume h1 : empty A
+    show ∃ (R : Rel Nat U), matching R (I 0) A from
+      Exists.intro (emptyRel Nat U) (empty_match I_0_empty h1)
     done
   done
 
-theorem nonempty_of_pos_numElts {A : Type} {X : Set A} {n : Nat}
-    (h1 : numElts X n) (h2 : n > 0) : ∃ (x : A), x ∈ X := by
+theorem nonempty_of_pos_numElts {U : Type} {A : Set U} {n : Nat}
+    (h1 : numElts A n) (h2 : n > 0) : ∃ (x : U), x ∈ A := by
   define at h1
-  obtain (R : Rel Nat A) (h3 : matching R (I n) X) from h1
+  obtain (R : Rel Nat U) (h3 : matching R (I n) A) from h1
   define at h3
   have h4 : 0 ∈ I n := h2
-  obtain (x : A) (h5 : R 0 x) from fcnl_exists h3.right.left h4
-  have h6 : 0 ∈ I n ∧ x ∈ X := h3.left h5
-  show ∃ (x : A), x ∈ X from Exists.intro x h6.right
+  obtain (x : U) (h5 : R 0 x) from fcnl_exists h3.right.left h4
+  have h6 : 0 ∈ I n ∧ x ∈ A := h3.left h5
+  show ∃ (x : U), x ∈ A from Exists.intro x h6.right
   done
 
-theorem relext {A B : Type} {R S : Rel A B}
-    (h : ∀ (a : A) (b : B), R a b ↔ S a b) : R = S := by
+theorem relext {U V : Type} {R S : Rel U V}
+    (h : ∀ (u : U) (v : V), R u v ↔ S u v) : R = S := by
   have h2 : extension R = extension S := by
     apply Set.ext
-    fix (a, b) : A × B --Goal : (a, b) ∈ extension R ↔ (a, b) ∈ extension S
-    rewrite [ext_def, ext_def]  --Goal : R a b ↔ S a b
-    show R a b ↔ S a b from h a b
+    fix (u, v) : U × V --Goal : (u, v) ∈ extension R ↔ (u, v) ∈ extension S
+    rewrite [ext_def, ext_def]  --Goal : R u v ↔ S u v
+    show R u v ↔ S u v from h u v
     done
   show R = S from
     calc R
@@ -382,35 +383,35 @@ theorem relext {A B : Type} {R S : Rel A B}
       _ = S := by rfl
   done
 
-lemma remove_one_def {A B : Type} (R : Rel A B) (u x : A) (v y : B) :
+lemma remove_one_def {U V : Type} (R : Rel U V) (u x : U) (v y : V) :
     remove_one R u v x y ↔
       x ≠ u ∧ y ≠ v ∧ (R x y ∨ (R x v ∧ R u y)) := by rfl
 
-lemma remove_one_rel_within {A B : Type}
-    {R : Rel A B} {X : Set A} {Y : Set B} {x u : A} {y v : B}
-    (h1 : matching R X Y) (h2 : remove_one R u v x y) :
-    x ∈ X \ {u} ∧ y ∈ Y \ {v} := by
-  define at h1  --h1 : rel_within R X Y ∧ fcnl_on R X ∧ fcnl_on (invRel R) Y
+lemma remove_one_rel_within {U V : Type}
+    {R : Rel U V} {A : Set U} {B : Set V} {x u : U} {y v : V}
+    (h1 : matching R A B) (h2 : remove_one R u v x y) :
+    x ∈ A \ {u} ∧ y ∈ B \ {v} := by
+  define at h1  --h1 : rel_within R A B ∧ fcnl_on R A ∧ fcnl_on (invRel R) B
   define at h2  --h2 : x ≠ u ∧ y ≠ v ∧ (R x y ∨ R x v ∧ R u y)
-  have h3 : x ∈ X ∧ y ∈ Y := by
+  have h3 : x ∈ A ∧ y ∈ B := by
     by_cases on h2.right.right with h3
     · -- Case 1. h3 : R x y
-      show x ∈ X ∧ y ∈ Y from h1.left h3
+      show x ∈ A ∧ y ∈ B from h1.left h3
       done
     · -- Case 2. h3 : R x v ∧ R u y
-      have h4 : x ∈ X ∧ v ∈ Y := h1.left h3.left
-      have h5 : u ∈ X ∧ y ∈ Y := h1.left h3.right
-      show x ∈ X ∧ y ∈ Y from And.intro h4.left h5.right
+      have h4 : x ∈ A ∧ v ∈ B := h1.left h3.left
+      have h5 : u ∈ A ∧ y ∈ B := h1.left h3.right
+      show x ∈ A ∧ y ∈ B from And.intro h4.left h5.right
       done
     done
-  show x ∈ X \ {u} ∧ y ∈ Y \ {v} from
+  show x ∈ A \ {u} ∧ y ∈ B \ {v} from
     And.intro (And.intro h3.left h2.left) (And.intro h3.right h2.right.left)
   done
 
-lemma remove_one_inv {A B : Type} (R : Rel A B) (u : A) (v : B) :
+lemma remove_one_inv {U V : Type} (R : Rel U V) (u : U) (v : V) :
     invRel (remove_one R u v) = remove_one (invRel R) v u := by
   apply relext
-  fix y : B; fix x : A
+  fix y : V; fix x : U
     --Goal : invRel (remove_one R u v) y x ↔ remove_one (invRel R) v u y x
   rewrite [invRel_def, remove_one_def, remove_one_def]
   rewrite [invRel_def, invRel_def, invRel_def]
@@ -423,30 +424,30 @@ lemma remove_one_inv {A B : Type} (R : Rel A B) (u : A) (v : B) :
   rfl
   done
 
-lemma remove_one_iff {A B : Type}
-    {X : Set A} {Y : Set B} {R : Rel A B} (h1 : matching R X Y)
-    {u : A} (h2 : u ∈ X) (v : B) {x : A} (h3 : x ∈ X \ {u}) :
-    ∃ (w : A), w ∈ X ∧ ∀ (y : B), remove_one R u v x y ↔ R w y := sorry
+lemma remove_one_iff {U V : Type}
+    {A : Set U} {B : Set V} {R : Rel U V} (h1 : matching R A B)
+    {u : U} (h2 : u ∈ A) (v : V) {x : U} (h3 : x ∈ A \ {u}) :
+    ∃ (w : U), w ∈ A ∧ ∀ (y : V), remove_one R u v x y ↔ R w y := sorry
 
-theorem remove_one_fcnl {A B : Type}
-    {R : Rel A B} {X : Set A} {Y : Set B} {u : A}
-    (h1 : matching R X Y) (h2 : u ∈ X) (v : B) :
-    fcnl_on (remove_one R u v) (X \ {u}) := by
+theorem remove_one_fcnl {U V : Type}
+    {R : Rel U V} {A : Set U} {B : Set V} {u : U}
+    (h1 : matching R A B) (h2 : u ∈ A) (v : V) :
+    fcnl_on (remove_one R u v) (A \ {u}) := by
   define
-  fix x : A
-  assume h3 : x ∈ X \ {u}  --Goal : ∃! (y : B), remove_one R u v x y
-  obtain (w : A) (h4 : w ∈ X ∧ ∀ (y : B),
+  fix x : U
+  assume h3 : x ∈ A \ {u}  --Goal : ∃! (y : V), remove_one R u v x y
+  obtain (w : U) (h4 : w ∈ A ∧ ∀ (y : V),
     remove_one R u v x y ↔ R w y) from remove_one_iff h1 h2 v h3
   define at h1
   exists_unique
   · -- Existence
-    obtain (y : B) (h5 : R w y) from fcnl_exists h1.right.left h4.left
+    obtain (y : V) (h5 : R w y) from fcnl_exists h1.right.left h4.left
     apply Exists.intro y
     rewrite [h4.right]
     show R w y from h5
     done
   · -- Uniqueness
-    fix y1 : B; fix y2 : B
+    fix y1 : V; fix y2 : V
     rewrite [h4.right, h4.right]
     assume h5 : R w y1
     assume h6 : R w y2
@@ -454,32 +455,32 @@ theorem remove_one_fcnl {A B : Type}
     done
   done
 
-theorem remove_one_match {A B : Type}
-    {R : Rel A B} {X : Set A} {Y : Set B} {u : A} {v : B}
-    (h1 : matching R X Y) (h2 : u ∈ X) (h3 : v ∈ Y) :
-    matching (remove_one R u v) (X \ {u}) (Y \ {v}) := by
+theorem remove_one_match {U V : Type}
+    {R : Rel U V} {A : Set U} {B : Set V} {u : U} {v : V}
+    (h1 : matching R A B) (h2 : u ∈ A) (h3 : v ∈ B) :
+    matching (remove_one R u v) (A \ {u}) (B \ {v}) := by
   define
   apply And.intro
   · -- Proof of rel_within
     define
-    fix x : A; fix y : B
+    fix x : U; fix y : V
     assume h4 : remove_one R u v x y
-    show x ∈ X \ {u} ∧ y ∈ Y \ {v} from remove_one_rel_within h1 h4
+    show x ∈ A \ {u} ∧ y ∈ B \ {v} from remove_one_rel_within h1 h4
     done
   · -- Proof of fcnl_ons
     apply And.intro (remove_one_fcnl h1 h2 v)
     rewrite [remove_one_inv]
-    show fcnl_on (remove_one (invRel R) v u) (Y \ {v}) from
+    show fcnl_on (remove_one (invRel R) v u) (B \ {v}) from
       remove_one_fcnl (inv_match h1) h3 u
   done
 
-theorem remove_one_equinum {A B : Type}
-    {X : Set A} {Y : Set B} {u : A} {v : B}
-    (h1 : X ∼ Y) (h2 : u ∈ X) (h3 : v ∈ Y) : X \ {u} ∼ Y \ {v} := by
+theorem remove_one_equinum {U V : Type}
+    {A : Set U} {B : Set V} {u : U} {v : V}
+    (h1 : A ∼ B) (h2 : u ∈ A) (h3 : v ∈ B) : A \ {u} ∼ B \ {v} := by
   define
-  obtain (R : Rel A B) (h4 : matching R X Y) from h1
+  obtain (R : Rel U V) (h4 : matching R A B) from h1
   apply Exists.intro (remove_one R u v)
-  show matching (remove_one R u v) (X \ {u}) (Y \ {v}) from
+  show matching (remove_one R u v) (A \ {u}) (B \ {v}) from
     remove_one_match h4 h2 h3
   done
 
@@ -520,19 +521,19 @@ lemma I_diff (n : Nat) : I (n + 1) \ {n} = I n := by
     done
   done
 
-theorem remove_one_numElts {A : Type} {X : Set A} {n : Nat} {x : A}
-    (h1 : numElts X (n + 1)) (h2 : x ∈ X) : numElts (X \ {x}) n := by
+theorem remove_one_numElts {U : Type} {A : Set U} {n : Nat} {a : U}
+    (h1 : numElts A (n + 1)) (h2 : a ∈ A) : numElts (A \ {a}) n := by
   have h3 : n ∈ I (n + 1) := I_max n
   rewrite [numElts_def] at h1     --h1 : I (n + 1) ∼ X
-  have h4 : I (n + 1) \ {n} ∼ X \ {x} := remove_one_equinum h1 h3 h2
-  rewrite [I_diff] at h4          --h4 : I n ∼ X \ {x}
-  show numElts (X \ {x}) n from h4
+  have h4 : I (n + 1) \ {n} ∼ A \ {a} := remove_one_equinum h1 h3 h2
+  rewrite [I_diff] at h4          --h4 : I n ∼ A \ {a}
+  show numElts (A \ {a}) n from h4
   done
   
-lemma one_match_def {A B : Type} (a x : A) (b y : B) :
+lemma one_match_def {U V : Type} (a x : U) (b y : V) :
     one_match a b x y ↔ x = a ∧ y = b := by rfl
 
-lemma one_match_match {A B : Type} (a : A) (b : B) :
+lemma one_match_match {U V : Type} (a : U) (b : V) :
     matching (one_match a b) {a} {b} := sorry
 
 lemma I_1_singleton : I 1 = {0} := by
@@ -553,48 +554,48 @@ lemma I_1_singleton : I 1 = {0} := by
     done
   done
 
-lemma singleton_of_diff_empty {A : Type} {X : Set A} {x : A}
-    (h1 : x ∈ X) (h2 : empty (X \ {x})) : X = {x} := by
+lemma singleton_of_diff_empty {U : Type} {A : Set U} {a : U}
+    (h1 : a ∈ A) (h2 : empty (A \ {a})) : A = {a} := by
   apply Set.ext
-  fix a : A
+  fix x : U
   apply Iff.intro
   · -- (→)
-    assume h3 : a ∈ X
+    assume h3 : x ∈ A
     contradict h2 with h4
-    apply Exists.intro a
+    apply Exists.intro x
     define
-    show a ∈ X ∧ ¬a ∈ {x} from And.intro h3 h4
+    show x ∈ A ∧ ¬x ∈ {a} from And.intro h3 h4
     done
   · -- (←)
-    assume h3 : a ∈ {x}
+    assume h3 : x ∈ {a}
     define at h3
     rewrite [h3]
-    show x ∈ X from h1
+    show a ∈ A from h1
     done
   done
 
-lemma singleton_one_elt {A : Type} (a : A) : numElts {a} 1 := by
+lemma singleton_one_elt {U : Type} (u : U) : numElts {u} 1 := by
   define
   rewrite [I_1_singleton]
-  show ∃ (R : Rel Nat A), matching R {0} {a} from
-    Exists.intro (one_match 0 a) (one_match_match 0 a)
+  show ∃ (R : Rel Nat U), matching R {0} {u} from
+    Exists.intro (one_match 0 u) (one_match_match 0 u)
   done
 
-theorem one_elt_iff_singleton {A : Type} (X : Set A) :
-    numElts X 1 ↔ ∃ (x : A), X = {x} := by
+theorem one_elt_iff_singleton {U : Type} (A : Set U) :
+    numElts A 1 ↔ ∃ (x : U), A = {x} := by
   apply Iff.intro
   · -- (→)
-    assume h1 : numElts X 1  --Goal : ∃ (x : A), X = {x}
+    assume h1 : numElts A 1  --Goal : ∃ (x : U), A = {x}
     have h2 : 1 > 0 := by norm_num
-    obtain (x : A) (h3 : x ∈ X) from nonempty_of_pos_numElts h1 h2
-    have h4 : numElts (X \ {x}) 0 := remove_one_numElts h1 h3
+    obtain (x : U) (h3 : x ∈ A) from nonempty_of_pos_numElts h1 h2
+    have h4 : numElts (A \ {x}) 0 := remove_one_numElts h1 h3
     rewrite [zero_elts_iff_empty] at h4
-    show ∃ (x : A), X = {x} from
+    show ∃ (x : U), A = {x} from
       Exists.intro x (singleton_of_diff_empty h3 h4)
     done
   · -- (←)
-    assume h1 : ∃ (x : A), X = {x}
-    obtain (x : A) (h2 : X = {x}) from h1
+    assume h1 : ∃ (x : U), A = {x}
+    obtain (x : U) (h2 : A = {x}) from h1
     rewrite [h2]
     show numElts {x} 1 from singleton_one_elt x
     done
