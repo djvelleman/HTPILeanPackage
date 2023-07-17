@@ -2141,30 +2141,35 @@ theorem Cantor_Schroeder_Bernstein_theorem
   set X0 : Set U := A \ C
   set X : Set U := cum_rep_image R S X0
   set T : Rel U V := csb_match R S X0
+  have Tdef : ∀ (x : U) (y : V),
+      T x y ↔ (x ∈ X ∧ R x y) ∨ (x ∉ X ∧ S x y) := by
+    fix x : U; fix y : V
+    rfl
+    done
   have A_not_X_in_C : A \ X ⊆ C := by
     fix a : U
     assume h5 : a ∈ A \ X
     contradict h5.right with h6  --h6 : ¬a ∈ C;  Goal : a ∈ X
-    define          --Goal : ∃ (n : Nat), a ∈ rep_common_image R S X0 n
+    define  --Goal : ∃ (n : Nat), a ∈ rep_common_image R S X0 n
     apply Exists.intro 0 
     define
     show a ∈ A ∧ ¬a ∈ C from And.intro h5.left h6
     done
-  define
-  apply Exists.intro T   --Goal : matching T A B
-  define
+  define    --Goal : ∃ (R : Rel U V), matching R A B
+  apply Exists.intro T
+  define    --Goal : rel_within T A B ∧ fcnl_on T A ∧ fcnl_on (invRel T) B
   apply And.intro
   · -- Proof of rel_within T A B
     define
     fix a : U; fix b : V
     assume h5 : T a b
-    define at h5
+    rewrite [Tdef] at h5   --h5 : a ∈ X ∧ R a b ∨ ¬a ∈ X ∧ S a b
     by_cases on h5
-    · -- Case 1. h5 : a ∈ cum_rep_image R S X0 ∧ R a b
+    · -- Case 1. h5 : a ∈ X ∧ R a b
       have h6 : a ∈ A ∧ b ∈ D := R_match_AD.left h5.right
       show a ∈ A ∧ b ∈ B from And.intro h6.left (h2 h6.right)
       done
-    · -- Case 2. h5 : a ∉ cum_rep_image R S X0 ∧ S a b
+    · -- Case 2. h5 : a ∉ X ∧ S a b
       have h6 : a ∈ C ∧ b ∈ B := S_match_CB.left h5.right
       show a ∈ A ∧ b ∈ B from And.intro (h1 h6.left) h6.right
       done
@@ -2182,7 +2187,7 @@ theorem Cantor_Schroeder_Bernstein_theorem
           obtain (b : V) (Rab : R a b) from
             fcnl_exists R_match_AD.right.left aA
           apply Exists.intro b
-          define
+          rewrite [Tdef]
           show a ∈ X ∧ R a b ∨ ¬a ∈ X ∧ S a b from
             Or.inl (And.intro h5 Rab)
           done
@@ -2191,7 +2196,7 @@ theorem Cantor_Schroeder_Bernstein_theorem
           obtain (b : V) (Sab : S a b) from
             fcnl_exists S_match_CB.right.left aC
           apply Exists.intro b
-          define
+          rewrite [Tdef]
           show a ∈ X ∧ R a b ∨ ¬a ∈ X ∧ S a b from
             Or.inr (And.intro h5 Sab)
           done
@@ -2232,7 +2237,7 @@ theorem Cantor_Schroeder_Bernstein_theorem
           have h7 : n ≠ 0 := by
             by_contra h7
             rewrite [h7] at h6
-            define at h6
+            define at h6       --h6 : c ∈ A ∧ ¬c ∈ C
             show False from h6.right cC
             done
           obtain (m : Nat) (h8 : n = m + 1) from
@@ -2242,8 +2247,8 @@ theorem Cantor_Schroeder_Bernstein_theorem
           obtain (a : U) (h9 : a ∈ rep_common_image R S X0 m ∧
             ∃ (y : V), R a y ∧ S c y) from h6
           apply Exists.intro a
-          define
-          apply Or.inl    --Goal : a ∈ cum_rep_image R S X0 ∧ R a b
+          rewrite [invRel_def, Tdef]
+          apply Or.inl    --Goal : a ∈ X ∧ R a b
           obtain (y : V) (h10 : R a y ∧ S c y) from h9.right
           have h11 : y = b :=
             fcnl_unique S_match_CB.right.left cC h10.right Scb
@@ -2255,7 +2260,7 @@ theorem Cantor_Schroeder_Bernstein_theorem
           done
         · -- Case 2. h5 : ¬c ∈ X
           apply Exists.intro c
-          define
+          rewrite [invRel_def, Tdef]
           show c ∈ X ∧ R c b ∨ c ∉ X ∧ S c b from
             Or.inr (And.intro h5 Scb)
           done

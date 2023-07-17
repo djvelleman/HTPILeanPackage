@@ -177,3 +177,49 @@ theorem unctbly_many_inf_set_nat :
 -- 9.
 theorem Exercise_8_2_8 {U : Type} {A B : Set U}
     (h : empty (A ∩ B)) : 𝒫 (A ∪ B) ∼ 𝒫 A ×ₛ 𝒫 B := sorry
+
+/- Section 8.3 -/
+-- 1.
+theorem CSB_func {U V : Type} {f : U → V} {g : V → U}
+    (h1 : one_to_one f) (h2 : one_to_one g) : Univ U ∼ Univ V := sorry
+
+-- 2.
+theorem intervals_equinum :
+    { x : Real | 0 < x ∧ x < 1 } ∼ { x : Real | 0 < x ∧ x ≤ 1 } := sorry
+
+-- Definitions for next six exercises
+def EqRel (A : Type) : Set (BinRel A) :=
+  { R : BinRel A | equiv_rel R }
+
+def Part (A : Type) : Set (Set (Set A)) :=
+  { P : Set (Set A) | partition P }
+
+def EqRelExt (A : Type) : Set (Set (A × A)) :=
+  { E : Set (A × A) | ∃ (R : BinRel A), equiv_rel R ∧ extension R = E}
+
+def shift_and_zero (X : Set Nat) : Set Nat :=
+  { x + 2 | x ∈ X } ∪ {0}
+
+def saz_pair (X : Set Nat) : Set (Set Nat) :=
+  { shift_and_zero X, (Univ Nat) \ (shift_and_zero X) }
+
+-- 3.
+theorem EqRel_equinum_Part (A : Type) : EqRel A ∼ Part A := sorry
+
+-- 4.
+theorem EqRel_equinum_EqRelExt (A : Type) :
+    EqRel A ∼ EqRelExt A := sorry
+
+-- 5.
+theorem EqRel_Nat_equinum_sub_PN :
+    ∃ (D : Set (Set Nat)), D ⊆ 𝒫 (Univ Nat) ∧ EqRel Nat ∼ D := sorry
+
+-- 6.
+theorem saz_pair_part (X : Set Nat) : partition (saz_pair X) := sorry
+
+-- 7.
+theorem PN_equinum_sub_EqRel_Nat :
+    ∃ (C : Set (BinRel Nat)), C ⊆ EqRel Nat ∧ C ∼ 𝒫 (Univ Nat) := sorry
+
+-- 8.
+theorem EqRel_Nat_equinum_PN : EqRel Nat ∼ 𝒫 (Univ Nat) := sorry
