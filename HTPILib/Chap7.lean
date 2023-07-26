@@ -148,12 +148,6 @@ theorem dvd_a_of_dvd_b_mod {a b d : Nat}
 
 lemma gcd_base (a : Nat) : gcd a 0 = a := by rfl
 
-lemma exists_eq_add_one_of_ne_zero {n : Nat} (h : n ≠ 0) :
-    ∃ (k : Nat), n = k + 1 := by
-  have h2 : 1 ≤ n := Nat.pos_of_ne_zero h
-  show ∃ (k : Nat), n = k + 1 from Nat.exists_eq_add_of_le' h2
-  done
-
 lemma gcd_nonzero (a : Nat) {b : Nat} (h : b ≠ 0) :
     gcd a b = gcd b (a % b) := by
   obtain (n : Nat) (h2 : b = n + 1) from exists_eq_add_one_of_ne_zero h
@@ -307,7 +301,7 @@ lemma exists_prime_factor : ∀ (n : Nat), 2 ≤ n →
       have h8 : n ≤ b :=
         calc n
           _ = a * b := h4.left.symm
-          _ ≤ 1 * b := Nat.mul_le_mul_right b h7
+          _ ≤ 1 * b := by rel [h7]
           _ = b := by ring
       linarith        --n ≤ b contradicts b < n
       done
@@ -574,9 +568,9 @@ lemma exists_prime_factorization : ∀ (n : Nat), n ≥ 1 →
       define at p_prime
       show m < n from
         calc m
-          _ < m + m := Nat.lt_add_of_pos_right m_pos
+          _ < m + m := by linarith
           _ = 2 * m := by ring
-          _ ≤ p * m := Nat.mul_le_mul_right m p_prime.left
+          _ ≤ p * m := by rel [p_prime.left]
           _ = n := n_eq_pm.symm
       done
     obtain (L : List Nat) (h6 : prime_factorization m L)
@@ -651,7 +645,7 @@ lemma le_nonzero_prod_left {a b : Nat} (h : a * b ≠ 0) : a ≤ a * b := by
   show a ≤ a * b from
     calc a
         = a * 1 := (mul_one a).symm
-      _ ≤ a * b := Nat.mul_le_mul_left a h2
+      _ ≤ a * b := by rel [h2]
   done
 
 lemma le_nonzero_prod_right {a b : Nat} (h : a * b ≠ 0) : b ≤ a * b := by
@@ -745,24 +739,24 @@ theorem Theorem_7_2_4 {p : Nat} (h1 : prime p) :
       absurd (eq_one_of_dvd_one h2) (prime_not_one h1)
     done
   · -- Induction Step
-    fix a : Nat
+    fix b : Nat
     fix L : List Nat
     assume ih : p ∣ prod L → ∃ (a : Nat), a ∈ L ∧ p ∣ a
-      --Goal : p ∣ prod (a :: L) → ∃ (a_2 : Nat), a_2 ∈ a :: L ∧ p ∣ a_2
-    assume h2 : p ∣ prod (a :: L)
+      --Goal : p ∣ prod (b :: L) → ∃ (a : Nat), a ∈ b :: L ∧ p ∣ a
+    assume h2 : p ∣ prod (b :: L)
     rewrite [prod_cons] at h2
-    have h3 : p ∣ a ∨ p ∣ prod L := Theorem_7_2_3 h1 h2
+    have h3 : p ∣ b ∨ p ∣ prod L := Theorem_7_2_3 h1 h2
     by_cases on h3
-    · -- Case 1. h3 : p ∣ a
-      apply Exists.intro a
-      show a ∈ a :: L ∧ p ∣ a from
-        And.intro (List.mem_cons_self a L) h3
+    · -- Case 1. h3 : p ∣ b
+      apply Exists.intro b
+      show b ∈ b :: L ∧ p ∣ b from
+        And.intro (List.mem_cons_self b L) h3
       done
     · -- Case 2. h3 : p ∣ prod L
-      obtain (b : Nat) (h4 : b ∈ L ∧ p ∣ b) from ih h3
-      apply Exists.intro b
-      show b ∈ a :: L ∧ p ∣ b from
-        And.intro (List.mem_cons_of_mem a h4.left) h4.right
+      obtain (a : Nat) (h4 : a ∈ L ∧ p ∣ a) from ih h3
+      apply Exists.intro a
+      show a ∈ b :: L ∧ p ∣ a from
+        And.intro (List.mem_cons_of_mem b h4.left) h4.right
       done
     done
   done
@@ -834,9 +828,9 @@ lemma first_le_first {p q : Nat} {l m : List Nat}
   rewrite [List.mem_cons] at h6
   by_cases on h6
   · -- Case 1. h6 : q = p
-    show p ≤ q from Nat.le_of_eq h6.symm
+    linarith
     done
-  · -- Case 2.  h6 : q ∈ l
+  · -- Case 2. h6 : q ∈ l
     have h8 : ∀ (m : Nat), m ∈ l → p ≤ m := h7.left
     show p ≤ q from h8 q h6
     done
@@ -880,8 +874,9 @@ theorem Theorem_7_2_5 : ∀ (l1 l2 : List Nat),
     rewrite [h6] at h3    --h3 : prod (p :: L1) = prod (q :: L2)
     have h7 : p ≤ q := first_le_first h1 h2 h3
     have h8 : q ≤ p := first_le_first h2 h1 h3.symm
-    have h9 : p = q := Nat.le_antisymm h7 h8
+    have h9 : p = q := by linarith
     rewrite [h9, prod_cons, prod_cons] at h3
+      --h3 : q * prod L1 = q * prod L2
     have h10 : nondec_prime_list L1 := nondec_prime_list_tail h1
     have h11 : nondec_prime_list L2 := nondec_prime_list_tail h2
     define at h2
@@ -2065,17 +2060,9 @@ lemma num_rp_prime {p : Nat} (h1 : prime p) :
       disj_syll h7 h4
       rewrite [h7] at h6     --h6 : p ∣ k + 1
       obtain (j : Nat) (h8 : k + 1 = p * j) from h6
-      have h9 : j ≠ 0 := by
-        by_contra h9
-        rewrite [h9] at h8
-        linarith
-        done
-      have h10 : j ≥ 1 := Nat.pos_of_ne_zero h9
-      have h11 : k + 1 ≥ p :=
-        calc k + 1
-          _ = p * j := h8
-          _ ≥ p * 1 := Nat.mul_le_mul_of_nonneg_left h10
-          _ = p := mul_one _
+      have h9 : p * j ≠ 0 := by linarith
+      have h10 : p ≤ p * j := le_nonzero_prod_left h9
+      rewrite [←h8] at h10
       linarith
       done
     rewrite [num_rp_below_step_rp h4, ih h3]

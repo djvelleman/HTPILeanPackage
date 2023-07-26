@@ -3,7 +3,6 @@ namespace HTPI
 set_option pp.funBinderTypes true
 set_option linter.unusedVariables false
 
-
 --From exercises of Section 6.1
 theorem Exercise_6_1_16a1 : ∀ (n : Nat), nat_even n ∨ nat_odd n := sorry
 
@@ -898,41 +897,7 @@ lemma Set_rp_below_def (a m : Nat) :
     a ∈ Set_rp_below m ↔ rel_prime m a ∧ a < m := by rfl
 
 lemma neb_nrpb (m : Nat) : ∀ ⦃k : Nat⦄, k ≤ m →
-    num_elts_below (Set_rp_below m) k (num_rp_below m k) := by
-  by_induc
-  · -- Base Case
-    assume h1
-    rewrite [num_rp_below_base]
-    define
-    rfl
-    done
-  · -- Induction Step
-    fix k
-    assume ih
-    assume h1
-    have h2 : k ≤ m := by linarith
-    by_cases h3 : rel_prime m k
-    · -- Case 1. h3 : rel_prime m k
-      have h4 : k ∈ Set_rp_below m := by
-        define
-        exact And.intro h3 h1
-        done
-      rewrite [num_rp_below_step_rp h3, neb_step_elt h4]
-      rewrite [Nat.add_sub_cancel]
-      apply And.intro _ (ih h2)
-      linarith
-      done
-    · -- Case 2. h3 : ¬rel_prime m k
-      have h4 : k ∉ Set_rp_below m := by
-        define
-        demorgan
-        exact Or.inl h3
-        done
-      rewrite [num_rp_below_step_not_rp h3, neb_step_not_elt h4]
-      exact ih h2
-      done
-    done
-  done
+    num_elts_below (Set_rp_below m) k (num_rp_below m k) := sorry
 
 lemma neb_phi (m : Nat) :
     num_elts_below (Set_rp_below m) m (phi m) := by
@@ -1038,12 +1003,6 @@ theorem Theorem_8_1_2_1
   done
 
 -- Exercise from Section 6.4
-/- Don't use this one
-theorem quot_rem_unique (m q r q' r' : Nat)
-    (h1 : m * q + r = m * q' + r') (h2 : r < m) (h3 : r' < m) :
-    q = q' ∧ r = r' := sorry
--/
-
 theorem div_mod_char (m n q r : Nat)
     (h1 : n = m * q + r) (h2 : r < m) : q = n / m ∧ r = n % m := sorry
 

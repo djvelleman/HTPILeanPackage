@@ -15,4 +15,3 @@ lean_lib HTPI {
   roots := #[`HTPIDefs, `MathlibTactics, `IntroLean,
     `Chap3, `Chap4, `Chap5, `Chap6, `Chap7, `Chap8Part1, `Chap8Part2]
 }
-

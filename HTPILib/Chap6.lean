@@ -136,12 +136,37 @@ theorem Example_6_1_1 :
   · -- Induction Step
     fix n : Nat
     assume ih : Sum i from 0 to n, (2 : Int) ^ i =
+        (2 : Int) ^ (n + 1) - (1 : Int)
+    show Sum i from 0 to n + 1, (2 : Int) ^ i =
+        (2 : Int) ^ (n + 1 +1) - (1 : Int) from
+      calc Sum i from 0 to n + 1, (2 : Int) ^ i
+        _ = (Sum i from 0 to n, (2 : Int) ^ i)
+            + (2 : Int) ^ (n + 1) := by rw [sum_from_zero_step]
+        _ = (2 : Int) ^ (n + 1) - (1 : Int)
+            + (2 : Int) ^ (n + 1) := by rw [ih]
+        _ = (2 : Int) ^ (n + 1 + 1) - (1 : Int) := by ring
+    done
+  done
+
+/- Old version
+theorem Example_6_1_1 :
+    ∀ (n : Nat), Sum i from 0 to n, (2 : Int) ^ i =
+    (2 : Int) ^ (n + 1) - (1 : Int) := by
+  by_induc
+  · -- Base Case
+    rewrite [sum_base]
+    rfl
+    done
+  · -- Induction Step
+    fix n : Nat
+    assume ih : Sum i from 0 to n, (2 : Int) ^ i =
       (2 : Int) ^ (n + 1) - (1 : Int)
     rewrite [sum_from_zero_step, ih]
       --Goal : 2 ^ (n + 1) - 1 + 2 ^ (n + 1) = 2 ^ (n + 1 + 1) - 1
     ring
     done
   done
+-/
 
 /- Section 6.2 -/
 lemma Lemma_6_2_1_1 {A : Type} {R : BinRel A} {B : Set A} {b c : A}
@@ -150,10 +175,10 @@ lemma Lemma_6_2_1_1 {A : Type} {R : BinRel A} {B : Set A} {b c : A}
   define at h3
     --h3 : c ∈ B \ {b} ∧ ¬∃ (x : A), x ∈ B \ {b} ∧ R x c ∧ x ≠ c
   define  --Goal : b ∈ B ∧ ¬∃ (x : A), x ∈ B ∧ R x b ∧ x ≠ b
-  apply And.intro h2  --Goal : ¬∃ (x : A), x ∈ B ∧ R x b ∧ x ≠ b
+  apply And.intro h2    --Goal : ¬∃ (x : A), x ∈ B ∧ R x b ∧ x ≠ b
   contradict h3.right with h5
   obtain (x : A) (h6 : x ∈ B ∧ R x b ∧ x ≠ b) from h5
-  apply Exists.intro x
+  apply Exists.intro x  --Goal : x ∈ B \ {b} ∧ R x c ∧ x ≠ c
   apply And.intro
   · -- Proof that x ∈ B \ {b}
     show x ∈ B \ {b} from And.intro h6.left h6.right.right
@@ -163,7 +188,7 @@ lemma Lemma_6_2_1_1 {A : Type} {R : BinRel A} {B : Set A} {b c : A}
     have h7 : R x c := Rtrans x b c h6.right.left h4
     apply And.intro h7
     by_contra h8
-    rewrite [h8] at h6
+    rewrite [h8] at h6  --h6 : c ∈ B ∧ R c b ∧ c ≠ b
     have Rantisymm : antisymmetric R := h1.right.right
     have h9 : c = b := Rantisymm c b h6.right.left h4
     show False from h6.right.right h9
@@ -188,7 +213,7 @@ theorem Example_6_2_1 {A : Type} (R : BinRel A) (h : partial_order R) :
     apply And.intro
     · -- Proof that b ∈ B
       rewrite [h3]    --Goal : b ∈ {b}
-      define
+      define          --Goal : b = b
       rfl
       done
     · -- Proof that nothing in B is smaller than b
@@ -266,7 +291,7 @@ theorem Exercise_6_2_2 {A : Type} (R : BinRel A) (h : partial_order R) :
     fix B : Set A
     assume h2 : numElts B 0
     rewrite [zero_elts_iff_empty] at h2
-    define at h2     --h2 : ¬∃ (x : A), x ∈ B
+    define at h2       --h2 : ¬∃ (x : A), x ∈ B
     apply Exists.intro R
     apply And.intro h
     apply And.intro
@@ -326,11 +351,11 @@ theorem Exercise_6_2_2 {A : Type} (R : BinRel A) (h : partial_order R) :
         fix y : A
         have h11 : T' x y ∨ T' y x := T'compB' x h10 y
         by_cases on h11
-        · -- Case 1. h11 : T' x y
+        · -- Case 2.1. h11 : T' x y
           show T x y ∨ T y x from
             Or.inl (extendPO_extends T' b x y h11)
           done
-        · -- Case 2. h11 : T' y x
+        · -- Case 2.2. h11 : T' y x
           show T x y ∨ T y x from
             Or.inr (extendPO_extends T' b y x h11)
           done
@@ -342,6 +367,7 @@ theorem Exercise_6_2_2 {A : Type} (R : BinRel A) (h : partial_order R) :
 /- Section 6.3 -/
 #eval fact 4       --Answer: 24
 
+/- Harder version
 theorem Example_6_3_1 : ∀ n ≥ 4, fact n > 2 ^ n := by
   by_induc
   · -- Base Case
@@ -360,6 +386,26 @@ theorem Example_6_3_1 : ∀ n ≥ 4, fact n > 2 ^ n := by
         _ = (n + 1) * fact n := by rfl
         _ > (n + 1) * 2 ^ n := Nat.mul_lt_mul_of_pos_left ih h2
         _ > 2 * 2 ^ n := Nat.mul_lt_mul_of_pos_right h3 h5
+        _ = 2 ^ (n + 1) := by ring
+    done
+  done
+-/
+
+theorem Example_6_3_1 : ∀ n ≥ 4, fact n > 2 ^ n := by
+  by_induc
+  · -- Base Case
+    norm_num
+    done
+  · -- Induction Step
+    fix n : Nat
+    assume h1 : n ≥ 4
+    assume ih : fact n > 2 ^ n
+    have h2 : n + 1 > 2 := by linarith
+    show fact (n + 1) > 2 ^ (n + 1) from
+      calc fact (n + 1)
+        _ = (n + 1) * fact n := by rfl
+        _ > (n + 1) * 2 ^ n := by rel [ih]
+        _ > 2 * 2 ^ n := by rel [h2]
         _ = 2 ^ (n + 1) := by ring
     done
   done
@@ -396,6 +442,7 @@ theorem Example_6_3_2 : ∀ (a : Real) (m n : Nat),
     done
   done
 
+/- Old version
 theorem Example_6_3_4 : ∀ (x : Real), x > -1 →
     ∀ (n : Nat), (1 + x) ^ n ≥ 1 + n * x := by
   fix x : Real
@@ -428,14 +475,38 @@ theorem Example_6_3_4 : ∀ (x : Real), x > -1 →
         _ = 1 + (n + 1) * x := by ring
     done
   done
+-/
 
-/- Section 6.4 -/
-lemma exists_eq_add_of_not_lt {n m : Nat} (h : ¬n < m) :
-    ∃ (k : Nat), n = k + m := by
-  have h1 : n ≥ m := by linarith
-  show ∃ (k : Nat), n = k + m from Nat.exists_eq_add_of_le' h1
+theorem Example_6_3_4 : ∀ (x : Real), x > -1 →
+    ∀ (n : Nat), (1 + x) ^ n ≥ 1 + n * x := by
+  fix x : Real
+  assume h1 : x > -1
+  by_induc
+  · -- Base Case
+    rewrite [Nat.cast_zero]
+    linarith
+    done
+  · -- Induction Step
+    fix n : Nat
+    assume ih : (1 + x) ^ n ≥ 1 + n * x
+    rewrite [Nat.cast_succ]
+    have h2 : 0 ≤ 1 + x := by linarith
+    have h3 : x ^ 2 ≥ 0 := sq_nonneg x
+    have h4 : n * x ^ 2 ≥ 0 :=
+      calc n * x ^ 2
+        _ ≥ n * 0 := by rel [h3]
+        _ = 0 := by ring
+    show (1 + x) ^ (n + 1) ≥ 1 + (n + 1) * x from
+      calc (1 + x) ^ (n + 1)
+        _ = (1 + x) * (1 + x) ^ n := by rfl
+        _ ≥ (1 + x) * (1 + n * x) := by rel [ih]
+        _ = 1 + x + n * x + n * x ^ 2 := by ring
+        _ ≥ 1 + x + n * x + 0 := by rel [h4]
+        _ = 1 + (n + 1) * x := by ring
+    done
   done
 
+/- Section 6.4 -/
 theorem Example_6_4_1 : ∀ m > 0, ∀ (n : Nat),
     ∃ (q r : Nat), n = m * q + r ∧ r < m := by
   fix m : Nat
@@ -451,38 +522,72 @@ theorem Example_6_4_1 : ∀ m > 0, ∀ (n : Nat),
     ring
     done
   · -- Case 2. h2 : ¬n < m
-    obtain (k : Nat) (h3 : n = k + m) from exists_eq_add_of_not_lt h2
-    have h4 : k < n := by linarith
-    have h5 : ∃ (q r : Nat), k = m * q + r ∧ r < m := ih k h4
+    have h3 : m ≤ n := by linarith
+    obtain (k : Nat) (h4 : n = k + m) from Nat.exists_eq_add_of_le' h3
+    have h5 : k < n := by linarith
+    have h6 : ∃ (q r : Nat), k = m * q + r ∧ r < m := ih k h5
     obtain (q' : Nat)
-      (h6 : ∃ (r : Nat), k = m * q' + r ∧ r < m) from h5
-    obtain (r' : Nat) (h7 : k = m * q' + r' ∧ r' < m) from h6
+      (h7 : ∃ (r : Nat), k = m * q' + r ∧ r < m) from h6
+    obtain (r' : Nat) (h8 : k = m * q' + r' ∧ r' < m) from h7
     apply Exists.intro (q' + 1)
     apply Exists.intro r'     --Goal : n = m * (q' + 1) + r' ∧ r' < m
-    apply And.intro _ h7.right
+    apply And.intro _ h8.right
     show n = m * (q' + 1) + r' from
       calc n
-        _ = k + m := h3
-        _ = m * q' + r' + m := by rw [h7.left]
+        _ = k + m := h4
+        _ = m * q' + r' + m := by rw [h8.left]
         _ = m * (q' + 1) + r' := by ring
     done
   done
 
-/- Old versions.
-lemma ge_two_of_ne {n : Nat} (h1 : n ≠ 0) (h2 : n ≠ 1) : n ≥ 2 := by
-  have h3 : n ≥ 1 := Nat.pos_of_ne_zero h1
-  show n ≥ 2 from lt_of_le_of_ne' h3 h2
+lemma exists_eq_add_one_of_ne_zero {n : Nat}
+    (h1 : n ≠ 0) : ∃ (k : Nat), n = k + 1 := by
+  have h2 : 1 ≤ n := Nat.pos_of_ne_zero h1
+  show ∃ (k : Nat), n = k + 1 from Nat.exists_eq_add_of_le' h2
   done
 
-lemma plus_two_of_ge {n : Nat} (h : n ≥ 2) : ∃ (k : Nat), n = k + 2 := by
-  apply Exists.intro (n - 2)
-  show n = n - 2 + 2 from (Nat.sub_add_cancel h).symm
+theorem exists_eq_add_two_of_ne_zero_one {n : Nat}
+    (h1 : n ≠ 0) (h2 : n ≠ 1) : ∃ (k : Nat), n = k + 2 := by
+  have h3 : 1 ≤ n := Nat.pos_of_ne_zero h1
+  have h4 : 2 ≤ n := lt_of_le_of_ne' h3 h2
+  show ∃ (k : Nat), n = k + 2 from Nat.exists_eq_add_of_le' h4
   done
 
-lemma plus_two_of_ne {n : Nat} (h1 : n ≠ 0) (h2 : n ≠ 1) :
-    ∃ (k : Nat), n = k + 2 := plus_two_of_ge (ge_two_of_ne h1 h2)
--/
+example : ∀ (n : Nat), Fib n < 2 ^ n := by
+  by_strong_induc
+  fix n : Nat
+  assume ih : ∀ (n_1 : Nat), n_1 < n → Fib n_1 < 2 ^ n_1
+  by_cases h1 : n = 0
+  · -- Case 1. h1 : n = 0
+    rewrite [h1]   --Goal : Fib 0 < 2 ^ 0
+    norm_num
+    done
+  · -- Case 2. h1 : ¬n = 0
+    by_cases h2 : n = 1
+    · -- Case 2.1. h2 : n = 1
+      rewrite [h2]
+      norm_num
+      done
+    · -- Case 2.2. h2 : ¬n = 1
+      obtain (k : Nat) (h3 : n = k + 2) from
+        exists_eq_add_two_of_ne_zero_one h1 h2
+      have h4 : k < n := by linarith
+      have h5 : Fib k < 2 ^ k := ih k h4
+      have h6 : k + 1 < n := by linarith
+      have h7 : Fib (k + 1) < 2 ^ (k + 1) := ih (k + 1) h6
+      rewrite [h3]            --Goal : Fib (k + 2) < 2 ^ (k + 2)
+      show Fib (k + 2) < 2 ^ (k + 2) from
+        calc Fib (k + 2)
+          _ = Fib k + Fib (k + 1) := by rfl
+          _ < 2 ^ k + Fib (k + 1) := by rel [h5]
+          _ < 2 ^ k + 2 ^ (k + 1) := by rel [h7]
+          _ ≤ 2 ^ k + 2 ^ (k + 1) + 2 ^ k := by linarith
+          _ = 2 ^ (k + 2) := by ring
+      done
+    done
+  done
 
+/- Old versions
 example : ∀ (n : Nat), Fib n < 2 ^ n := by
   by_strong_induc
   fix n : Nat
@@ -510,7 +615,6 @@ example : ∀ (n : Nat), Fib n < 2 ^ n := by
       done
   done
 
-/- Old version
 example : ∀ (n : Nat), Fib n < 2 ^ n := by
   by_strong_induc
   fix n : Nat
@@ -545,6 +649,14 @@ example : ∀ (n : Nat), Fib n < 2 ^ n := by
 -/
 
 /- Old version
+lemma ge_two_of_ne {n : Nat} (h1 : n ≠ 0) (h2 : n ≠ 1) : n ≥ 2 := by
+  have h3 : n ≥ 1 := Nat.pos_of_ne_zero h1
+  show n ≥ 2 from lt_of_le_of_ne' h3 h2
+  done
+
+lemma plus_two_of_ne {n : Nat} (h1 : n ≠ 0) (h2 : n ≠ 1) :
+    ∃ (k : Nat), n = k + 2 := Nat.exists_eq_add_of_le' (ge_two_of_ne h1 h2)
+
 example : ∀ (n : Nat), Fib n < 2 ^ n := by
   by_strong_induc
   fix n : Nat

@@ -60,9 +60,9 @@ import Mathlib.Tactic.NormNum.Core
 --import Mathlib.Tactic.NthRewrite
 --import Mathlib.Tactic.PermuteGoals
 --import Mathlib.Tactic.Polyrith
---import Mathlib.Tactic.Positivity
---import Mathlib.Tactic.Positivity.Basic
---import Mathlib.Tactic.Positivity.Core
+import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Positivity.Core
 --import Mathlib.Tactic.PrintPrefix
 import Mathlib.Tactic.PushNeg
 --import Mathlib.Tactic.Qify
@@ -101,6 +101,6 @@ import Mathlib.Tactic.Trace
 --import Mathlib.Tactic.TypeCheck
 --import Mathlib.Tactic.UnsetOption
 import Mathlib.Tactic.Use
---import Mathlib.Tactic.WLOG
+import Mathlib.Tactic.WLOG
 import Mathlib.Tactic.Zify
 import Mathlib.Tactic.Zify.Attr
