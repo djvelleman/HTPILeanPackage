@@ -1,3 +1,3 @@
 # HTPILeanPackage
 
-Open this package in VS Code to write proofs in Lean.  The file HTPILib/HTPIDefs.lean defines tactics that are used in How To Prove It With Lean.
+This Lean packages accompanies the online book *How To Prove It with Lean*.  The folder HTPILib contains files with all of the theorems in the book, as well as a file defining tactics used in the book.  There are also files containing all of the exercises.

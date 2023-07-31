@@ -1,5 +1,5 @@
 import Lean.Elab.Tactic
-import MathlibTactics
+import Mathlib.Tactic
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Rel

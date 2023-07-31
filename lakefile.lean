@@ -6,12 +6,12 @@ package hTPI {
 }
 
 require mathlib from git
-  "https://github.com/leanprover-community/mathlib4.git" @ "b8c4b6e95c21e1d23f51178abfb951d8b9c1dca9"
+  "https://github.com/leanprover-community/mathlib4.git" @ "d8c7d9897527e99b28862cdf5a4a13aefee95897"
 
 @[default_target]
 lean_lib HTPI {
   -- add library configuration options here
   srcDir := "HTPILib"
-  roots := #[`HTPIDefs, `MathlibTactics, `IntroLean,
+  roots := #[`HTPIDefs, `IntroLean,
     `Chap3, `Chap4, `Chap5, `Chap6, `Chap7, `Chap8Part1, `Chap8Part2]
 }
