@@ -125,6 +125,15 @@ theorem congr_rel_prime {m a b : Nat} (h1 : a ≡ b (MOD m)) :
 theorem rel_prime_mod (m a : Nat) :
     rel_prime m (a % m) ↔ rel_prime m a := sorry
 
+-- 12.
+lemma congr_iff_mod_eq_Int (m : Nat) (a b : Int) [NeZero m] :
+    a ≡ b (MOD m) ↔ a % ↑m = b % ↑m := sorry
+
+--Hint: Use the lemma above,
+--together with the theorems Int.ofNat_mod_ofNat and Nat.cast_inj
+theorem congr_iff_mod_eq_Nat (m a b : Nat) [NeZero m] :
+    ↑a ≡ ↑b (MOD m) ↔ a % m = b % m := sorry
+
 /- Section 7.4 -/
 -- 1.
 --Hint:  Use induction.

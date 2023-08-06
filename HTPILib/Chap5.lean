@@ -43,60 +43,44 @@ def inverse_image {A B : Type} (f : A → B) (Y : Set B) : Set A :=
 theorem graph_def {A B : Type} (f : A → B) (a : A) (b : B) :
     (a, b) ∈ graph f ↔ f a = b := by rfl
 
-theorem func_from_graph {A B : Type} (F : Set (A × B)) :
-    (∃ (f : A → B), graph f = F) ↔ is_func_graph F := by
+theorem func_from_graph_ltr {A B : Type} (F : Set (A × B)) :
+    (∃ (f : A → B), graph f = F) → is_func_graph F := sorry
+
+--This proof is explained in Section 8.2
+theorem func_from_graph_rtl {A B : Type} (F : Set (A × B)) :
+    is_func_graph F → (∃ (f : A → B), graph f = F) := by
+  assume h1 : is_func_graph F
+  define at h1    --h1 : ∀ (x : A), ∃! (y : B), (x, y) ∈ F
+  have h2 : ∀ (x : A), ∃ (y : B), (x, y) ∈ F := by
+    fix x : A
+    obtain (y : B) (h3 : (x, y) ∈ F)
+      (h4 : ∀ (y1 y2 : B), (x, y1) ∈ F → (x, y2) ∈ F → y1 = y2) from h1 x
+    show ∃ (y : B), (x, y) ∈ F from Exists.intro y h3
+    done
+  set f : A → B := fun (x : A) => Classical.choose (h2 x)
+  apply Exists.intro f
+  apply Set.ext
+  fix (x, y) : A × B
+  have h3 : (x, f x) ∈ F := Classical.choose_spec (h2 x)
   apply Iff.intro
   · -- (→)
-    assume h1 : ∃ (f : A → B), graph f = F
-    obtain (f : A → B) (h2 : graph f = F) from h1
-    define
-    fix x : A
-    rewrite [←h2]
-    exists_unique
-    · -- Existence
-      apply Exists.intro (f x)
-      define
-      rfl
-      done
-    · -- Uniqueness
-      fix y1 : B; fix y2 : B
-      assume h3 : (x, y1) ∈ graph f
-      assume h4 : (x, y2) ∈ graph f
-      define at h3; define at h4
-      rewrite [h3] at h4
-      show y1 = y2 from h4
-      done
+    assume h4 : (x, y) ∈ graph f
+    define at h4        --h4 : f x = y
+    rewrite [h4] at h3
+    show (x, y) ∈ F from h3
     done
   · -- (←)
-    assume h1 : is_func_graph F
-    define at h1
-    have h2 : ∀ (x : A), ∃ (y : B), (x, y) ∈ F := by
-      fix x : A
-      obtain (y : B) (h3 : (x, y) ∈ F)
-        (h4 : ∀ (y1 y2 : B), (x, y1) ∈ F → (x, y2) ∈ F → y1 = y2) from h1 x
-      show ∃ (y : B), (x, y) ∈ F from Exists.intro y h3
-      done
-    set f : A → B := fun (x : A) => Classical.choose (h2 x)
-    apply Exists.intro f
-    apply Set.ext
-    fix (x, y) : A × B
-    have h3 : (x, f x) ∈ F := Classical.choose_spec (h2 x)
-    apply Iff.intro
-    · -- (→)
-      assume h4 : (x, y) ∈ graph f
-      define at h4
-      rewrite [h4] at h3
-      show (x, y) ∈ F from h3
-      done
-    · -- (←)
-      assume h4 : (x, y) ∈ F
-      define
-      obtain (z : B) (h5 : (x, z) ∈ F)
-        (h6 : ∀ (y1 y2 : B), (x, y1) ∈ F → (x, y2) ∈ F → y1 = y2) from h1 x
-      show f x = y from h6 (f x) y h3 h4
-      done
+    assume h4 : (x, y) ∈ F
+    define              --Goal : f x = y
+    obtain (z : B) (h5 : (x, z) ∈ F)
+      (h6 : ∀ (y1 y2 : B), (x, y1) ∈ F → (x, y2) ∈ F → y1 = y2) from h1 x
+    show f x = y from h6 (f x) y h3 h4
     done
   done
+
+theorem func_from_graph {A B : Type} (F : Set (A × B)) :
+    (∃ (f : A → B), graph f = F) ↔ is_func_graph F := 
+  Iff.intro (func_from_graph_ltr F) (func_from_graph_rtl F)
 
 theorem Theorem_5_1_4 {A B : Type} (f g : A → B) :
     (∀ (a : A), f a = g a) → f = g := funext
@@ -182,7 +166,6 @@ theorem Theorem_5_2_5_1 {A B C : Type} (f : A → B) (g : B → C) :
   have h4 : f a1 = f a2 := h2 (f a1) (f a2) h3
   show a1 = a2 from h1 a1 a2 h4
   done
-
 
 lemma comp_def {A B C : Type} (g : B → C) (f : A → B) (x : A) :
     (g ∘ f) x = g (f x) := by rfl

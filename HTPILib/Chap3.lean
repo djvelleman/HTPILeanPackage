@@ -145,8 +145,8 @@ theorem Example_3_4_5 (U : Type)
 
 /- Section 3.5 -/
 theorem Example_3_5_2
-(U : Type) (A B C : Set U) :
-A \ (B \ C) ⊆ (A \ B) ∪ C := by
+    (U : Type) (A B C : Set U) :
+    A \ (B \ C) ⊆ (A \ B) ∪ C := by
   fix x : U
   assume h1 : x ∈ A \ (B \ C)
   define; define at h1
@@ -318,12 +318,9 @@ theorem Theorem_3_4_7 :
     obtain (k : Int) (h5 : n = 3 * k) from h3
     have h6 : 6 * (j - k) = n :=
       calc 6 * (j - k)
-        _ = 6 * j - 6 * k := Int.mul_sub 6 j k
-        _ = 3 * (2 * j) - 2 * (3 * k) := by
-            rewrite [←mul_assoc 3 2 j, ←mul_assoc 2 3 k]; rfl
-        _ = 3 * n - 2 * n := by rewrite [←h4, ←h5]; rfl
-        _ = (3 - 2) * n := (Int.sub_mul 3 2 n).symm
-        _ = n := Int.one_mul n
+        _ = 3 * (2 * j) - 2 * (3 * k) := by ring
+        _ = 3 * n - 2 * n := by rw [←h4, ←h5]
+        _ = n := by ring
     show ∃ (c : Int), n = 6 * c from
       Exists.intro (j - k) h6.symm
     done

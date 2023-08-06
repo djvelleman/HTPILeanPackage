@@ -138,7 +138,7 @@ theorem Example_6_1_1 :
     assume ih : Sum i from 0 to n, (2 : Int) ^ i =
         (2 : Int) ^ (n + 1) - (1 : Int)
     show Sum i from 0 to n + 1, (2 : Int) ^ i =
-        (2 : Int) ^ (n + 1 +1) - (1 : Int) from
+        (2 : Int) ^ (n + 1 + 1) - (1 : Int) from
       calc Sum i from 0 to n + 1, (2 : Int) ^ i
         _ = (Sum i from 0 to n, (2 : Int) ^ i)
             + (2 : Int) ^ (n + 1) := by rw [sum_from_zero_step]
@@ -147,26 +147,6 @@ theorem Example_6_1_1 :
         _ = (2 : Int) ^ (n + 1 + 1) - (1 : Int) := by ring
     done
   done
-
-/- Old version
-theorem Example_6_1_1 :
-    ∀ (n : Nat), Sum i from 0 to n, (2 : Int) ^ i =
-    (2 : Int) ^ (n + 1) - (1 : Int) := by
-  by_induc
-  · -- Base Case
-    rewrite [sum_base]
-    rfl
-    done
-  · -- Induction Step
-    fix n : Nat
-    assume ih : Sum i from 0 to n, (2 : Int) ^ i =
-      (2 : Int) ^ (n + 1) - (1 : Int)
-    rewrite [sum_from_zero_step, ih]
-      --Goal : 2 ^ (n + 1) - 1 + 2 ^ (n + 1) = 2 ^ (n + 1 + 1) - 1
-    ring
-    done
-  done
--/
 
 /- Section 6.2 -/
 lemma Lemma_6_2_1_1 {A : Type} {R : BinRel A} {B : Set A} {b c : A}
@@ -367,30 +347,6 @@ theorem Exercise_6_2_2 {A : Type} (R : BinRel A) (h : partial_order R) :
 /- Section 6.3 -/
 #eval fact 4       --Answer: 24
 
-/- Harder version
-theorem Example_6_3_1 : ∀ n ≥ 4, fact n > 2 ^ n := by
-  by_induc
-  · -- Base Case
-    norm_num
-    done
-  · -- Induction Step
-    fix n : Nat
-    assume h1 : n ≥ 4
-    assume ih : fact n > 2 ^ n
-    have h2 : n + 1 > 0 := by linarith
-    have h3 : n + 1 > 2 := by linarith
-    have h4 : 2 > 0 := by linarith
-    have h5 : 2 ^ n > 0 := Nat.pos_pow_of_pos n h4
-    show fact (n + 1) > 2 ^ (n + 1) from
-      calc fact (n + 1)
-        _ = (n + 1) * fact n := by rfl
-        _ > (n + 1) * 2 ^ n := Nat.mul_lt_mul_of_pos_left ih h2
-        _ > 2 * 2 ^ n := Nat.mul_lt_mul_of_pos_right h3 h5
-        _ = 2 ^ (n + 1) := by ring
-    done
-  done
--/
-
 theorem Example_6_3_1 : ∀ n ≥ 4, fact n > 2 ^ n := by
   by_induc
   · -- Base Case
@@ -441,41 +397,6 @@ theorem Example_6_3_2 : ∀ (a : Real) (m n : Nat),
         _ = a ^ m * (a ^ (n + 1)) := by rfl
     done
   done
-
-/- Old version
-theorem Example_6_3_4 : ∀ (x : Real), x > -1 →
-    ∀ (n : Nat), (1 + x) ^ n ≥ 1 + n * x := by
-  fix x : Real
-  assume h1 : x > -1
-  by_induc
-  · -- Base Case
-    rewrite [Nat.cast_zero]
-    linarith
-    done
-  · -- Induction Step
-    fix n : Nat
-    assume ih : (1 + x) ^ n ≥ 1 + n * x
-    rewrite [Nat.cast_succ]
-    have h2 : 1 + x ≥ 0 := by linarith
-    have h3 : n * x * x ≥ 0 := by
-      have h4 : x * x ≥ 0 := mul_self_nonneg x
-      have h5 : (↑n : Real) ≥ 0 := Nat.cast_nonneg n
-      show n * x * x ≥ 0 from 
-        calc n * x * x
-          _ = n * (x * x) := mul_assoc _ _ _
-          _ ≥ n * 0 := mul_le_mul_of_nonneg_left h4 h5
-          _ = 0 := by ring
-      done
-    show (1 + x) ^ (n + 1) ≥ 1 + (n + 1) * x from
-      calc (1 + x) ^ (n + 1)
-        _ = (1 + x) * (1 + x) ^ n := by rfl
-        _ ≥ (1 + x) * (1 + n * x) := mul_le_mul_of_nonneg_left ih h2
-        _ = 1 + x + n * x + n * x * x := by ring
-        _ ≥ 1 + x + n * x + 0 := add_le_add_left h3 _
-        _ = 1 + (n + 1) * x := by ring
-    done
-  done
--/
 
 theorem Example_6_3_4 : ∀ (x : Real), x > -1 →
     ∀ (n : Nat), (1 + x) ^ n ≥ 1 + n * x := by
@@ -586,111 +507,6 @@ example : ∀ (n : Nat), Fib n < 2 ^ n := by
       done
     done
   done
-
-/- Old versions
-example : ∀ (n : Nat), Fib n < 2 ^ n := by
-  by_strong_induc
-  fix n : Nat
-  assume ih : ∀ (n_1 : Nat), n_1 < n → Fib n_1 < 2 ^ n_1
-  match n with
-    | 0 => -- Case 1. n = 0.  Goal : Fib 0 < 2 ^ 0
-      norm_num
-      done
-    | 1 => -- Case 2. n = 1.  Goal : Fib 1 < 2 ^ 1
-      norm_num
-      done
-    | k + 2 => -- Case 3. n = k + 2.  Goal : Fib (k + 2) < 2 ^ (k + 2)
-        --ih : ih: ∀ (n_1 : Nat), n_1 < k + 2 → Fib n_1 < 2 ^ n_1
-      have h1 : k < k + 2 := by linarith
-      have h2 : Fib k < 2 ^ k := ih k h1
-      have h3 : k + 1 < k + 2 := by linarith
-      have h4 : Fib (k + 1) < 2 ^ (k + 1) := ih (k + 1) h3
-      show Fib (k + 2) < 2 ^ (k + 2) from
-        calc Fib (k + 2)
-          _ = Fib k + Fib (k + 1) := by rfl
-          _ < 2 ^ k + Fib (k + 1) := add_lt_add_right h2 _
-          _ < 2 ^ k + 2 ^ (k + 1) := add_lt_add_left h4 _
-          _ ≤ 2 ^ k + 2 ^ (k + 1) + 2 ^ k := Nat.le_add_right _ _
-          _ = 2 ^ (k + 2) := by ring
-      done
-  done
-
-example : ∀ (n : Nat), Fib n < 2 ^ n := by
-  by_strong_induc
-  fix n : Nat
-  assume ih : ∀ (n_1 : Nat), n_1 < n → Fib n_1 < 2 ^ n_1
-  by_cases h1 : n < 2
-  · -- Case 1. h1 : n < 2
-    interval_cases n
-    · -- Case 1.1. n = 0.  Goal : Fib 0 < 2 ^ 0
-      norm_num
-      done
-    · -- Case 1.2. n = 1.  Goal : Fib 1 < 2 ^ 1
-      norm_num
-      done
-    done
-  · -- Case 2. h1 : ¬n < 2
-    obtain (k : Nat) (h2 : n = k + 2) from exists_eq_add_of_not_lt h1
-    have h3 : k < n := by linarith
-    have h4 : Fib k < 2 ^ k := ih k h3
-    have h5 : k + 1 < n := by linarith
-    have h6 : Fib (k + 1) < 2 ^ (k + 1) := ih (k + 1) h5
-    show Fib n < 2 ^ n from
-      calc Fib n
-        _ = Fib (k + 2) := by rw [h2]
-        _ = Fib k + Fib (k + 1) := by rfl
-        _ < 2 ^ k + Fib (k + 1) := add_lt_add_right h4 _
-        _ < 2 ^ k + 2 ^ (k + 1) := add_lt_add_left h6 _
-        _ ≤ 2 ^ k + 2 ^ (k + 1) + 2 ^ k := Nat.le_add_right _ _
-        _ = 2 ^ (k + 2) := by ring
-        _ = 2 ^ n := by rw [h2]
-    done
-  done
--/
-
-/- Old version
-lemma ge_two_of_ne {n : Nat} (h1 : n ≠ 0) (h2 : n ≠ 1) : n ≥ 2 := by
-  have h3 : n ≥ 1 := Nat.pos_of_ne_zero h1
-  show n ≥ 2 from lt_of_le_of_ne' h3 h2
-  done
-
-lemma plus_two_of_ne {n : Nat} (h1 : n ≠ 0) (h2 : n ≠ 1) :
-    ∃ (k : Nat), n = k + 2 := Nat.exists_eq_add_of_le' (ge_two_of_ne h1 h2)
-
-example : ∀ (n : Nat), Fib n < 2 ^ n := by
-  by_strong_induc
-  fix n : Nat
-  assume ih : ∀ n_1 < n, Fib n_1 < 2 ^ n_1
-  by_cases h1 : n = 0
-  · -- Case 1. h1 : n = 0
-    rewrite [h1]          --Goal : Fib 0 < 2 ^ 0
-    norm_num
-    done
-  · -- Case 2. h1 : n ≠ 0
-    by_cases h2 : n = 1
-    · -- Case 2.1. h2 : n = 1
-      rewrite [h2]        --Goal : Fib 1 < 2 ^ 1
-      norm_num
-      done
-    · -- Case 2.2. h2 : n ≠ 1
-      obtain (k : Nat) (h3 : n = k + 2) from plus_two_of_ne h1 h2
-      have h4 : k < n := by linarith
-      have h5 : Fib k < 2 ^ k := ih k h4
-      have h6 : k + 1 < n := by linarith
-      have h7 : Fib (k + 1) < 2 ^ (k + 1) := ih (k + 1) h6
-      show Fib n < 2 ^ n from
-        calc Fib n
-          _ = Fib (k + 2) := by rw [h3]
-          _ = Fib k + Fib (k + 1) := by rfl
-          _ < 2 ^ k + Fib (k + 1) := add_lt_add_right h5 _
-          _ < 2 ^ k + 2 ^ (k + 1) := add_lt_add_left h7 _
-          _ ≤ 2 ^ k + 2 ^ (k + 1) + 2 ^ k := Nat.le_add_right _ _
-          _ = 2 ^ (k + 2) := by ring
-          _ = 2 ^ n := by rw [h3]
-      done
-    done
-  done
--/
 
 theorem well_ord_princ (S : Set Nat) : (∃ (n : Nat), n ∈ S) →
     ∃ (n : Nat), n ∈ S ∧ ∀ (m : Nat), m ∈ S → n ≤ m := by

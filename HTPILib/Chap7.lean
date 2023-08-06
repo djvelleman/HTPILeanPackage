@@ -132,17 +132,7 @@ theorem dvd_mod_of_dvd_a_b {a b d : Nat}
   done
 
 theorem dvd_a_of_dvd_b_mod {a b d : Nat}
-    (h1 : d ∣ b) (h2 : d ∣ (a % b)) : d ∣ a := by
-  set q : Nat := a / b
-  have h3 : b * q + a % b = a := Nat.div_add_mod a b
-  obtain (j : Nat) (h4 : b = d * j) from h1
-  obtain (k : Nat) (h5 : a % b = d * k) from h2
-  rewrite [h5, h4] at h3  --h3 : d * j * q + d * k = a
-  define                  --Goal : ∃ (c : Nat), a = d * c
-  apply Exists.intro (j * q + k)
-  rewrite [←h3]           --Goal : d * j * q + d * k = d * (j * q + k)
-  ring
-  done
+    (h1 : d ∣ b) (h2 : d ∣ (a % b)) : d ∣ a := sorry
 
 #eval gcd 672 161    --Answer: 7
 
@@ -394,44 +384,6 @@ lemma exists_cons_of_length_eq_succ {A : Type}
   show L.length = n from (Nat.add_right_cancel h4).symm
   done
 
-/- If use alternative definition of all_prime
-lemma elt_all_prime_by_length (k : Nat) : ∀ (n : Nat), ∀ (l : List Nat),
-    l.length = n → all_prime l → k ∈ l → prime k := by
-  by_induc
-  · -- Base Case
-    fix l : List Nat
-    assume h1 : l.length = 0
-    assume h2
-    contrapos
-    assume h3 : ¬prime k
-    rewrite [List.length_eq_zero] at h1
-    rewrite [h1]
-    show ¬k ∈ [] from List.not_mem_nil k
-    done
-  · -- Induction Step
-    fix n : Nat
-    assume ih
-    fix l : List Nat
-    assume h1 : l.length = n + 1
-    assume h2 : all_prime l
-    assume h3 : k ∈ l
-    obtain (a : Nat) h4 from exists_cons_of_length_eq_succ h1
-    obtain (L : List Nat) h5 from h4
-    rewrite [h5.left] at h2
-    define at h2  --replace with rewriting lemma??
-    rewrite [h5.left, List.mem_cons] at h3
-    by_cases on h3
-    · -- Case 1. h3 : k = a
-      rewrite [h3]
-      exact h2.left
-      done
-    · -- Case 2. h3 : k ∈ L
-      exact ih L h5.right h2.right h3
-      done
-    done
-  done
--/
-
 lemma list_elt_dvd_prod_by_length (a : Nat) : ∀ (n : Nat),
     ∀ (l : List Nat), l.length = n → a ∈ l → a ∣ prod l := by
   by_induc
@@ -478,48 +430,6 @@ lemma list_elt_dvd_prod {a : Nat} {l : List Nat}
   have h1 : l.length = n := by rfl
   show a ∣ prod l from list_elt_dvd_prod_by_length a n l h1 h
   done
-
-/- Don't use?
-lemma prime_factorization_step {n m p : Nat} {L : List Nat}
-    (h1 : prime p) (h2 : m * p = n) (h3 : ∀ (q : Nat), prime_factor q n → p ≤ q)
-    (h4 : prime_factorization m L) : prime_factorization n (p :: L) := by
-  define
-  define at h4
-  have h5 : nondec_prime_list L := h4.left
-  define at h5
-  apply And.intro
-  · -- Proof of nondec_prime_list (p :: L)
-    define
-    apply And.intro
-    · -- Proof of all_prime (p :: L)
-      rewrite [all_prime_cons]
-      exact And.intro h1 h5.left
-      done
-    · -- Proof of nondec (p :: L)
-      rewrite [nondec_cons]
-      apply And.intro _ h5.right
-      define
-      fix q : Nat
-      assume h6 : q ∈ L
-      have h7 : q ∣ prod L := list_elt_dvd_prod h6
-      rewrite [h4.right] at h7
-      have h8 : m ∣ n := by
-        apply Exists.intro p
-        exact h2.symm
-        done
-      have h9 : q ∣ n := dvd_trans h7 h8
-      have h10 : all_prime L := h5.left
-      define at h10
-      have h11 : prime_factor q n := And.intro (h10 q h6) h9
-      exact h3 q h11
-      done
-    done
-  · -- Proof of prod (p :: L) = n
-    rewrite [prod_cons, h4.right, ←h2]
-    ring
-    done
-  done
--/
 
 lemma exists_prime_factorization : ∀ (n : Nat), n ≥ 1 →
     ∃ (l : List Nat), prime_factorization n l := by
@@ -655,30 +565,7 @@ lemma le_nonzero_prod_right {a b : Nat} (h : a * b ≠ 0) : b ≤ a * b := by
   done
 
 lemma dvd_prime {a p : Nat}
-    (h1 : prime p) (h2 : a ∣ p) : a = 1 ∨ a = p := by
-  obtain (b : Nat) (h3 : p = a * b) from h2
-  define at h1
-  contradict h1.right with h4
-    --Goal : ∃ (a b : Nat), a * b = p ∧ a < p ∧ b < p
-  demorgan at h4
-  apply Exists.intro a
-  apply Exists.intro b
-  apply And.intro h3.symm   --Goal : a < p ∧ b < p
-  have h5 : a * b ≠ 0 := by linarith
-  have h6 : a ≤ a * b := le_nonzero_prod_left h5
-  have h7 : b ≤ a * b := le_nonzero_prod_right h5
-  rewrite [←h3] at h6
-  rewrite [←h3] at h7
-  have h8 : b ≠ p := by
-    contradict h4.left with h8
-    rewrite [←one_mul p, h8] at h3
-    have h9 : p > 0 := by linarith
-    show a = 1 from Nat.eq_of_mul_eq_mul_right h9 h3.symm
-    done
-  have h9 : a < p := lt_of_le_of_ne h6 h4.right
-  have h10 : b < p := lt_of_le_of_ne h7 h8
-  show a < p ∧ b < p from And.intro h9 h10
-  done
+    (h1 : prime p) (h2 : a ∣ p) : a = 1 ∨ a = p := sorry
 
 lemma rel_prime_of_prime_not_dvd {a p : Nat}
     (h1 : prime p) (h2 : ¬p ∣ a) : rel_prime a p := by
@@ -772,6 +659,32 @@ lemma prime_in_list {p : Nat} {l : List Nat}
   show a ∈ l from h4.left
   done
 
+lemma first_le_first {p q : Nat} {l m : List Nat}
+    (h1 : nondec_prime_list (p :: l)) (h2 : nondec_prime_list (q :: m))
+    (h3 : prod (p :: l) = prod (q :: m)) : p ≤ q := by
+  define at h1; define at h2
+  have h4 : q ∣ prod (p :: l) := by
+    define
+    apply Exists.intro (prod m)
+    rewrite [←prod_cons]
+    show prod (p :: l) = prod (q :: m) from h3
+    done
+  have h5 : all_prime (q :: m) := h2.left
+  rewrite [all_prime_cons] at h5
+  have h6 : q ∈ p :: l := prime_in_list h5.left h1.left h4
+  have h7 : nondec (p :: l) := h1.right
+  rewrite [nondec_cons] at h7
+  rewrite [List.mem_cons] at h6
+  by_cases on h6
+  · -- Case 1. h6 : q = p
+    linarith
+    done
+  · -- Case 2. h6 : q ∈ l
+    have h8 : ∀ (m : Nat), m ∈ l → p ≤ m := h7.left
+    show p ≤ q from h8 q h6
+    done
+  done
+
 lemma nondec_prime_list_tail {p : Nat} {l : List Nat}
     (h : nondec_prime_list (p :: l)) : nondec_prime_list l := by
   define at h
@@ -807,32 +720,6 @@ lemma list_nil_iff_prod_one {l : List Nat} (h : nondec_prime_list l) :
     rewrite [h3] at h
     rewrite [h3]
     show ¬prod (p :: L) = 1 from cons_prod_not_one h
-    done
-  done
-
-lemma first_le_first {p q : Nat} {l m : List Nat}
-    (h1 : nondec_prime_list (p :: l)) (h2 : nondec_prime_list (q :: m))
-    (h3 : prod (p :: l) = prod (q :: m)) : p ≤ q := by
-  define at h1; define at h2
-  have h4 : q ∣ prod (p :: l) := by
-    define
-    apply Exists.intro (prod m)
-    rewrite [←prod_cons]
-    show prod (p :: l) = prod (q :: m) from h3
-    done
-  have h5 : all_prime (q :: m) := h2.left
-  rewrite [all_prime_cons] at h5
-  have h6 : q ∈ p :: l := prime_in_list h5.left h1.left h4
-  have h7 : nondec (p :: l) := h1.right
-  rewrite [nondec_cons] at h7
-  rewrite [List.mem_cons] at h6
-  by_cases on h6
-  · -- Case 1. h6 : q = p
-    linarith
-    done
-  · -- Case 2. h6 : q ∈ l
-    have h8 : ∀ (m : Nat), m ∈ l → p ≤ m := h7.left
-    show p ≤ q from h8 q h6
     done
   done
 
@@ -932,19 +819,7 @@ theorem congr_symm {m : Nat} : ∀ {a b : Int},
   done
 
 theorem congr_trans {m : Nat} : ∀ {a b c : Int},
-    a ≡ b (MOD m) → b ≡ c (MOD m) → a ≡ c (MOD m) := by
-  fix a : Int; fix b : Int; fix c : Int
-  assume h1 : a ≡ b (MOD m)
-  assume h2 : b ≡ c (MOD m)
-  obtain (d : Int) (h3 : a - b = m * d) from h1
-  obtain (e : Int) (h4 : b - c = m * e) from h2
-  apply Exists.intro (d + e)
-  show a - c = m * (d + e) from
-    calc a - c
-      _ = (a - b) + (b - c) := by ring
-      _ = m * d + m * e := by rw [h3, h4]
-      _ = m * (d + e) := by ring
-  done
+    a ≡ b (MOD m) → b ≡ c (MOD m) → a ≡ c (MOD m) := sorry
 
 /- Fundamental properties of congruence classes -/
 lemma cc_eq_iff_val_eq {n : Nat} (X Y : ZMod (n + 1)) :
@@ -1157,41 +1032,7 @@ theorem Theorem_7_3_6_7 {m : Nat} (X : ZMod m) : X * [1]_m = X := by
   done
 
 theorem Exercise_7_2_6 (a b : Nat) :
-    rel_prime a b ↔ ∃ (s t : Int), s * a + t * b = 1 := by
-  apply Iff.intro
-  · -- (→)
-    assume h1 : rel_prime a b
-    define at h1
-    apply Exists.intro (gcd_c1 a b)
-    apply Exists.intro (gcd_c2 a b)
-    have h2 : gcd_c1 a b * a + gcd_c2 a b * b = gcd a b :=
-      gcd_lin_comb b a
-    rewrite [h1, Nat.cast_one] at h2
-    show gcd_c1 a b * a + gcd_c2 a b * b = 1 from h2
-    done
-  · -- (←)
-    assume h1 : ∃ (s : Int), ∃ (t : Int), s * a + t * b = 1
-    obtain (s : Int) (h2 : ∃ (t : Int), s * a + t * b = 1) from h1
-    obtain (t : Int) (h3 : s * a + t * b = 1) from h2
-    set g : Nat := gcd a b
-    have h4 : g ∣ a := gcd_dvd_left a b
-    have h5 : g ∣ b := gcd_dvd_right a b
-    obtain (c : Nat) (h6 : a = g * c) from h4
-    obtain (d : Nat) (h7 : b = g * d) from h5
-    have h8 : g ∣ 1 := by
-      rewrite [←Int.coe_nat_dvd, Nat.cast_one] --Goal : ↑g ∣ (1 : Int)
-      apply Exists.intro (s * c + t * d)
-      show 1 = g * (s * c + t * d) from
-        calc 1
-          _ = s * a + t * b := h3.symm
-          _ = s * (g * c) + t * (g * d) := by
-              rw [h6, h7, Nat.cast_mul, Nat.cast_mul]
-          _ = g * (s * c + t * d) := by ring
-      done
-    define
-    show gcd a b = 1 from eq_one_of_dvd_one h8
-    done
-  done
+    rel_prime a b ↔ ∃ (s t : Int), s * a + t * b = 1 := sorry
 
 lemma gcd_c2_inv {m a : Nat} (h1 : rel_prime m a) :
     [a]_m * [gcd_c2 m a]_m = [1]_m := by
@@ -1267,7 +1108,6 @@ lemma num_rp_below_step_not_rp {m j : Nat} (h : ¬rel_prime m j) :
 
 lemma phi_def (m : Nat) : phi m = num_rp_below m m := by rfl
 
-#eval phi 600   --Answer: 160
 #eval phi 10    --Answer: 4
 
 lemma prod_inv_iff_inv {m : Nat} {X : ZMod m}
@@ -1431,19 +1271,7 @@ lemma G_maps_below (m a : Nat) [NeZero m] : maps_below m (G m a) := by
   done
 
 lemma left_inv_one_one_below {n : Nat} {g g' : Nat → Nat}
-    (h1 : ∀ i < n, g' (g i) = i) : one_one_below n g := by
-  define
-  fix i1 : Nat
-  assume h2 : i1 < n
-  fix i2 : Nat
-  assume h3 : i2 < n
-  assume h4 : g i1 = g i2
-  show i1 = i2 from
-    calc i1
-      _ = g' (g i1) := (h1 i1 h2).symm
-      _ = g' (g i2) := by rw [h4]
-      _ = i2 := h1 i2 h3
-  done
+    (h1 : ∀ i < n, g' (g i) = i) : one_one_below n g := sorry
 
 lemma right_inv_onto_below {n : Nat} {g g' : Nat → Nat}
     (h1 : ∀ i < n, g (g' i) = i) (h2 : maps_below n g') :
@@ -1477,32 +1305,13 @@ lemma mod_mul_mod_eq_mul_mod (m a b : Nat) : (a % m * b) % m = (a * b) % m := by
   rfl
   done
 
-theorem congr_iff_mod_eq (m a b : Nat) [NeZero m] : a ≡ b (MOD m) ↔ a % m = b % m := by
-  have h1 := mod_cmpl_res m a
-  have h2 := mod_cmpl_res m b
-  rewrite [Int.ofNat_mod_ofNat] at h1
-  rewrite [Int.ofNat_mod_ofNat] at h2 
-  apply Iff.intro
-  · -- (→)
-    assume h3
-    have h4 := congr_trans h3 (h2.right.right)
-    have h5 := And.intro h2.left (And.intro h2.right.left h4)
-    obtain r h6 h7 from Theorem_7_3_1 m a
-    have h8 := h7 ↑(a % m) ↑(b % m) h1 h5
-    rewrite [Nat.cast_inj] at h8
-    exact h8
-    done
-  · -- (→)
-    assume h3
-    rewrite [h3] at h1
-    exact congr_trans h1.right.right (congr_symm h2.right.right)
-    done
-  done
+theorem congr_iff_mod_eq_Nat (m a b : Nat) [NeZero m] :
+    ↑a ≡ ↑b (MOD m) ↔ a % m = b % m := sorry
 
 lemma mul_inv_mod_cancel {m a i : Nat} [NeZero m]
     (h1 : rel_prime m a) (h2 : i < m) : a * (inv_mod m a) * i % m = i := by
   have h3 : [a]_m * [inv_mod m a]_m = [1]_m := cc_mul_inv_mod_eq_one h1
-  rewrite [mul_class, cc_eq_iff_congr, ←Nat.cast_mul, ←Nat.cast_one, congr_iff_mod_eq] at h3
+  rewrite [mul_class, cc_eq_iff_congr, ←Nat.cast_mul, ←Nat.cast_one, congr_iff_mod_eq_Nat] at h3
   exact
     calc a * (inv_mod m a) * i % m
       _ = (a * inv_mod m a) % m * i % m := by rw [mod_mul_mod_eq_mul_mod]
@@ -1537,10 +1346,6 @@ lemma Ginv_left_inv {m a : Nat} [NeZero m] (h1 : rel_prime m a) :
       _ = a * inv_mod m a * i % m := by rw [←mul_assoc, mul_comm (inv_mod m a)]
       _ = i := mul_inv_mod_cancel h1 h2
   done
-
-#check Nat.mul_mod    --a * b % n = a % n * b % n
-#check Nat.mod_mod    --a % n % n = a % n
-#check Nat.mod_eq_of_lt  -- (a < b) a % b = a
 
 lemma Ginv_maps_below (m a : Nat) [NeZero m] :
     maps_below m (Ginv m a) := G_maps_below m (inv_mod m a)
@@ -1663,48 +1468,7 @@ lemma swap_perm_below {u v n} (h1 : u < n) (h2 : v < n) : perm_below n (swap u v
 
 lemma comp_perm_below {n : Nat} {f g : Nat → Nat}
     (h1 : perm_below n f) (h2 : perm_below n g) :
-    perm_below n (f ∘ g) := by
-  define; define at h1; define at h2
-  apply And.intro
-  · -- Proof of maps_below n (f ∘ g)
-    have h3 := h1.left
-    have h4 := h2.left
-    define at h3; define at h4
-    define
-    fix i
-    assume h5
-    exact h3 (g i) (h4 i h5)
-    done
-  · -- Rest
-    apply And.intro
-    · -- Proof of one_one_below n (f ∘ g)
-      have h3 := h1.right.left
-      have h4 := h2.right.left
-      define at h3; define at h4
-      define
-      fix i1; assume h5
-      fix i2; assume h6
-      assume h7
-      have h8 := h2.left; define at h8
-      have h9 := h3 (g i1) (h8 i1 h5) (g i2) (h8 i2 h6) h7
-      exact h4 i1 h5 i2 h6 h9
-      done
-    · -- Proof of onto_below n (f ∘ g)
-      have h3 := h1.right.right
-      have h4 := h2.right.right
-      define at h3; define at h4; define
-      fix k
-      assume h5
-      obtain k' h6 from h3 k h5
-      obtain i h7 from h4 k' h6.left
-      apply Exists.intro i
-      apply And.intro h7.left
-      define : (f ∘ g) i
-      rewrite [h7.right]
-      exact h6.right
-      done
-    done
-  done
+    perm_below n (f ∘ g) := sorry
 
 lemma trivial_swap (u : Nat) : swap u u = id := by
   apply funext
@@ -1841,54 +1605,7 @@ lemma swap_prod_eq_prod {m u n : Nat} (f : Nat → ZMod m) (h1 : u ≤ n) :
   done
 
 lemma perm_below_fixed {n : Nat} {g : Nat → Nat}
-    (h1 : perm_below (n + 1) g) (h2 : g n = n) : perm_below n g := by
-  define; define at h1
-  have h1_1 := h1.left
-  have h1_2 := h1.right.left
-  have h1_3 := h1.right.right
-  define at h1_1; define at h1_2; define at h1_3
-  have h3 : n < n + 1 := Nat.lt_succ_self n
-  apply And.intro
-  · -- Proof of maps_below
-    define
-    fix i
-    assume h4
-    have h5 : i < n + 1 := by linarith
-    have h6 := h1_1 i h5
-    have h7 : g i ≠ n := by
-      by_contra h7
-      rewrite [←h2] at h7
-      have h8 := h1_2 i h5 n h3 h7
-      linarith
-      done
-    show g i < n from Nat.lt_of_le_of_ne (Nat.le_of_lt_succ h6) h7
-    done
-  · -- Rest
-    apply And.intro
-    · -- Proof of one_one
-      define
-      fix i1; assume h4
-      fix i2; assume h5
-      assume h6
-      have h7 : i1 < n + 1 := by linarith
-      have h8 : i2 < n + 1 := by linarith
-      exact h1_2 i1 h7 i2 h8 h6
-      done
-    · -- Proof of onto
-      define
-      fix k
-      assume h4
-      have h5 : k < n + 1 := by linarith
-      obtain i h6 from h1_3 k h5
-      apply Exists.intro i
-      apply And.intro _ h6.right
-      by_contra h7
-      have h8 : i = n := by linarith
-      rewrite [←h6.right, h8, h2] at h4
-      linarith
-      done
-    done
-  done
+    (h1 : perm_below (n + 1) g) (h2 : g n = n) : perm_below n g := sorry
 
 lemma perm_prod {m : Nat} (f : Nat → ZMod m) :
     ∀ (n : Nat), ∀ (g : Nat → Nat), perm_below n g →
@@ -1971,7 +1688,6 @@ lemma Fprod_invertible (m : Nat) :
     done
   done
 
---Euler's theorem for congruence classes
 theorem Theorem_7_4_2 {m a : Nat} [NeZero m] (h1 : rel_prime m a) :
     [a]_m ^ (phi m) = [1]_m := by
   have h2 : invertible (prod_seq m 0 (F m)) := Fprod_invertible m m
@@ -1987,30 +1703,8 @@ theorem Theorem_7_4_2 {m a : Nat} [NeZero m] (h1 : rel_prime m a) :
       _ = [1]_m := by rw [h3]
   done
 
---When state as exercise, give hint for base case:
---Use Theorem_7_3_6_7 to prove [a]_m ^ 0 = [a]_m ^ 0 * [1]_m
---Use ring to prove [a]_m ^ 0 * [1]_m = [1]_m.
 lemma Exercise_7_4_5_Int (m : Nat) (a : Int) :
-    ∀ (n : Nat), [a]_m ^ n = [a ^ n]_m := by
-  by_induc
-  · -- Base Case
-    show [a]_m ^ 0 = [a ^ 0]_m from
-      calc [a]_m ^ 0
-        _ = [a]_m ^ 0 * [1]_m := (Theorem_7_3_6_7 ([a]_m ^ 0)).symm
-        _ = [1]_m := by ring
-        _ = [a ^ 0]_m := by rfl
-    done
-  · -- Induction Step
-    fix n : Nat
-    assume ih : [a]_m ^ n = [a ^ n]_m
-    show [a]_m ^ (n + 1) = [a ^ (n + 1)]_m from
-      calc [a]_m ^ (n + 1)
-        _ = [a]_m ^ n * [a]_m := by ring
-        _ = [a ^ n]_m * [a]_m := by rw [ih]
-        _ = [a ^ n * a]_m := mul_class _ _ _
-        _ = [a ^ (n + 1)]_m := by rfl
-    done
-  done
+    ∀ (n : Nat), [a]_m ^ n = [a ^ n]_m := sorry
 
 lemma Exercise_7_4_5_Nat (m a n : Nat) :
     [a]_m ^ n = [a ^ n]_m := by
@@ -2034,41 +1728,7 @@ end Euler
 
 /- Section 7.5 -/
 lemma num_rp_prime {p : Nat} (h1 : prime p) :
-    ∀ (k : Nat), k < p → num_rp_below p (k + 1) = k := by
-  by_induc
-  · -- Base Case
-    assume h2 : 0 < p
-    have h3 : ¬rel_prime p 0 := by
-      define
-      rewrite [gcd_base]
-      show ¬p = 1 from prime_not_one h1
-      done
-    rewrite [num_rp_below_step_not_rp h3, num_rp_below_base]
-    rfl
-    done
-  · -- Induction Step
-    fix k : Nat
-    assume ih : k < p → num_rp_below p (k + 1) = k
-    assume h2 : k + 1 < p
-    have h3 : k < p := by linarith
-    have h4 : rel_prime p (k + 1) := by
-      define
-      by_contra h4
-      have h5 : gcd p (k + 1) ∣ p := gcd_dvd_left p (k + 1)
-      have h6 : gcd p (k + 1) ∣ k + 1 := gcd_dvd_right p (k + 1)
-      have h7 : gcd p (k + 1) = 1 ∨ gcd p (k + 1) = p := dvd_prime h1 h5
-      disj_syll h7 h4
-      rewrite [h7] at h6     --h6 : p ∣ k + 1
-      obtain (j : Nat) (h8 : k + 1 = p * j) from h6
-      have h9 : p * j ≠ 0 := by linarith
-      have h10 : p ≤ p * j := le_nonzero_prod_left h9
-      rewrite [←h8] at h10
-      linarith
-      done
-    rewrite [num_rp_below_step_rp h4, ih h3]
-    rfl
-    done
-  done
+    ∀ (k : Nat), k < p → num_rp_below p (k + 1) = k := sorry
 
 lemma phi_prime {p : Nat} (h1 : prime p) : phi p = p - 1 := by
   have h2 : 1 ≤ p := prime_pos h1
@@ -2080,25 +1740,6 @@ lemma phi_prime {p : Nat} (h1 : prime p) : phi p = p - 1 := by
   show phi p = p - 1 from h5
   done
 
-lemma dvd_neg_iff_dvd (a b : Int) : a ∣ (-b) ↔ a ∣ b := by
-  apply Iff.intro
-  assume h1
-  obtain j h2 from h1
-  apply Exists.intro (-j)
-  have h3 : b = -(-b) := by ring
-  rewrite [h3, h2]
-  ring
-  assume h1
-  obtain j h2 from h1
-  apply Exists.intro (-j)
-  rewrite [h2]
-  ring
-  done
-
-#check Int.natAbs
-#check @Int.coe_nat_dvd_left
-#check @Int.natAbs_mul
-#check @Int.natAbs_ofNat
 theorem Theorem_7_2_2_Int {a c : Nat} {b : Int}
     (h1 : ↑c ∣ ↑a * b) (h2 : rel_prime a c) : ↑c ∣ b := by
   rewrite [Int.coe_nat_dvd_left, Int.natAbs_mul,
@@ -2106,29 +1747,6 @@ theorem Theorem_7_2_2_Int {a c : Nat} {b : Int}
   rewrite [Int.coe_nat_dvd_left]   --Goal : c ∣ Int.natAbs b
   show c ∣ Int.natAbs b from Theorem_7_2_2 h1 h2
   done
-
-/- Old version
-theorem Theorem_7_2_2_Int {a c : Nat} {b : Int}
-    (h1 : ↑c ∣ ↑a * b) (h2 : rel_prime a c) : ↑c ∣ b := by
-  obtain (n : Nat) (h3 : b = ↑n ∨ b = -↑n) from Int.eq_nat_or_neg b
-  by_cases on h3
-  · -- Case 1. h3 : b = ↑n
-    rewrite [h3, ←Nat.cast_mul, Int.coe_nat_dvd] at h1  --h1 : c ∣ a * n
-    rewrite [h3, Int.coe_nat_dvd]                       --Goal : c ∣ n
-    show c ∣ n from Theorem_7_2_2 h1 h2
-    done
-  · -- Case 2. h3 : b = -↑n
-    have h4 : ↑a * b = -(↑a * ↑n) :=
-      calc ↑a * b
-        _ = ↑a * (-↑n) := by rw [h3]
-        _ = -(↑a * ↑n) := by ring
-    rewrite [h4, dvd_neg_iff_dvd, ←Nat.cast_mul, Int.coe_nat_dvd] at h1
-                                                        --h1 : c ∣ a * n
-    rewrite [h3, dvd_neg_iff_dvd, Int.coe_nat_dvd]      --Goal : c ∣ n
-    show c ∣ n from Theorem_7_2_2 h1 h2
-    done
-  done
--/
 
 lemma Lemma_7_4_5 {m n : Nat} (a b : Int) (h1 : rel_prime m n) :
     a ≡ b (MOD m * n) ↔ a ≡ b (MOD m) ∧ a ≡ b (MOD n) := by
@@ -2168,40 +1786,9 @@ lemma Lemma_7_4_5 {m n : Nat} (a b : Int) (h1 : rel_prime m n) :
     done
   done
 
---These are exercises in 7.1
-lemma gcd_comm_lt {a b : Nat} (h : a < b) : gcd a b = gcd b a := by
-  have h2 : b ≠ 0 := by linarith
-  have h3 : gcd a b = gcd b (a % b) := gcd_nonzero a h2
-  have h4 : a % b = a := Nat.mod_eq_of_lt h
-  rewrite [h4] at h3
-  show gcd a b = gcd b a from h3
-  done
-
-theorem gcd_comm (a b : Nat) : gcd a b = gcd b a := by
-  by_cases h1 : a < b
-  · -- Case 1. h1 : a < b
-    show gcd a b = gcd b a from gcd_comm_lt h1
-    done
-  · -- Case 2. h1 : ¬a < b
-    by_cases h2 : b < a
-    · -- Case 2.1. h2 : b < a
-      show gcd a b = gcd b a from (gcd_comm_lt h2).symm
-      done
-    · -- Case 2.2. h2 : ¬b < a
-      have h3 : a = b := by linarith
-      rewrite [h3]
-      rfl
-      done
-    done
-  done
-
--- Make this an exercise too?  gcd_comm already exercise in 7.1
+--From exercises of Section 7.2
 theorem rel_prime_symm {a b : Nat} (h : rel_prime a b) :
-    rel_prime b a := by
-  define at h
-  rewrite [gcd_comm] at h
-  exact h
-  done
+    rel_prime b a := sorry
 
 lemma prime_NeZero {p : Nat} (h : prime p) : NeZero p := by
   rewrite [neZero_iff]     --Goal : p ≠ 0
