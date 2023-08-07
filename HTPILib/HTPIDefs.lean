@@ -12,13 +12,6 @@ import Mathlib.Data.ZMod.Defs
 def Iff.ltr {p q : Prop} (h : p ↔ q) := h.mp
 def Iff.rtl {p q : Prop} (h : p ↔ q) := h.mpr
 
-/-To allow use of "termination_hint" in recursive definitions.  Don't use?
-syntax withPosition("termination_hint : " term " := " term Lean.Parser.semicolonOrLinebreak) term : term
-
-macro_rules
-  | `(termination_hint : $t := $p; $b) => `(have : $t := $p; $b)
--/
-
 --New set theory notation.
 --Lower priority than all other set theory notation
 macro (priority := low-1) "{ " pat:term " : " t:term " | " p:term " }" : term =>
@@ -39,26 +32,18 @@ def setOf.unexpander : Lean.PrettyPrinter.Unexpander
         `({ $pat:term : $ty:term | $p:term })
       else
         throw ()
-  -- Next line not needed anymore -- fixed bug in Mathlib/Init/Set.lean
-  --| `($_ fun ($x:ident : $ty:term) => $p) => `({ $x:ident : $ty:term | $p })
   | _ => throw ()
 
 --Make sure Lean understands {x} and ∅ as Sets, not Finsets
 attribute [default_instance] Set.instSingletonSet
 attribute [default_instance] Set.instEmptyCollectionSet
 
-/- No longer needed
-@[app_unexpander Function.comp] def unexpandFunctionComp : Lean.PrettyPrinter.Unexpander
-  | `($(_) $f:term $g:term $x:term) => `(($f ∘ $g) $x)
-  | _ => throw ()
--/
-
--- Set theory notation that should be in library.  Will it be added eventually?
+-- Set theory notation that should be in library.
 -- Copying similar in:  Mathlib/Init/Set.lean, lean4/Init/Notation.lean, std4/Std/Classes/SetNotation.lean
 notation:50 a:50 " ⊈ " b:50 => ¬ (a ⊆ b)
 
 --Note:  Mathlib.Order.SymmDiff.lean defines this with ∆ (\increment) instead of △ (\bigtriangleup).
---Switch to that??  But display of symmDiff seems to use △.
+--But display of symmDiff seems to use △.
 infixl:100 " △ " => symmDiff
 
 namespace HTPI
@@ -86,7 +71,6 @@ theorem not_not_iff {p q : Prop} : ¬(¬p ↔ q) ↔ (p ↔ q) := by
   rw [not_iff, Classical.not_not]
 
 def Pred (t : Type u) : Type u := t → Prop
---def Rel (s t : Type u) : Type u := s → t → Prop   --Defined in Mathlib.Data.Rel
 def BinRel (t : Type u) : Type u := Rel t t
 
 --Definitions of tactics
@@ -357,17 +341,6 @@ def doHave (n : Name) (form : Expr) (pfstx : Syntax) : TacticM Unit := do
     replaceMainGoal [← newGoal.replaceTargetDefEq oldtar]
   else
     replaceMainGoal [newGoal]
-
---Add n : (Type) := val to context.
-/- **Not used
-def doLet (n : Name) (val : Expr) : TacticM Unit := do
-  let goal ← getMainGoal
-  withContext goal do
-    let valType ← Meta.inferType val
-    let mvarIdNew ← define goal n valType val
-    let (_, newGoal) ← intro1P mvarIdNew
-    replaceMainGoal [newGoal]
--/
 
 --Set goal to be form; pfstx is proof that it suffices.
 def doSuffices (form : Expr) (pfstx : Syntax) : TacticM Unit := do
@@ -739,9 +712,7 @@ elab "contradict" h:term w:(withId)? : tactic => do
       | _ =>
         doSuffices (mkNot tocon) (← `(fun x => x $h))
 
-/- define, def_step, and whnf tactics 
-Probably want to use define, but include whnf to be able to compare
--/
+/- define, def_step, and whnf tactics -/
 def unfoldOrWhnf (tac: Name) (e : Expr) (w rep : Bool) : TacticM Expr := do
   if w then
     match (← getPropForm e) with
@@ -782,7 +753,6 @@ def mkRel (e1 e2 : Expr) (prop : Bool) : TacticM Expr :=
 
 -- repeatedly assert definition equivalences or equations, numbering steps
 partial def doDefinitionRep (label : Name) (e e1 : Expr) (prop : Bool) (rule : Ident) (firstNum : Nat) : TacticM Unit := do
-  --let e' ← unfoldHead e1 `definition (firstNum == 1)
   let e' ← unfoldHead e1 `definition (firstNum == 1) false
   let res ← mkRel e e' prop
   doHave (Name.appendIndexAfter label firstNum) res (← `($rule _))
@@ -803,7 +773,6 @@ def doDefinition (all : Bool) (f : Option ColonTerm) (l : Option OneLoc) (wid : 
     if all then
       doDefinitionRep labeln e e prop rule 1
     else
-      --let e' ← unfoldHeadRep e `definition true
       let e' ← unfoldHead e `definition true true
       let res ← mkRel e e' prop
       doHave labeln res (← `($rule _))
@@ -982,34 +951,6 @@ macro "show " c:term " from " p:term : tactic => `(tactic| {show $c; exact $p})
 macro "show " c:term " := " p:term : tactic => `(tactic| {show $c; exact $p})
 macro "show " c:term " by " p:tactic : tactic => `(tactic| {show $c; $p})
 
-/- Not needed anymore--use Nat.strongRec' in Mathlib.Data.Nat.Basic.lean
-theorem str_induc (P : Nat → Prop)
-    (h : ∀ (n : Nat), (∀ n_1 < n, P n_1)→ P n) : ∀ (n : Nat), P n := by
-  have h2 : ∀ (n : Nat), ∀ k < n, P k := by
-    apply @Nat.rec
-    fix k
-    assume h2
-    contradict h2
-    exact Bool.of_decide_true rfl
-    fix n
-    assume ih
-    fix k
-    assume h2
-    by_cases h3 : k = n
-    rewrite [h3]
-    exact h n ih
-    have h4 : k < n := by
-      have h5 : k ≤ n := Nat.le_of_succ_le_succ h2
-      have h6 : k < n ∨ k = n := LE.le.lt_or_eq_dec h5
-      disj_syll h6 h3
-      exact h6
-    exact ih k h4
-  fix n
-  have h3 := h2 (n+1) n
-  apply h3
-  exact Nat.lt_succ_self n
--/
-
 theorem induc_from (P : Nat → Prop) (k : Nat) (h1 : P k) (h2 : (∀ n ≥ k, P n → P (n+1))) :
     ∀ n ≥ k, P n := by
   apply @Nat.rec
@@ -1028,7 +969,7 @@ theorem induc_from (P : Nat → Prop) (k : Nat) (h1 : P k) (h2 : (∀ n ≥ k, P
   rewrite [h5] at h1
   exact h1
 
--- New version:  For ordinary induction, uses a different base if appropriate
+-- For ordinary induction, uses a different base if appropriate
 def doInduc (strong : Bool) : TacticM Unit := do
   let goal ← getMainGoal
   withContext goal do
@@ -1057,7 +998,7 @@ def doInduc (strong : Bool) : TacticM Unit := do
               replaceMainGoal [newgoal.mvarId!]
             else
               let (base, ind, rule) ← Meta.lambdaTelescope m fun fvs Pv => do
-                -- fvs.size should be 1.  Could it ever be larger?
+                -- fvs.size should be 1.
                 let fv := fvs[0]!
                 let PFPv ← getPropForm Pv
                 let (fr, Qv) := match PFPv with
@@ -1097,69 +1038,6 @@ elab "by_induc" : tactic => doInduc false
 elab "by_strong_induc" : tactic => doInduc true
 end tactic_defs
 
-/- Constructing a function from its graph:
-def graph {A B : Type} (f : A → B) : Set (A × B) :=
-    { (a, b) : A × B | f a = b }
-
-def is_func_graph {A B : Type} (G : Set (A × B)) : Prop :=
-    ∀ (x : A), ∃! (y : B), (x, y) ∈ G
-
-theorem func_from_graph {A B : Type} (F : Set (A × B)) :
-    (∃ (f : A → B), graph f = F) ↔ is_func_graph F := by
-  apply Iff.intro
-  · -- (→)
-    assume h1 : ∃ (f : A → B), graph f = F
-    obtain (f : A → B) (h2 : graph f = F) from h1
-    define
-    fix x : A
-    rewrite [←h2]
-    exists_unique
-    · -- Existence
-      apply Exists.intro (f x)
-      define
-      rfl
-      done
-    · -- Uniqueness
-      fix y1 : B; fix y2 : B
-      assume h3 : (x, y1) ∈ graph f
-      assume h4 : (x, y2) ∈ graph f
-      define at h3; define at h4
-      rewrite [h3] at h4
-      show y1 = y2 from h4
-      done
-    done
-  · -- (←)
-    assume h1 : is_func_graph F
-    define at h1
-    have h2 : ∀ (x : A), ∃ (y : B), (x, y) ∈ F := by
-      fix x : A
-      obtain (y : B) (h3 : (x, y) ∈ F)
-        (h4 : ∀ (y1 y2 : B), (x, y1) ∈ F → (x, y2) ∈ F → y1 = y2) from h1 x
-      show ∃ (y : B), (x, y) ∈ F from Exists.intro y h3
-      done
-    set f : A → B := fun (x : A) => Classical.choose (h2 x)
-    apply Exists.intro f
-    apply Set.ext
-    fix (x, y) : A × B
-    have h3 : (x, f x) ∈ F := Classical.choose_spec (h2 x)
-    apply Iff.intro
-    · -- (→)
-      assume h4 : (x, y) ∈ graph f
-      define at h4
-      rewrite [h4] at h3
-      show (x, y) ∈ F from h3
-      done
-    · -- (←)
-      assume h4 : (x, y) ∈ F
-      define
-      obtain (z : B) (h5 : (x, z) ∈ F)
-        (h6 : ∀ (y1 y2 : B), (x, y1) ∈ F → (x, y2) ∈ F → y1 = y2) from h1 x
-      show f x = y from h6 (f x) y h3 h4
-      done
-    done
-  done
--/
-
 --Sum of m terms of the form f i, starting with i = k
 def sum_seq {A : Type} [AddZeroClass A] (m k : Nat) (f : Nat → A) : A :=
   match m with
@@ -1168,16 +1046,6 @@ def sum_seq {A : Type} [AddZeroClass A] (m k : Nat) (f : Nat → A) : A :=
 
 def sum_from_to {A : Type} [AddZeroClass A] (k n : Nat) (f : Nat → A) : A :=
   sum_seq (n + 1 - k) k f
-
-/- Old versions
-def sum_less {A : Type} [AddZeroClass A] (m : Nat) (f : Nat → A) : A :=
-  match m with
-    | 0 => 0
-    | n + 1 => sum_less n f + f n
-
-def sum_from_to {A : Type} [AddZeroClass A] (k n : Nat) (f : Nat → A) : A :=
-  sum_less (n + 1 - k) (fun (j : Nat) => f (k + j))
--/
 
 syntax (name := sumFromTo) "Sum " ident " from " term " to " term ", " term:51 : term
 macro_rules (kind := sumFromTo)
@@ -1223,67 +1091,3 @@ theorem sum_empty {A : Type} [AddZeroClass A] {k n : Nat} {f : Nat → A}
   rewrite [h2]
   rfl
   done
-
-/-
-def prod_terms_from {A : Type} [MulOneClass A] (m k : Nat) (f : Nat → A) : A :=
-  match m with
-    | 0 => 1
-    | n + 1 => prod_terms_from n k f * f (k + n)
-
-def prod_from_to {A : Type} [MulOneClass A] (k n : Nat) (f : Nat → A) : A :=
-  prod_terms_from (n + 1 - k) k f
-
-/- Old versions
-def prod_less {A : Type} [MulOneClass A] (m : Nat) (f : Nat → A) : A :=
-  match m with
-    | 0 => 1
-    | n + 1 => prod_less n f * f n
-
-def prod_from_to {A : Type} [MulOneClass A] (k n : Nat) (f : Nat → A) : A :=
-  prod_less (n + 1 - k) (fun (j : Nat) => f (k + j))
--/
-
-syntax (name := prodFromTo) "Prod " ident " from " term " to " term ", " term:51 : term
-macro_rules (kind := prodFromTo)
-  | `(Prod $i from $k to $n, $p) => `(prod_from_to $k $n (fun $i => $p))
-
-@[app_unexpander prod_from_to] def unexpandProdFromTo : Lean.PrettyPrinter.Unexpander
-  | `($_ $k:term $n:term fun $i:ident => $b) => `(Prod $i from $k to $n, $b)
-  | `($_ $k:term $n:term fun ($i:ident : $_) => $b) => `(Prod $i from $k to $n, $b)
-  | _ => throw ()
-
-theorem prod_base {A : Type} [MulOneClass A] {k : Nat} {f : Nat → A} :
-    Prod i from k to k, f i = f k := by
-  define : Prod i from k to k, f i
-  rewrite [Nat.add_sub_cancel_left]
-  unfold prod_terms_from; unfold prod_terms_from
-  rewrite [one_mul, add_zero]
-  rfl
-  done
- 
-theorem prod_step {A : Type} [MulOneClass A] {k n : Nat} {f : Nat → A}
-    (h : k ≤ n) : Prod i from k to (n + 1), f i = (Prod i from k to n, f i) * f (n + 1) := by
-  define : Prod i from k to (n+1), f i
-  obtain j h1 from Nat.le.dest h
-  have h2 : n + 1 + 1 - k = n + 1 - k + 1 := by
-    rewrite [←h1, add_assoc, add_assoc, Nat.add_sub_cancel_left, add_assoc, Nat.add_sub_cancel_left, add_assoc]
-    rfl
-  have h3 : f (n + 1) = f (k + (n + 1 - k)) := by
-    rewrite [←h1, add_assoc, Nat.add_sub_cancel_left]
-    rfl
-  rewrite [h2, h3]
-  rfl
-  done
-
-theorem prod_from_zero_step {A : Type} [MulOneClass A] {n : Nat} {f : Nat → A} :
-    Prod i from 0 to (n + 1), f i = (Prod i from 0 to n, f i) * f (n + 1) :=
-  prod_step (Nat.zero_le n)
-
-theorem prod_empty {A : Type} [MulOneClass A] {k n : Nat} {f : Nat → A}
-    (h : n < k) : Prod i from k to n, f i = 1 := by
-  define : Prod i from k to n, f i
-  have h2 : n + 1 - k = 0 := Nat.sub_eq_zero_of_le h
-  rewrite [h2]
-  rfl
-  done
--/

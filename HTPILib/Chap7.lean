@@ -400,26 +400,27 @@ lemma list_elt_dvd_prod_by_length (a : Nat) : ∀ (n : Nat),
     fix n : Nat
     assume ih : ∀ (l : List Nat), List.length l = n → a ∈ l → a ∣ prod l
     fix l : List Nat
-    assume h1 : l.length = n + 1
+    assume h1 : l.length = n + 1            --Goal : a ∈ l → a ∣ prod l
     obtain (b : Nat) (h2 : ∃ (L : List Nat),
       l = b :: L ∧ L.length = n) from exists_cons_of_length_eq_succ h1
     obtain (L : List Nat) (h3 : l = b :: L ∧ L.length = n) from h2
-    assume h4 : a ∈ l
+    have h4 : a ∈ L → a ∣ prod L := ih L h3.right
+    assume h5 : a ∈ l
     rewrite [h3.left, prod_cons]            --Goal : a ∣ b * prod L
-    rewrite [h3.left, List.mem_cons] at h4  --h4 : a = b ∨ a ∈ L
-    by_cases on h4
-    · -- Case 1. h4 : a = b
+    rewrite [h3.left, List.mem_cons] at h5  --h5 : a = b ∨ a ∈ L
+    by_cases on h5
+    · -- Case 1. h5 : a = b
       apply Exists.intro (prod L)
-      rewrite [h4]
+      rewrite [h5]
       rfl
       done
-    · -- Case 2. h4 : a ∈ L
-      have h5 : a ∣ prod L := ih L h3.right h4
-      have h6 : prod L ∣ b * prod L := by
+    · -- Case 2. h5 : a ∈ L
+      have h6 : a ∣ prod L := h4 h5
+      have h7 : prod L ∣ b * prod L := by
         apply Exists.intro b
         ring
         done
-      show a ∣ b * prod L from dvd_trans h5 h6
+      show a ∣ b * prod L from dvd_trans h6 h7
       done
     done
   done
