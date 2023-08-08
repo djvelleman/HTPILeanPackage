@@ -452,7 +452,7 @@ lemma enum_not_skip {A : Set Nat} : ∀ ⦃m s : Nat⦄, num_elts_below A m s �
       done
     · -- Case 2. h2 : m ∉ A
       rewrite [neb_step_not_elt h2] at h1
-      exact ih h1
+      show ∀ (t : Nat), t < s → ∃ (n : Nat), enum A t n from ih h1
       done
     done
   done
@@ -1223,7 +1223,7 @@ theorem Theorem_8_2_1_1 {U V : Type} {A : Set U} {B : Set V}
     show p ∈ Univ (Nat × Nat) from elt_Univ p
     done
   have h7 : ctble (Univ (Nat × Nat)) := by
-    define       --Goal : finite (Univ (ℕ × ℕ)) ∨ denum (Univ (ℕ × ℕ))
+    define   --Goal : finite (Univ (Nat × Nat)) ∨ denum (Univ (Nat × Nat))
     apply Or.inr
     rewrite [denum_def]
     show Univ Nat ∼ Univ (Nat × Nat) from Theorem_8_1_3_2 NxN_equinum_N
@@ -1475,7 +1475,7 @@ theorem Cantor's_theorem : ¬ctble (Univ (Set Nat)) := by
   by_contra h1
   rewrite [Theorem_8_1_5_2] at h1
   obtain (R : Rel Nat (Set Nat))
-    (h2 : fcnl_onto_from_nat R (Univ (Set ℕ))) from h1
+    (h2 : fcnl_onto_from_nat R (Univ (Set Nat))) from h1
   define at h2
   have h3 : unique_val_on_N R := h2.left
   have h4 : nat_rel_onto R (Univ (Set Nat)) := h2.right
@@ -1496,7 +1496,7 @@ theorem Cantor's_theorem : ¬ctble (Univ (Set Nat)) := by
   · -- Case 2. h7 : n ∉ D
     contradict h7
     define
-    show ∃ (X : Set ℕ), R n X ∧ ¬n ∈ X from
+    show ∃ (X : Set Nat), R n X ∧ ¬n ∈ X from
       Exists.intro D (And.intro h6 h7)
     done
   done
@@ -1673,7 +1673,7 @@ theorem Cantor_Schroeder_Bernstein_theorem
           rewrite [h11] at h10
           apply And.intro _ h10.left
           define
-          show ∃ (n : ℕ), a ∈ rep_common_image R S X0 n from
+          show ∃ (n : Nat), a ∈ rep_common_image R S X0 n from
             Exists.intro m h9.left
           done
         · -- Case 2. h5 : ¬c ∈ X

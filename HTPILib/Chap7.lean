@@ -909,13 +909,12 @@ lemma cc_nat_zero_iff_dvd (m k : Nat) : [k]_m = [0]_m ↔ m ∣ k :=
   match m with
     | 0 => by
       have h : (0 : Int) = (↑(0 : Nat) : Int) := by rfl
-      rewrite [cc_mod_0, cc_mod_0, h, @Nat.cast_inj Int]
+      rewrite [cc_mod_0, cc_mod_0, h, Nat.cast_inj]
       apply Iff.intro
       · -- (→)
         assume h1 : k = 0
         rewrite [h1]
-        apply Exists.intro 0
-        norm_num
+        show 0 ∣ 0 from dvd_self 0
         done
       · -- (←)
         assume h1 : 0 ∣ k
@@ -1262,7 +1261,6 @@ lemma FG_prod {m a : Nat} (h1 : rel_prime m a) :
     done
   done
 
---Permuting a product of congruence classes doesn't change product
 lemma G_maps_below (m a : Nat) [NeZero m] : maps_below m (G m a) := by
   define             --Goal : ∀ (i : Nat), i < m → G m a i < m
   fix i : Nat
@@ -1287,7 +1285,7 @@ lemma right_inv_onto_below {n : Nat} {g g' : Nat → Nat}
 lemma cc_mul_inv_mod_eq_one {m a : Nat} [NeZero m] (h1 : rel_prime m a) :
     [a]_m * [inv_mod m a]_m = [1]_m := by
   have h2 : 0 ≤ (gcd_c2 m a) % m := mod_nonneg m (gcd_c2 m a)
-  exact
+  show [a]_m * [inv_mod m a]_m = [1]_m from
     calc [a]_m * [inv_mod m a]_m
       _ = [a]_m * [Int.toNat ((gcd_c2 m a) % m)]_m := by rfl
       _ = [a]_m * [(gcd_c2 m a) % m]_m := by rw [Int.toNat_of_nonneg h2]
@@ -1313,7 +1311,7 @@ lemma mul_inv_mod_cancel {m a i : Nat} [NeZero m]
     (h1 : rel_prime m a) (h2 : i < m) : a * (inv_mod m a) * i % m = i := by
   have h3 : [a]_m * [inv_mod m a]_m = [1]_m := cc_mul_inv_mod_eq_one h1
   rewrite [mul_class, cc_eq_iff_congr, ←Nat.cast_mul, ←Nat.cast_one, congr_iff_mod_eq_Nat] at h3
-  exact
+  show a * inv_mod m a * i % m = i from
     calc a * (inv_mod m a) * i % m
       _ = (a * inv_mod m a) % m * i % m := by rw [mod_mul_mod_eq_mul_mod]
       _ = 1 % m * i % m := by rw [h3]
@@ -1326,9 +1324,9 @@ lemma Ginv_def {m a i : Nat} : Ginv m a i = G m (inv_mod m a) i := by rfl
 
 lemma Ginv_right_inv {m a : Nat} [NeZero m] (h1 : rel_prime m a) :
     ∀ i < m, G m a (Ginv m a i) = i := by
-  fix i
-  assume h2
-  exact
+  fix i : Nat
+  assume h2 : i < m
+  show G m a (Ginv m a i) = i from
     calc G m a (Ginv m a i)
       _ = a * ((inv_mod m a * i) % m) % m := by rfl
       _ = a * (inv_mod m a * i) % m := by rw [mul_mod_mod_eq_mul_mod]
@@ -1338,9 +1336,9 @@ lemma Ginv_right_inv {m a : Nat} [NeZero m] (h1 : rel_prime m a) :
 
 lemma Ginv_left_inv {m a : Nat} [NeZero m] (h1 : rel_prime m a) :
     ∀ i < m, Ginv m a (G m a i) = i := by
-  fix i
-  assume h2
-  exact
+  fix i : Nat
+  assume h2 : i < m
+  show Ginv m a (G m a i) = i from
     calc Ginv m a (G m a i)
       _ = inv_mod m a * ((a * i) % m) % m := by rfl
       _ = inv_mod m a * (a * i) % m := by rw [mul_mod_mod_eq_mul_mod]
@@ -1363,6 +1361,7 @@ lemma G_perm_below {m a : Nat} [NeZero m] (h1 : rel_prime m a) :
     perm_below m (G m a) := And.intro (G_maps_below m a)
   (And.intro (G_one_one_below h1) (G_onto_below h1))
 
+--Permuting a product of congruence classes doesn't change product
 lemma swap_fst (u v : Nat) : swap u v u = v := by
   define : swap u v u
     --Goal : (if u = u then v else if u = v then u else u) = v
@@ -1376,7 +1375,7 @@ lemma swap_snd (u v : Nat) : swap u v v = u := by
   by_cases h1 : v = u
   · -- Case 1. h1 : v = u
     rewrite [if_pos h1]
-    exact h1
+    show v = u from h1
     done
   · -- Case 2. h1 : v ≠ u
     rewrite [if_neg h1]
@@ -1397,7 +1396,7 @@ lemma swap_values (u v i : Nat) : swap u v i = v ∨ swap u v i = u ∨ swap u v
   · -- Case 1. h1 : i = u
     apply Or.inl
     rewrite [h1]
-    exact swap_fst u v
+    show swap u v u = v from swap_fst u v
     done
   · -- Case 2. h1 : i ≠ u
     apply Or.inr
@@ -1405,41 +1404,41 @@ lemma swap_values (u v i : Nat) : swap u v i = v ∨ swap u v i = u ∨ swap u v
     · -- Case 2.1. h2 : i = v
       apply Or.inl
       rewrite [h2]
-      exact swap_snd u v
+      show swap u v v = u from swap_snd u v
       done
     · -- Case 2.2. h2 : i ≠ v
       apply Or.inr
-      exact swap_other h1 h2
+      show swap u v i = i from swap_other h1 h2
       done
     done
   done
 
 lemma swap_maps_below {u v n : Nat} (h1 : u < n) (h2 : v < n) : maps_below n (swap u v) := by
   define
-  fix i
-  assume h3
-  have h4 := swap_values u v i
+  fix i : Nat
+  assume h3 : i < n
+  have h4 : swap u v i = v ∨ swap u v i = u ∨ swap u v i = i := swap_values u v i
   by_cases on h4
   · -- Case 1. h4 : swap u v i = v
     rewrite [h4]
-    exact h2
+    show v < n from h2
     done
   · -- Case 2.
     by_cases on h4
     · -- Case 2.1. h4 : swap u v i = u
       rewrite [h4]
-      exact h1
+      show u < n from h1
       done
     · -- Case 2.2. h4 : swap u v i = i
       rewrite [h4]
-      exact h3
+      show i < n from h3
       done
     done
   done
 
 lemma swap_swap (u v n : Nat) : ∀ i < n, swap u v (swap u v i) = i := by
-  fix i
-  assume h
+  fix i : Nat
+  assume h : i < n
   by_cases h1 : i = u
   · -- Case 1. h1 : i = u
     rewrite [h1, swap_fst, swap_snd]
@@ -1473,7 +1472,7 @@ lemma comp_perm_below {n : Nat} {f g : Nat → Nat}
 
 lemma trivial_swap (u : Nat) : swap u u = id := by
   apply funext
-  fix x
+  fix x : Nat
   by_cases h1 : x = u
   · -- Case 1. h1 : x = u
     rewrite [h1, swap_fst]
@@ -1490,21 +1489,21 @@ lemma prod_eq_fun {m : Nat} (f g : Nat → ZMod m) (k : Nat) :
       prod_seq n k f = prod_seq n k g := by
   by_induc
   · -- Base Case
-    assume h
+    assume h : (∀ (i : Nat), i < 0 → f (k + i) = g (k + i))
     rewrite [prod_seq_base, prod_seq_base]
     rfl
     done
   · -- Induction Step
-    fix n
-    assume ih
-    assume h1
+    fix n : Nat
+    assume ih : (∀ (i : Nat), i < n → f (k + i) = g (k + i)) → prod_seq n k f = prod_seq n k g
+    assume h1 : ∀ (i : Nat), i < n + 1 → f (k + i) = g (k + i)
     have h2 : ∀ (i : Nat), i < n → f (k + i) = g (k + i) := by
-      fix i
-      assume h2
+      fix i : Nat
+      assume h2 : i < n
       have h3 : i < n + 1 := by linarith
-      exact h1 i h3
+      show f (k + i) = g (k + i) from h1 i h3
       done
-    have h3 := ih h2
+    have h3 : prod_seq n k f = prod_seq n k g := ih h2
     have h4 : n < n + 1 := Nat.lt_succ_self n
     rewrite [prod_seq_step, prod_seq_step, h3, h1 n h4]
     rfl
@@ -1514,27 +1513,29 @@ lemma prod_eq_fun {m : Nat} (f g : Nat → ZMod m) (k : Nat) :
 lemma swap_prod_eq_prod_below {m u n : Nat} (f : Nat → ZMod m)
     (h1 : u ≤ n) : prod_seq u 0 (f ∘ swap u n) = prod_seq u 0 f := by
   have h2 : ∀ (i : Nat), i < u → (f ∘ swap u n) (0 + i) = f (0 + i) := by
-    fix i
-    assume h2
+    fix i : Nat
+    assume h2 : i < u
     have h3 : 0 + i ≠ u := by linarith
     have h4 : 0 + i ≠ n := by linarith
     rewrite [comp_def, swap_other h3 h4]
     rfl
     done
-  exact prod_eq_fun (f ∘ swap u n) f 0 u h2
+  show prod_seq u 0 (f ∘ swap u n) = prod_seq u 0 f from
+    prod_eq_fun (f ∘ swap u n) f 0 u h2
   done
 
 lemma swap_prod_eq_prod_between {m u j n : Nat} (f : Nat → ZMod m)
     (h1 : n = u + 1 + j) : prod_seq j (u + 1) (f ∘ swap u n) =
       prod_seq j (u + 1) f := by
   have h2 : ∀ i < j, (f ∘ swap u n) (u + 1 + i) = f (u + 1 + i) := by
-    fix i
-    assume h2
+    fix i : Nat
+    assume h2 : i < j
     have h3 : u + 1 + i ≠ u := by linarith
     have h4 : u + 1 + i ≠ n := by linarith
     rewrite [comp_def, swap_other h3 h4]
     rfl
-  exact prod_eq_fun (f ∘ swap u n) f (u + 1) j h2
+  show prod_seq j (u + 1) (f ∘ swap u n) = prod_seq j (u + 1) f from
+    prod_eq_fun (f ∘ swap u n) f (u + 1) j h2
   done
 
 lemma break_prod {m : Nat} (n : Nat) (f : Nat → ZMod m) :
@@ -1546,8 +1547,8 @@ lemma break_prod {m : Nat} (n : Nat) (f : Nat → ZMod m) :
     rfl
     done
   · -- Induction Step
-    fix j
-    assume ih
+    fix j : Nat
+    assume ih : prod_seq (n + j) 0 f = prod_seq n 0 f * prod_seq j n f
     rewrite [←add_assoc, prod_seq_zero_step, prod_seq_step, ih, mul_assoc]
     rfl
     done
@@ -1556,14 +1557,17 @@ lemma break_prod {m : Nat} (n : Nat) (f : Nat → ZMod m) :
 lemma break_prod_twice  {m u j n : Nat} (f : Nat → ZMod m)
     (h1 : n = u + 1 + j) : prod_seq (n + 1) 0 f =
       prod_seq u 0 f * f u * prod_seq j (u + 1) f * f n := by
-  have h2 := break_prod n f 1
+  have h2 : prod_seq (n + 1) 0 f = prod_seq n 0 f * prod_seq 1 n f :=
+    break_prod n f 1
   rewrite [prod_one] at h2
-  have h3 := break_prod (u + 1) f j
+  have h3 : prod_seq (u + 1 + j) 0 f = prod_seq (u + 1) 0 f * prod_seq j (u + 1) f :=
+    break_prod (u + 1) f j
   rewrite [←h1] at h3
-  have h4 := break_prod u f 1
+  have h4 : prod_seq (u + 1) 0 f = prod_seq u 0 f * prod_seq 1 u f :=
+    break_prod u f 1
   rewrite [prod_one] at h4
   rewrite [h3, h4] at h2
-  exact h2
+  show prod_seq (n + 1) 0 f = prod_seq u 0 f * f u * prod_seq j (u + 1) f * f n from h2
   done
 
 lemma swap_prod_eq_prod {m u n : Nat} (f : Nat → ZMod m) (h1 : u ≤ n) :
