@@ -1,3 +1,5 @@
+/- Copyright 2023 Daniel J. Velleman -/
+
 import Lean.Elab.Tactic
 import Mathlib.Tactic
 import Mathlib.Data.Set.Basic

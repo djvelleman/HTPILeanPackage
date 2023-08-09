@@ -1,3 +1,5 @@
+/- Copyright 2023 Daniel J. Velleman -/
+
 import Chap5
 namespace HTPI
 set_option pp.funBinderTypes true
