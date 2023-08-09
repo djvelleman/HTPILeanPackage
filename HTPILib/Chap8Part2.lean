@@ -511,10 +511,10 @@ lemma bdd_subset_nat_match {A : Set Nat} {m s : Nat}
     apply And.intro _ h3.left
     define
     have h5 : n < m := h1 n h3.left
-    have h6 : m ≥ n + 1 := by linarith
+    have h6 : m ≥ n + 1 := h5
     show t < s from h4 h6 h2
     done
-  · -- Proof of fcn_ons
+  · -- Proof of fcnl_ons
     apply And.intro
     · -- proof of fcnl_on (enum A)
       define
