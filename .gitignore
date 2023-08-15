@@ -1,11 +1,4 @@
 /build
 /lake-packages/*
-test.lean
-EquivTests.lean
-RemovedFromHTPIDefs.lean
-FiniteSetsPairs.lean
-FiniteSetsFunc.lean
 .DS_Store
 /HTPILib/.DS_Store
-TalkExamples.lean
-Chap7Unused.lean
