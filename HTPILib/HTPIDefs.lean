@@ -266,56 +266,68 @@ If rep = true, unfold repeatedly.
 Let whnfCore handle everything except unfolding of constants.
 Do all normalization up to first unfolding of a definition; on next call do that unfolding
 -/
-partial def unfoldHead (e : Expr) (tac : Name) (first rep : Bool) : TacticM Expr := do
+
+--Unfold if possible, else return (consumeMDate input)
+partial def unfoldHeadCore (e : Expr) (tac : Name) (first rep : Bool) : TacticM Expr := do
   let e1 := consumeMData e
+  match e1 with  --Don't unfold { x | p } if not applied to anything
+    | (app (app (const ``setOf _) _) _) => return e1
+    | _ => pure ()
   let (h, args) := getHeadData e1
-  -- First let e2 = result of one unfolding, or handle negation, or fail
+  -- First let e2 = result of one unfolding, or handle negation, or return e1
   let e2 ← match h with
     | const c levs =>
       match (c, levs, args) with
-        | (``Not, _, [l]) => return mkNot (← unfoldHead l tac first rep) --Return from function call, bypassing e2
+        | (``Not, _, [l]) => return mkNot (← unfoldHeadCore l tac first rep) --Return from function call, bypassing e2
         | (``ExistsUnique, [lev], [r, l]) =>
           if first then
             pure (applyToExData unfoldExUn lev l r)
           else
-            myFail tac "failed to unfold definition"
+            return e1
         | _ => 
           if !first then
             if c ∈ dontUnfold then
-              myFail tac "failed to unfold definition"
+              return e1
             if c ∈ dontUnfoldNum then
               match args[3]! with
-                | const nc _ => if nc ∈ numNames then myFail tac "failed to unfold definition"
+                | const nc _ => if nc ∈ numNames then return e1
                 | _ => pure ()
           let edo ← Meta.unfoldDefinition? e1
           match edo with
             | some ed => pure ed
-            | none => myFail tac "failed to unfold definition"
+            | none => return e1
     | _ =>
       let ew ← Meta.whnfCore e1
       if ew == e1 then
-        myFail tac "failed to unfold definition"
+        return e1
       else
         pure ew
   if rep then
-    let e3 ← try
-        unfoldHead e2 tac false true
-      catch _ =>
-        pure e2
-    match e1 with
-      | (app (app (app (app (app (const ``Membership.mem _) _) (app (const ``Set _) _)) _) x) y) =>
-        if (e3 == app y x) then
-          myFail tac "failed to unfold definition"  --Don't unfold `x ∈ y` to `y x`
-        else
-          return e3
-      | (app (app (const ``setOf _) _) f) => 
-        if (e3 == f) then
-          myFail tac "failed to unfold definition"  --Don't unfold `{ x | p }` to `fun x => p`
-        else
-          return e3
-      | _ => return e3
+    unfoldHeadCore e2 tac false true
   else
     return e2
+  
+def unfoldHead (e : Expr) (tac : Name) (first rep : Bool) : TacticM Expr := do
+  let e1 := consumeMData e
+  let e2 ← unfoldHeadCore e1 tac first rep
+  let result ←
+    if rep then
+      match e2 with  --if result of repeated unfolding is "set elt", change to "elt ∈ set"
+        | app st elt =>
+          let tp ← Meta.inferType st
+          match tp with
+            | app (const ``Set [lev]) t =>
+              pure (app (app (app (app (app (const ``Membership.mem [lev, lev]) t)
+                (app (const ``Set [lev]) t))
+                (app (const ``Set.instMembershipSet [lev]) t)) elt) st)
+            | _ => pure e2
+        | _ => pure e2
+    else
+      pure e2
+  if result == e1 then
+    myFail tac "failed to unfold definition"
+  else
+    return result
 
 -- whnf, but don't unfold ``ExistsUnique
 def whnfNotExUn (e : Expr) : TacticM Expr :=
