@@ -211,7 +211,7 @@ def applyToExData {α : Type} (f : Level → Name → Expr → Expr → BinderIn
     | _ => f lev `x l (mkApp r' (bvar 0)) BinderInfo.default
 
 -- Get logical form of a proposition.
--- Recognizes negative predicates by one of two methods from above.
+-- Recognizes negative predicates by findNegPropAll.
 def getPropForm (e : Expr) : TacticM PropForm := do
   if !(← exprIsProp e) then return PropForm.none
   let (h, args) := getHeadData e
@@ -226,7 +226,7 @@ def getPropForm (e : Expr) : TacticM PropForm := do
         | (``Iff, _, [r, l]) => return PropForm.iff l r
         | (``Exists, [lev], [r, l]) => return applyToExData PropForm.ex lev l r
         | (``ExistsUnique, [lev], [r, l]) => return applyToExData PropForm.exun lev l r
-        | _ => findNegPropAll e     --or:  return findNegPropList c levs args
+        | _ => findNegPropAll e
     | forallE v t b bi =>
       if (b.hasLooseBVars || !(← exprIsProp t)) then
         return PropForm.all v t b bi
@@ -317,9 +317,12 @@ def unfoldHead (e : Expr) (tac : Name) (first rep : Bool) : TacticM Expr := do
           let tp ← Meta.inferType st
           match tp with
             | app (const ``Set [lev]) t =>
-              pure (app (app (app (app (app (const ``Membership.mem [lev, lev]) t)
-                (app (const ``Set [lev]) t))
-                (app (const ``Set.instMembershipSet [lev]) t)) elt) st)
+              pure (mkApp5 (mkConst ``Membership.mem [lev, lev])
+                t
+                (mkApp (mkConst ``Set [lev]) t)
+                (mkApp (mkConst ``Set.instMembershipSet [lev]) t)
+                elt
+                st)
             | _ => pure e2
         | _ => pure e2
     else
@@ -884,23 +887,60 @@ def parseIdOrTerm?Type (tac : Name) (it : IdOrTerm?Type) : TacticM (Term × (Opt
   checkIdUsed tac res.1.raw
   return res
 
+/- Old version
 def doIntroOption (i : Term) (t : Option Term) : TacticM Unit := do
   match t with
     | some tt => --evalTactic (← `(tactic| intro ($i : $tt)))
+      --Above fails in Chap8Part1 line 572.  Problem seems to be that
+      --{a} is not understood as a Set despite default instance declarations above.
       evalTactic (← `(tactic| intro h; match @h with | ($i : $tt) => ?_; try clear h))
+    | none => evalTactic (← `(tactic| intro $i:term))
+-/
+
+def doIntroOption (tac : Name) (i : Term) (t : Option Term) : TacticM Unit := withMainContext do
+  match t with
+    | some tt =>
+      let et ← elabTerm tt none
+      let goal ← getMainGoal
+      let h ← mkFreshUserName `h
+      let hid := mkIdent h
+      /-
+      try
+        let (fvid, goal2) ← goal.intro h
+        replaceMainGoal [goal2]
+        withMainContext do
+          let fv := mkFVar fvid
+          let fvt ← Meta.inferType fv
+          if (← Meta.isDefEq et fvt) then
+            replaceMainGoal [← goal2.replaceLocalDeclDefEq fvid et]
+            evalTactic (← `(tactic| match @$hid with | ($i : _) => ?_; try clear $hid))
+          else
+            throwError "type mismatch: {i} {← Meta.mkHasTypeButIsExpectedMsg et fvt}"
+      catch err =>
+        Meta.throwTacticEx tac goal err.toMessageData
+      -/
+      let (fvid, goal2) ← goal.intro h
+      replaceMainGoal [goal2]
+      withMainContext do
+        let fv := mkFVar fvid
+        let fvt ← Meta.inferType fv
+        if (← Meta.isDefEq et fvt) then
+          replaceMainGoal [← goal2.replaceLocalDeclDefEq fvid et]
+          evalTactic (← `(tactic| match @$hid with | ($i : _) => ?_; try clear $hid))
+        else
+          Meta.throwTacticEx tac goal m!"type mismatch: {i} {← Meta.mkHasTypeButIsExpectedMsg et fvt}"
     | none => evalTactic (← `(tactic| intro $i:term))
 
 def doObtain (itw ith : IdOrTerm?Type) (tm : Term) : TacticM Unit :=
   withMainContext do
-    --let e ← whnfNotExUn (← formFromIdent l.raw)
     let e ← exprFromPf tm 1
     match (← getPropForm e) with
       | PropForm.ex _ _ _ _ _ =>
         let (wi, wt) ← parseIdOrTerm?Type `obtain itw
         let (hi, ht) ← parseIdOrTerm?Type `obtain ith
         evalTactic (← `(tactic| refine Exists.elim $tm ?_))
-        doIntroOption wi wt
-        doIntroOption hi ht
+        doIntroOption `obtain wi wt
+        doIntroOption `obtain hi ht
       | _ => myFail `obtain "hypothesis is not an existence statement"
 
 theorem exun_elim {α : Sort u} {p : α → Prop} {b : Prop}
@@ -928,9 +968,9 @@ def doObtainExUn (itw ith1 ith2 : IdOrTerm?Type) (tm : Term) : TacticM Unit :=
         let hid := mkIdent h
         doHave h (← mkArrow exun tar) (← `(exun_elim $tm))
         evalTactic (← `(tactic| refine $hid ?_; clear $hid))
-        doIntroOption wi wt
-        doIntroOption h1i h1t
-        doIntroOption h2i h2t
+        doIntroOption `obtain wi wt
+        doIntroOption `obtain h1i h1t
+        doIntroOption `obtain h2i h2t
       | _ => myFail `obtain "hypothesis is not a unique existence statement"
 
 --Make 1 assertion for existential, 2 for unique existential
@@ -944,7 +984,7 @@ def doAssume (w : Term) (t : Option Term) : TacticM Unit :=
   withMainContext do
     checkIdUsed `assume w
     match (← getPropForm (← Meta.whnf (← getMainTarget))) with
-      | PropForm.implies _ _ => doIntroOption w t
+      | PropForm.implies _ _ => doIntroOption `assume w t
       --| PropForm.not _ => doIntroOption w t  --Not necessary--whnf will have changed to implies
       | _ => myFail `assume "goal is not a conditional statement"
 
@@ -952,7 +992,7 @@ def doFix (w : Term) (t : Option Term) : TacticM Unit :=
   withMainContext do
     checkIdUsed `fix w
     match (← getPropForm (← Meta.whnf (← getMainTarget))) with
-      | PropForm.all _ _ _ _ => doIntroOption w t
+      | PropForm.all _ _ _ _ => doIntroOption `fix w t
       | _ => myFail `fix "goal is not a universally quantified statement"
 
 elab "assume" w:term : tactic => doAssume w none
