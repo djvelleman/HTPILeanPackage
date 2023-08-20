@@ -897,6 +897,18 @@ def doIntroOption (i : Term) (t : Option Term) : TacticM Unit := do
     | none => evalTactic (← `(tactic| intro $i:term))
 -/
 
+--Imitating mkHasTypeButIsExpectedMsg
+def mkDeclaredTypeButIsExpectedMsg (decType expectedType : Expr) : MetaM MessageData := do
+  try
+    let decTypeType ← Meta.inferType decType
+    let expectedTypeType ← Meta.inferType expectedType
+    let (decType, expectedType) ← Meta.addPPExplicitToExposeDiff decType expectedType
+    let (decTypeType, expectedTypeType) ← Meta.addPPExplicitToExposeDiff decTypeType expectedTypeType
+    return m!"is declared to have type{indentD m!"{decType} : {decTypeType}"}\nbut is expected to have type{indentD m!"{expectedType} : {expectedTypeType}"}"
+  catch _ =>
+    let (decType, expectedType) ← Meta.addPPExplicitToExposeDiff decType expectedType
+    return m!"is declared to have type{indentExpr decType}\nbut is expected to have type{indentExpr expectedType}"
+
 def doIntroOption (tac : Name) (i : Term) (t : Option Term) : TacticM Unit := withMainContext do
   match t with
     | some tt =>
@@ -904,21 +916,6 @@ def doIntroOption (tac : Name) (i : Term) (t : Option Term) : TacticM Unit := wi
       let goal ← getMainGoal
       let h ← mkFreshUserName `h
       let hid := mkIdent h
-      /-
-      try
-        let (fvid, goal2) ← goal.intro h
-        replaceMainGoal [goal2]
-        withMainContext do
-          let fv := mkFVar fvid
-          let fvt ← Meta.inferType fv
-          if (← Meta.isDefEq et fvt) then
-            replaceMainGoal [← goal2.replaceLocalDeclDefEq fvid et]
-            evalTactic (← `(tactic| match @$hid with | ($i : _) => ?_; try clear $hid))
-          else
-            throwError "type mismatch: {i} {← Meta.mkHasTypeButIsExpectedMsg et fvt}"
-      catch err =>
-        Meta.throwTacticEx tac goal err.toMessageData
-      -/
       let (fvid, goal2) ← goal.intro h
       replaceMainGoal [goal2]
       withMainContext do
@@ -928,7 +925,7 @@ def doIntroOption (tac : Name) (i : Term) (t : Option Term) : TacticM Unit := wi
           replaceMainGoal [← goal2.replaceLocalDeclDefEq fvid et]
           evalTactic (← `(tactic| match @$hid with | ($i : _) => ?_; try clear $hid))
         else
-          Meta.throwTacticEx tac goal m!"type mismatch: {i} {← Meta.mkHasTypeButIsExpectedMsg et fvt}"
+          Meta.throwTacticEx tac goal m!"type mismatch: {i} {← mkDeclaredTypeButIsExpectedMsg et fvt}"
     | none => evalTactic (← `(tactic| intro $i:term))
 
 def doObtain (itw ith : IdOrTerm?Type) (tm : Term) : TacticM Unit :=
