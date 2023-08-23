@@ -160,15 +160,15 @@ lemma overlap_implies_equal {A : Type}
     ∀ X ∈ F, ∀ Y ∈ F, ∀ (x : A), x ∈ X → x ∈ Y → X = Y := sorry
 
 -- 2.
-lemma Lemma_4_5_7_ref {A : Type} (F : Set (Set A)) (h : partition F):
+lemma Lemma_4_5_7_ref {A : Type} (F : Set (Set A)) (h : partition F) :
     reflexive (EqRelFromPart F) := sorry
 
 -- 3.
-lemma Lemma_4_5_7_symm {A : Type} (F : Set (Set A)) (h : partition F):
+lemma Lemma_4_5_7_symm {A : Type} (F : Set (Set A)) (h : partition F) :
     symmetric (EqRelFromPart F) := sorry
 
 -- 4.
-lemma Lemma_4_5_7_trans {A : Type} (F : Set (Set A)) (h : partition F):
+lemma Lemma_4_5_7_trans {A : Type} (F : Set (Set A)) (h : partition F) :
     transitive (EqRelFromPart F) := sorry
 
 -- 5.
