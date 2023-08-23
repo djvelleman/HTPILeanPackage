@@ -149,7 +149,7 @@ theorem Exercise_4_4_22 {A : Type}
     B1 ⊆ B2 → R x1 x2 := sorry
 
 -- 10.
-theorem Exercise_4_4_24 (A : Type) (R : Set (A × A)) :
+theorem Exercise_4_4_24 {A : Type} (R : Set (A × A)) :
     smallestElt (sub (A × A)) (R ∪ (inv R))
     { T : Set (A × A) | R ⊆ T ∧ symmetric (RelFromExt T) } := sorry
 
