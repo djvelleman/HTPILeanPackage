@@ -312,9 +312,9 @@ theorem Theorem_3_4_7 :
       done
     done
   · -- (←)
-    assume h1
-    have h2 := h1.left
-    have h3 := h1.right
+    assume h1 : 2 ∣ n ∧ 3 ∣ n
+    have h2 : 2 ∣ n := h1.left
+    have h3 : 3 ∣ n := h1.right
     define at h2; define at h3; define
     obtain (j : Int) (h4 : n = 2 * j) from h2
     obtain (k : Int) (h5 : n = 3 * k) from h3
