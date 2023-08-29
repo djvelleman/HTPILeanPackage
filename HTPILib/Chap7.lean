@@ -1093,8 +1093,9 @@ lemma num_rp_below_step_rp {m j : Nat} (h : rel_prime m j) :
   have h1 : num_rp_below m (j + 1) =
     if gcd m j = 1 then (num_rp_below m j) + 1
     else num_rp_below m j := by rfl
-  define at h        --h : gcd m j = 1
+  define at h     --h : gcd m j = 1
   rewrite [if_pos h] at h1
+                  --h1 : num_rp_below m (j + 1) = num_rp_below m j + 1
   show num_rp_below m (j + 1) = num_rp_below m j + 1 from h1
   done
 
@@ -1103,8 +1104,9 @@ lemma num_rp_below_step_not_rp {m j : Nat} (h : ¬rel_prime m j) :
   have h1 : num_rp_below m (j +1) =
     if gcd m j = 1 then (num_rp_below m j) + 1
     else num_rp_below m j := by rfl
-  define at h        --h : ¬gcd m j = 1
+  define at h     --h : ¬gcd m j = 1
   rewrite [if_neg h] at h1
+                  --h1 : num_rp_below m (j + 1) = num_rp_below m j
   show num_rp_below m (j + 1) = num_rp_below m j from h1
   done
 
