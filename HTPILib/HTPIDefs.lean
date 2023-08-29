@@ -267,70 +267,70 @@ Let whnfCore handle everything except unfolding of constants.
 Do all normalization up to first unfolding of a definition; on next call do that unfolding
 -/
 
---Unfold if possible, else return (consumeMDate input)
-partial def unfoldHeadCore (e : Expr) (tac : Name) (first rep : Bool) : TacticM Expr := do
-  let e1 := consumeMData e
-  match e1 with  --Don't unfold { x | p } if not applied to anything
-    | (app (app (const ``setOf _) _) _) => return e1
+def fixElt (e : Expr) (doFix : Bool) : TacticM Expr := do
+  if doFix then
+    match e with  --if e is "set elt", change to "elt ∈ set"
+      | app st elt =>
+        let tp ← Meta.inferType st
+        match tp with
+          | app (const ``Set [lev]) t =>
+            return (mkApp5 (mkConst ``Membership.mem [lev, lev])
+              t
+              (mkApp (mkConst ``Set [lev]) t)
+              (mkApp (mkConst ``Set.instMembershipSet [lev]) t)
+              elt
+              st)
+          | _ => return e
+      | _ => return e
+  else
+    return e
+  
+--Unfold if possible, else return input.  Input should have no MData.
+partial def unfoldHeadCore (e : Expr) (first rep : Bool) : TacticM Expr := do
+  match e with  --Don't unfold { x | p } if not applied to anything
+    | (app (app (const ``setOf _) _) _) => return e
     | _ => pure ()
-  let (h, args) := getHeadData e1
-  -- First let e2 = result of one unfolding, or handle negation, or return e1
-  let e2 ← match h with
+  let (h, args) := getHeadData e
+  -- First let e1 = result of one unfolding, or handle negation, or return e
+  let e1 ← match h with
     | const c levs =>
       match (c, levs, args) with
-        | (``Not, _, [l]) => return mkNot (← unfoldHeadCore l tac first rep) --Return from function call, bypassing e2
+        | (``Not, _, [l]) => return mkNot (← unfoldHeadCore (consumeMData l) first rep)
         | (``ExistsUnique, [lev], [r, l]) =>
           if first then
             pure (applyToExData unfoldExUn lev l r)
           else
-            return e1
+            return e
         | _ => 
           if !first then
             if c ∈ dontUnfold then
-              return e1
+              return e
             if c ∈ dontUnfoldNum then
               match args[3]! with
-                | const nc _ => if nc ∈ numNames then return e1
+                | const nc _ => if nc ∈ numNames then return e
                 | _ => pure ()
-          let edo ← Meta.unfoldDefinition? e1
+          let edo ← Meta.unfoldDefinition? e
           match edo with
             | some ed => pure ed
-            | none => return e1
+            | none => return (← fixElt e rep)
     | _ =>
-      let ew ← Meta.whnfCore e1
-      if ew == e1 then
-        return e1
+      let ew ← Meta.whnfCore e
+      if ew == e then
+        return (← fixElt e rep)
       else
         pure ew
   if rep then
-    unfoldHeadCore e2 tac false true
+    return (← unfoldHeadCore (consumeMData e1) false true)
   else
-    return e2
+    return e1
   
 def unfoldHead (e : Expr) (tac : Name) (first rep : Bool) : TacticM Expr := do
   let e1 := consumeMData e
-  let e2 ← unfoldHeadCore e1 tac first rep
-  let result ←
-    if rep then
-      match e2 with  --if result of repeated unfolding is "set elt", change to "elt ∈ set"
-        | app st elt =>
-          let tp ← Meta.inferType st
-          match tp with
-            | app (const ``Set [lev]) t =>
-              pure (mkApp5 (mkConst ``Membership.mem [lev, lev])
-                t
-                (mkApp (mkConst ``Set [lev]) t)
-                (mkApp (mkConst ``Set.instMembershipSet [lev]) t)
-                elt
-                st)
-            | _ => pure e2
-        | _ => pure e2
-    else
-      pure e2
-  if result == e1 then
+  let e2 ← unfoldHeadCore e1 first rep
+  if e2 == e1 then
     myFail tac "failed to unfold definition"
   else
-    return result
+    return e2
 
 -- whnf, but don't unfold ``ExistsUnique
 def whnfNotExUn (e : Expr) : TacticM Expr :=

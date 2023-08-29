@@ -518,7 +518,7 @@ lemma bdd_subset_nat_match {A : Set Nat} {m s : Nat}
     done
   · -- Proof of fcnl_ons
     apply And.intro
-    · -- proof of fcnl_on (enum A)
+    · -- proof of fcnl_on (enum A) (I s)
       define
       fix t : Nat
       assume h3 : t ∈ I s
@@ -532,7 +532,7 @@ lemma bdd_subset_nat_match {A : Set Nat} {m s : Nat}
           enum_unique A t
         done
       done
-    · -- Proof of fcnl_on (invRel (enum A))
+    · -- Proof of fcnl_on (invRel (enum A)) A
       show fcnl_on (invRel (enum A)) A from inv_enum_fcnl A
       done
     done
