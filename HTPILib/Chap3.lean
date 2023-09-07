@@ -256,7 +256,7 @@ theorem Example_3_6_2 (U : Type) :
       calc C
         _ = D ∪ C := h4.symm
         _ = C ∪ D := union_comm D C
-        _ = D     := h3
+        _ = D := h3
     done
   done
 

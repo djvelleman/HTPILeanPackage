@@ -98,7 +98,7 @@ theorem Like_Example_6_1_1 :
     show (Sum i from 0 to n + 1, 2 ^ i) + 1 = 2 ^ (n + 1 + 1) from
       calc (Sum i from 0 to n + 1, 2 ^ i) + 1
         _ = (Sum i from 0 to n, 2 ^ i) + 2 ^ (n + 1) + 1 := by
-            rw [sum_from_zero_step]
+              rw [sum_from_zero_step]
         _ = (Sum i from 0 to n, 2 ^ i) + 1 + 2 ^ (n + 1) := by ring
         _ = 2 ^ (n + 1) + 2 ^ (n + 1) := by rw [ih]
         _ = 2 ^ (n + 1 + 1) := by ring
@@ -395,7 +395,7 @@ theorem Example_6_3_2 : ∀ (a : Real) (m n : Nat),
         _ = a * a ^ (m + n) := by rfl
         _ = a * (a ^ m * a ^ n) := by rw [ih]
         _ = a ^ m * (a * a ^ n) := by
-            rw [←mul_assoc, mul_comm a, mul_assoc]
+              rw [←mul_assoc, mul_comm a, mul_assoc]
         _ = a ^ m * (a ^ (n + 1)) := by rfl
     done
   done

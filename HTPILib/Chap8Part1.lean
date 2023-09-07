@@ -209,8 +209,8 @@ lemma inv_comp {U V W : Type} (R : Rel U V) (S : Rel V W) :
     invRel (compRel S R) = compRel (invRel R) (invRel S) := 
   calc invRel (compRel S R)
     _ = RelFromExt (inv (comp (extension S) (extension R))) := by rfl
-    _ = RelFromExt (comp (inv (extension R)) (inv (extension S))) :=
-        by rw [Theorem_4_2_5_5]
+    _ = RelFromExt (comp (inv (extension R)) (inv (extension S))) := by
+          rw [Theorem_4_2_5_5]
     _ = compRel (invRel R) (invRel S) := by rfl
 
 lemma comp_fcnl {U V W : Type} {R : Rel U V} {S : Rel V W}

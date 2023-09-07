@@ -544,7 +544,7 @@ theorem Theorem_7_2_2 {a b c : Nat}
       _ = (s * ↑a + t * ↑c) * ↑b := by rw [h4]
       _ = s * (↑a * ↑b) + t * ↑c * ↑b := by ring
       _ = s * (↑c * ↑j) + t * ↑c * ↑b := by
-          rw [←Nat.cast_mul a b, h3, Nat.cast_mul c j]
+            rw [←Nat.cast_mul a b, h3, Nat.cast_mul c j]
       _ = ↑c * (s * ↑j + t * ↑b) := by ring
   done
 
