@@ -144,7 +144,7 @@ theorem Exercise_6_4_7c : ∀ (n : Nat),
     Sum i from 0 to n, Fib (2 * i + 1) = Fib (2 * n + 2) := sorry
 
 -- 6.
-theorem Exercise_6_4_8a : ∀ (m n : Nat) ,
+theorem Exercise_6_4_8a : ∀ (m n : Nat),
     Fib (m + n + 1) = Fib m * Fib n + Fib (m + 1) * Fib (n + 1) := sorry
 
 -- 7.
