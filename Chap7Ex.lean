@@ -61,25 +61,30 @@ theorem rel_prime_symm {a b : Nat} (h : rel_prime a b) :
     rel_prime b a := sorry
 
 -- 5.
+lemma in_prime_factorization_iff_prime_dvd {a : Nat} {l : List Nat}
+    (h1 : prime_factorization a l) (p : Nat) :
+    p ∈ l ↔ prime p ∧ p ∣ a := sorry
+
+-- 6.
 theorem Exercise_7_2_5 {a b : Nat} {l m : List Nat}
     (h1 : prime_factorization a l) (h2 : prime_factorization b m) :
     rel_prime a b ↔ (¬∃ (p : Nat), p ∈ l ∧ p ∈ m) := sorry
 
--- 6.
+-- 7.
 theorem Exercise_7_2_6 (a b : Nat) :
     rel_prime a b ↔ ∃ (s t : Int), s * a + t * b = 1 := sorry
 
--- 7.
+-- 8.
 theorem Exercise_7_2_7 {a b a' b' : Nat}
     (h1 : rel_prime a b) (h2 : a' ∣ a) (h3 : b' ∣ b) :
     rel_prime a' b' := sorry
 
--- 8.
+-- 9.
 theorem Exercise_7_2_9
     {a b d j k : Nat} (h1 : d ≠ 0) (h2 : d = gcd a b)
     (h3 : a = j * d) (h4 : b = k * d) : rel_prime j k := sorry
 
--- 9.
+-- 10.
 theorem Exercise_7_2_17a (a b c : Nat) :
     gcd a (b * c) ∣ gcd a b * gcd a c := sorry
 
