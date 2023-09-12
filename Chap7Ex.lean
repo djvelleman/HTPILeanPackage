@@ -30,11 +30,14 @@ theorem gcd_greatest {a b d : Nat} (h1 : gcd a b ≠ 0)
     (h2 : d ∣ a) (h3 : d ∣ b) : d ≤ gcd a b := sorry
 
 -- 7.
-lemma Lemma_7_1_10a {a b : Nat} (n : Nat) (h : a ∣ b) :
-    (n * a) ∣ (n * b) := sorry
+lemma Lemma_7_1_10a {a b : Nat}
+    (n : Nat) (h : a ∣ b) : (n * a) ∣ (n * b) := sorry
 
-lemma Lemma_7_1_10b {a b : Nat} (h1 : a ∣ b) (h2 : b ∣ a) :
-    a = b := sorry
+lemma Lemma_7_1_10b {a b n : Nat}
+    (h1 : n ≠ 0) (h2 : (n * a) ∣ (n * b)) : a ∣ b := sorry
+
+lemma Lemma_7_1_10c {a b : Nat}
+    (h1 : a ∣ b) (h2 : b ∣ a) : a = b := sorry
 
 theorem Exercise_7_1_10 (a b n : Nat) :
     gcd (n * a) (n * b) = n * gcd a b := sorry
