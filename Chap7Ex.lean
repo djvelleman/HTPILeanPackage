@@ -14,8 +14,8 @@ lemma gcd_comm_lt {a b : Nat} (h : a < b) : gcd a b = gcd b a := sorry
 theorem gcd_comm (a b : Nat) : gcd a b = gcd b a := sorry
 
 -- 3.
-theorem Exercise_7_1_5 (a b d : Nat) (n : Int) (h1 : gcd a b = d) :
-    (∃ (s t : Int), s * a + t * b = n) ↔ (↑d : Int) ∣ n := sorry
+theorem Exercise_7_1_5 (a b : Nat) (n : Int) :
+    (∃ (s t : Int), s * a + t * b = n) ↔ (↑(gcd a b) : Int) ∣ n := sorry
 
 -- 4.
 theorem Exercise_7_1_6 (a b c : Nat) :
