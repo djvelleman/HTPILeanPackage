@@ -61,9 +61,9 @@ theorem rel_prime_symm {a b : Nat} (h : rel_prime a b) :
     rel_prime b a := sorry
 
 -- 5.
-lemma in_prime_factorization_iff_prime_dvd {a : Nat} {l : List Nat}
+lemma in_prime_factorization_iff_prime_factor {a : Nat} {l : List Nat}
     (h1 : prime_factorization a l) (p : Nat) :
-    p ∈ l ↔ prime p ∧ p ∣ a := sorry
+    p ∈ l ↔ prime_factor p a := sorry
 
 -- 6.
 theorem Exercise_7_2_5 {a b : Nat} {l m : List Nat}
