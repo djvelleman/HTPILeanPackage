@@ -1108,7 +1108,7 @@ lemma mod_mod_one_one_on {m n : Nat} (h1 : rel_prime m n) :
   rewrite [←congr_iff_mod_eq_Nat, ←congr_iff_mod_eq_Nat] at h5
       --h5 : ↑a1 ≡ ↑a2 (MOD m) ∧ ↑a1 ≡ ↑a2 (MOD n)
   rewrite [←Lemma_7_4_5 _ _ h1] at h5  --h5 : ↑a1 ≡ ↑a2 (MOD m * n)
-  rewrite [congr_iff_mod_eq_Nat] at h5     --h5 : a1 % (m * n) = a2 % (m * n)
+  rewrite [congr_iff_mod_eq_Nat] at h5 --h5 : a1 % (m * n) = a2 % (m * n)
   rewrite [Nat.mod_eq_of_lt h2.right, Nat.mod_eq_of_lt h3.right] at h5
   show a1 = a2 from h5
   done

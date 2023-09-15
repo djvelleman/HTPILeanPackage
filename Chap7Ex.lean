@@ -80,9 +80,9 @@ theorem Exercise_7_2_7 {a b a' b' : Nat}
     rel_prime a' b' := sorry
 
 -- 9.
-theorem Exercise_7_2_9
-    {a b d j k : Nat} (h1 : d ≠ 0) (h2 : d = gcd a b)
-    (h3 : a = j * d) (h4 : b = k * d) : rel_prime j k := sorry
+theorem Exercise_7_2_9 {a b j k : Nat}
+    (h1 : gcd a b ≠ 0) (h2 : a = j * gcd a b) (h3 : b = k * gcd a b) :
+    rel_prime j k := sorry
 
 -- 10.
 theorem Exercise_7_2_17a (a b c : Nat) :
