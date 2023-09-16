@@ -1473,16 +1473,21 @@ theorem Theorem_8_2_4 {U : Type} {A : Set U}
   show ctble (⋃₀ sbl_set A) from Theorem_8_2_2 h2 h3
   done
 
-theorem Cantor's_theorem : ¬ctble (Univ (Set Nat)) := by
+theorem Cantor's_theorem : ¬ctble (𝒫 (Univ Nat)) := by
   by_contra h1
   rewrite [Theorem_8_1_5_2] at h1
   obtain (R : Rel Nat (Set Nat))
-    (h2 : fcnl_onto_from_nat R (Univ (Set Nat))) from h1
+    (h2 : fcnl_onto_from_nat R (𝒫 (Univ Nat))) from h1
   define at h2
   have h3 : unique_val_on_N R := h2.left
-  have h4 : nat_rel_onto R (Univ (Set Nat)) := h2.right
+  have h4 : nat_rel_onto R (𝒫 (Univ Nat)) := h2.right
   set D : Set Nat := { n : Nat | ∃ (X : Set Nat), R n X ∧ n ∉ X }
-  have h5 : D ∈ Univ (Set Nat) := elt_Univ D
+  have h5 : D ∈ 𝒫 (Univ Nat) := by
+    define
+    fix n : Nat
+    assume h5 : n ∈ D
+    show n ∈ Univ Nat from elt_Univ n
+    done
   define at h4
   obtain (n : Nat) (h6 : R n D) from h4 h5
   by_cases h7 : n ∈ D
