@@ -1473,6 +1473,13 @@ theorem Theorem_8_2_4 {U : Type} {A : Set U}
   show ctble (⋃₀ sbl_set A) from Theorem_8_2_2 h2 h3
   done
 
+lemma set_elt_powerset_univ {U : Type} (A : Set U) :
+    A ∈ 𝒫 (Univ U) := by
+  fix x : U
+  assume h : x ∈ A
+  show x ∈ Univ U from elt_Univ x
+  done
+
 theorem Cantor's_theorem : ¬ctble (𝒫 (Univ Nat)) := by
   by_contra h1
   rewrite [Theorem_8_1_5_2] at h1
@@ -1482,12 +1489,7 @@ theorem Cantor's_theorem : ¬ctble (𝒫 (Univ Nat)) := by
   have h3 : unique_val_on_N R := h2.left
   have h4 : nat_rel_onto R (𝒫 (Univ Nat)) := h2.right
   set D : Set Nat := { n : Nat | ∃ (X : Set Nat), R n X ∧ n ∉ X }
-  have h5 : D ∈ 𝒫 (Univ Nat) := by
-    define
-    fix n : Nat
-    assume h5 : n ∈ D
-    show n ∈ Univ Nat from elt_Univ n
-    done
+  have h5 : D ∈ 𝒫 (Univ Nat) := set_elt_powerset_univ D
   define at h4
   obtain (n : Nat) (h6 : R n D) from h4 h5
   by_cases h7 : n ∈ D
