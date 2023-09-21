@@ -218,7 +218,7 @@ theorem EqRel_Nat_equinum_sub_PN :
 theorem saz_pair_part (X : Set Nat) : partition (saz_pair X) := sorry
 
 -- 7.
-theorem PN_equinum_sub_EqRel_Nat :
+theorem sub_EqRel_Nat_equinum_PN :
     ∃ (C : Set (BinRel Nat)), C ⊆ EqRel Nat ∧ C ∼ 𝒫 (Univ Nat) := sorry
 
 -- 8.
