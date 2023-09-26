@@ -110,8 +110,8 @@ theorem Exercise_7_3_4b {m : Nat} (X Y1 Y2 : ZMod m)
     (h1 : X + Y1 = [0]_m) (h2 : X + Y2 = [0]_m) : Y1 = Y2 := sorry
 
 -- 6.
-theorem Theorem_7_3_10 (m a d : Nat) (b : Int) (h1 : d = gcd m a) :
-    ¬(↑d : Int) ∣ b → ¬∃ (x : Int), a * x ≡ b (MOD m) := sorry
+theorem Theorem_7_3_10 (m a : Nat) (b : Int) :
+    ¬(↑(gcd m a) : Int) ∣ b → ¬∃ (x : Int), a * x ≡ b (MOD m) := sorry
 
 -- 7.
 theorem Theorem_7_3_11 (m n : Nat) (a b : Int) (h1 : n ≠ 0) :
