@@ -2,8 +2,6 @@
 
 import HTPILib.Chap5
 namespace HTPI
-set_option pp.funBinderTypes true
-set_option linter.unusedVariables false
 
 /- Definitions -/
 def invRel {U V : Type} (R : Rel U V) : Rel V U :=

@@ -2,8 +2,6 @@
 
 import HTPILib.Chap7
 namespace HTPI
-set_option pp.funBinderTypes true
-set_option linter.unusedVariables false
 
 /- Definiitons -/
 def fnz (n : Nat) : Int := if 2 ∣ n then ↑(n / 2) else -↑((n + 1) / 2)

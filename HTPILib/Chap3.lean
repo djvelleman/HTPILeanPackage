@@ -2,8 +2,6 @@
 
 import HTPILib.IntroLean
 namespace HTPI
-set_option pp.funBinderTypes true
-set_option linter.unusedVariables false
 
 /- Definitions -/
 def even (n : Int) : Prop := ∃ (k : Int), n = 2 * k

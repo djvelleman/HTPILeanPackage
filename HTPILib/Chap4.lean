@@ -2,8 +2,6 @@
 
 import HTPILib.Chap3
 namespace HTPI
-set_option pp.funBinderTypes true
-set_option linter.unusedVariables false
 
 /- Definitions -/
 def Dom {A B : Type} (R : Set (A × B)) : Set A :=

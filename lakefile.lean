@@ -2,7 +2,10 @@ import Lake
 open Lake DSL
 
 package htpi {
-  -- add package configuration options here
+  moreServerArgs := #[
+    "-Dlinter.unusedVariables=false", -- ignores unused variables
+    "-Dpp.funBinderTypes=true"  -- shows types of bound variables
+  ]
 }
 
 require mathlib from git
@@ -10,5 +13,8 @@ require mathlib from git
 
 @[default_target]
 lean_lib HTPILib {
-  -- add library configuration options here
+  moreLeanArgs := #[
+    "-Dlinter.unusedVariables=false", -- ignores unused variables
+    "-Dpp.funBinderTypes=true"  -- shows types of bound variables
+  ]
 }

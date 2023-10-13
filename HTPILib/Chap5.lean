@@ -2,8 +2,6 @@
 
 import HTPILib.Chap4
 namespace HTPI
-set_option pp.funBinderTypes true
-set_option linter.unusedVariables false
 
 /- Definitions -/
 def graph {A B : Type} (f : A → B) : Set (A × B) :=

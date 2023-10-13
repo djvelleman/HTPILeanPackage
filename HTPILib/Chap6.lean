@@ -2,8 +2,6 @@
 
 import HTPILib.Chap8Part1
 namespace HTPI
-set_option pp.funBinderTypes true
-set_option linter.unusedVariables false
 
 /- Definitions and theorems in Chap8Part1 and HTPIDefs
 

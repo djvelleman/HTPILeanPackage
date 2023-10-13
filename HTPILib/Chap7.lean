@@ -2,8 +2,6 @@
 
 import HTPILib.Chap6
 namespace HTPI
-set_option pp.funBinderTypes true
-set_option linter.unusedVariables false
 
 /- Definitions -/
 lemma mod_succ_lt (a n : Nat) : a % (n + 1) < n + 1 := by

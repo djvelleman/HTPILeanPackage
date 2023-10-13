@@ -2,8 +2,6 @@
 
 import HTPILib.HTPIDefs
 namespace HTPI
-set_option pp.funBinderTypes true
-set_option linter.unusedVariables false
 
 theorem Example_3_2_4
     (P Q R : Prop) (h : P → (Q → R)) : ¬R → (P → ¬Q) := by
