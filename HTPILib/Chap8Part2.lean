@@ -3,7 +3,7 @@
 import HTPILib.Chap7
 namespace HTPI
 
-/- Definiitons -/
+/- Definitions -/
 def fnz (n : Nat) : Int := if 2 ∣ n then ↑(n / 2) else -↑((n + 1) / 2)
 
 def fzn (a : Int) : Nat := if a ≥ 0 then 2 * Int.toNat a else 2 * Int.toNat (-a) - 1
