@@ -2,7 +2,5 @@
     "workbench.colorTheme": "Visual Studio Light",
     "editor.semanticHighlighting.enabled": true,
     "editor.minimap.enabled": false,
-    "editor.rulers": [100],
     "lean4.infoview.showExpectedType": false,
-    "lean4.infoview.emphasizeFirstGoal": true,
 }
