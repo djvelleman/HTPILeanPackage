@@ -6,4 +6,4 @@ vscode:
     - leanprover.lean4
 
 tasks:
-  - init: lake exe cache get
+  - init: lake exe cache get && lake build
