@@ -249,7 +249,7 @@ theorem Example_3_6_2 (U : Type) :
     assume h1 : ∀ (B : Set U), C ∪ B = B
     assume h2 : ∀ (B : Set U), D ∪ B = B
     have h3 : C ∪ D = D := h1 D
-    have h4 : D ∪ C = C := h2 C 
+    have h4 : D ∪ C = C := h2 C
     show C = D from
       calc C
         _ = D ∪ C := h4.symm
