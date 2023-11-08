@@ -107,7 +107,7 @@ theorem Like_Example_3_4_1 (U : Type)
   · -- Proof that x ∈ B.
     show x ∈ B from h1 h3.left
     done
-  · -- Proof that ¬x ∈ D.
+  · -- Proof that x ∉ D.
     contradict h2 with h4
     apply Exists.intro x
     show x ∈ C ∩ D from And.intro h3.right h4
