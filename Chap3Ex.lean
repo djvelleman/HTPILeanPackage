@@ -5,25 +5,25 @@ namespace HTPI.Exercises
 -- 1.
 theorem Exercise_3_2_1a (P Q R : Prop)
     (h1 : P → Q) (h2 : Q → R) : P → R := by
-  
+
   done
 
 -- 2.
 theorem Exercise_3_2_1b (P Q R : Prop)
     (h1 : ¬R → (P → ¬Q)) : P → (Q → R) := by
-  
+
   done
 
 -- 3.
 theorem Exercise_3_2_2a (P Q R : Prop)
     (h1 : P → Q) (h2 : R → ¬Q) : P → ¬R := by
-  
+
   done
 
 -- 4.
 theorem Exercise_3_2_2b (P Q : Prop)
     (h1 : P) : Q → ¬(Q → ¬P) := by
-  
+
   done
 
 /- Section 3.3 -/
@@ -31,57 +31,57 @@ theorem Exercise_3_2_2b (P Q : Prop)
 theorem Exercise_3_3_1
     (U : Type) (P Q : Pred U) (h1 : ∃ (x : U), P x → Q x) :
     (∀ (x : U), P x) → ∃ (x : U), Q x := by
-  
+
   done
 
 -- 2.
 theorem Exercise_3_3_8 (U : Type) (F : Set (Set U)) (A : Set U)
     (h1 : A ∈ F) : A ⊆ ⋃₀ F := by
-  
+
   done
 
 -- 3.
 theorem Exercise_3_3_9 (U : Type) (F : Set (Set U)) (A : Set U)
     (h1 : A ∈ F) : ⋂₀ F ⊆ A := by
-  
+
   done
 
 -- 4.
 theorem Exercise_3_3_10 (U : Type) (B : Set U) (F : Set (Set U))
     (h1 : ∀ (A : Set U), A ∈ F → B ⊆ A) : B ⊆ ⋂₀ F := by
-  
+
   done
 
 -- 5.
 theorem Exercise_3_3_13 (U : Type)
     (F G : Set (Set U)) : F ⊆ G → ⋂₀ G ⊆ ⋂₀ F := by
-  
+
   done
 
 /- Section 3.4 -/
 -- 1.
 theorem Exercise_3_4_2 (U : Type) (A B C : Set U)
     (h1 : A ⊆ B) (h2 : A ⊆ C) : A ⊆ B ∩ C := by
-  
+
   done
 
 -- 2.
 theorem Exercise_3_4_4 (U : Type) (A B C : Set U)
     (h1 : A ⊆ B) (h2 : A ⊈ C) : B ⊈ C := by
-  
+
   done
 
 -- 3.
 theorem Exercise_3_3_16 (U : Type) (B : Set U)
     (F : Set (Set U)) : F ⊆ 𝒫 B → ⋃₀ F ⊆ B := by
-  
+
   done
 
 -- 4.
 theorem Exercise_3_3_17 (U : Type) (F G : Set (Set U))
     (h1 : ∀ (A : Set U), A ∈ F → ∀ (B : Set U), B ∈ G → A ⊆ B) :
     ⋃₀ F ⊆ ⋂₀ G := by
-  
+
   done
 
 -- 5.
@@ -98,21 +98,21 @@ theorem Exercise_3_4_17 (U : Type) (A : Set U) : A = ⋃₀ (𝒫 A) := by
 -- 7.
 theorem Exercise_3_4_18a (U : Type) (F G : Set (Set U)) :
     ⋃₀ (F ∩ G) ⊆ (⋃₀ F) ∩ (⋃₀ G) := by
-  
+
   done
 
 -- 8.
 theorem Exercise_3_4_19 (U : Type) (F G : Set (Set U)) :
     (⋃₀ F) ∩ (⋃₀ G) ⊆ ⋃₀ (F ∩ G) ↔
       ∀ (A B : Set U), A ∈ F → B ∈ G → A ∩ B ⊆ ⋃₀ (F ∩ G) := by
-  
+
   done
 
 /- Section 3.5 -/
 -- 1.
 theorem Exercise_3_5_2 (U : Type) (A B C : Set U) :
     (A ∪ B) \ C ⊆ A ∪ (B \ C) := sorry
-  
+
 -- 2.
 theorem Exercise_3_5_5 (U : Type) (A B C : Set U)
     (h1 : A ∩ C ⊆ B ∩ C) (h2 : A ∪ C ⊆ B ∪ C) : A ⊆ B := sorry
@@ -171,7 +171,7 @@ theorem Exercise_3_6_10 (U : Type) (A : Set U)
   set F0 : Set (Set U) := { X : Set U | X ⊆ A ∧ ∃! (x : U), x ∈ X }
   --Now F0 is in the tactic state, with the definition above
   have h2 : ⋃₀ F0 = A := sorry
-  
+
   done
 
 /- Section 3.7 -/
@@ -187,8 +187,8 @@ theorem Exercise_3_4_6 (U : Type) (A B C : Set U) :
   show x ∈ A \ (B ∩ C) ↔ x ∈ A \ B ∪ A \ C from
     calc x ∈ A \ (B ∩ C)
       _ ↔ x ∈ A ∧ ¬(x ∈ B ∧ x ∈ C) := sorry
-      _ ↔ x ∈ A ∧ (¬x ∈ B ∨ ¬x ∈ C) := sorry  
-      _ ↔ (x ∈ A ∧ ¬x ∈ B) ∨ (x ∈ A ∧ ¬x ∈ C) := sorry
+      _ ↔ x ∈ A ∧ (x ∉ B ∨ x ∉ C) := sorry
+      _ ↔ (x ∈ A ∧ x ∉ B) ∨ (x ∈ A ∧ x ∉ C) := sorry
       _ ↔ x ∈ (A \ B) ∪ (A \ C) := sorry
   done
 

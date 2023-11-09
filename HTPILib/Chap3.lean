@@ -150,11 +150,11 @@ theorem Example_3_5_2
   fix x : U
   assume h1 : x ∈ A \ (B \ C)
   define; define at h1
-  have h2 : ¬x ∈ B \ C := h1.right
+  have h2 : x ∉ B \ C := h1.right
   define at h2; demorgan at h2
-            --h2 : ¬x ∈ B ∨ x ∈ C
+            --h2 : x ∉ B ∨ x ∈ C
   by_cases on h2
-  · -- Case 1. h2 : ¬x ∈ B
+  · -- Case 1. h2 : x ∉ B
     apply Or.inl
     show x ∈ A \ B from And.intro h1.left h2
     done
