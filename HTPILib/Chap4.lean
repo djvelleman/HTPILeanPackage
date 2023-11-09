@@ -66,7 +66,7 @@ def equivClass {A : Type} (R : BinRel A) (x : A) : Set A :=
 def mod (A : Type) (R : BinRel A) : Set (Set A) :=
   { equivClass R x | x : A }
 
-def empty {A : Type} (X : Set A) : Prop := ¬∃ (x : A), x ∈ X 
+def empty {A : Type} (X : Set A) : Prop := ¬∃ (x : A), x ∈ X
 
 def pairwise_disjoint {A : Type} (F : Set (Set A)) : Prop :=
   ∀ X ∈ F, ∀ Y ∈ F, X ≠ Y → empty (X ∩ Y)
@@ -234,7 +234,7 @@ theorem Theorem_4_4_6_3 {A : Type} (R : BinRel A) (B : Set A) (b : A)
   assume h3 : x ∈ B        --Goal : R b x
   by_cases h4 : x = b
   · -- Case 1. h4 : x = b
-    rewrite [h4]             --Goal : R b b
+    rewrite [h4]           --Goal : R b b
     have h5 : partial_order R := h1.left
     define at h5
     have h6 : reflexive R := h5.left
@@ -361,7 +361,7 @@ lemma overlap_implies_equal {A : Type}
 
 lemma Lemma_4_5_7_ref {A : Type} (F : Set (Set A)) (h : partition F):
     reflexive (EqRelFromPart F) := sorry
-  
+
 lemma Lemma_4_5_7_symm {A : Type} (F : Set (Set A)) (h : partition F):
     symmetric (EqRelFromPart F) := sorry
 
