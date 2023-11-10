@@ -21,7 +21,7 @@ mutual
   def gcd_c1 (a b : Nat) : Int :=
     match b with
       | 0 => 1
-      | n + 1 => 
+      | n + 1 =>
         have : a % (n + 1) < n + 1 := mod_succ_lt a n
         gcd_c2 (n + 1) (a % (n + 1))
           --Corresponds to s = t'
@@ -44,12 +44,12 @@ def prime (n : Nat) : Prop :=
 
 def prime_factor (p n : Nat) : Prop := prime p ∧ p ∣ n
 
-def all_prime (l : List Nat) : Prop := ∀ (p : Nat), p ∈ l → prime p
+def all_prime (l : List Nat) : Prop := ∀ p ∈ l, prime p
 
 def nondec (l : List Nat) : Prop :=
   match l with
     | [] => True   --Of course, True is a proposition that is always true
-    | n :: L => (∀ (m : Nat), m ∈ L → n ≤ m) ∧ nondec L
+    | n :: L => (∀ m ∈ L, n ≤ m) ∧ nondec L
 
 def nondec_prime_list (l : List Nat) : Prop := all_prime l ∧ nondec l
 
@@ -158,8 +158,7 @@ lemma dvd_self (n : Nat) : n ∣ n := by
 theorem gcd_dvd : ∀ (b a : Nat), (gcd a b) ∣ a ∧ (gcd a b) ∣ b := by
   by_strong_induc
   fix b : Nat
-  assume ih : ∀ (b_1 : Nat), b_1 < b →
-    ∀ (a : Nat), (gcd a b_1) ∣ a ∧ (gcd a b_1) ∣ b_1
+  assume ih : ∀ b_1 < b, ∀ (a : Nat), (gcd a b_1) ∣ a ∧ (gcd a b_1) ∣ b_1
   fix a : Nat
   by_cases h1 : b = 0
   · -- Case 1. h1 : b = 0
@@ -206,7 +205,7 @@ theorem gcd_lin_comb : ∀ (b a : Nat),
     (gcd_c1 a b) * ↑a + (gcd_c2 a b) * ↑b = ↑(gcd a b) := by
   by_strong_induc
   fix b : Nat
-  assume ih : ∀ (b_1 : Nat), b_1 < b → ∀ (a : Nat),
+  assume ih : ∀ b_1 < b, ∀ (a : Nat),
     (gcd_c1 a b_1) * ↑a + (gcd_c2 a b_1) * ↑b_1 = ↑(gcd a b_1)
   fix a : Nat
   by_cases h1 : b = 0
@@ -255,7 +254,7 @@ theorem Theorem_7_1_6 {d a b : Nat} (h1 : d ∣ a) (h2 : d ∣ b) :
   ring
   done
 
-/- Section 7.2 -/ 
+/- Section 7.2 -/
 theorem dvd_trans {a b c : Nat} (h1 : a ∣ b) (h2 : b ∣ c) : a ∣ c := by
   define at h1; define at h2; define
   obtain (m : Nat) (h3 : b = a * m) from h1
@@ -269,8 +268,7 @@ lemma exists_prime_factor : ∀ (n : Nat), 2 ≤ n →
     ∃ (p : Nat), prime_factor p n := by
   by_strong_induc
   fix n : Nat
-  assume ih : ∀ (n_1 : Nat), n_1 < n →
-    2 ≤ n_1 → ∃ (p : Nat), prime_factor p n_1
+  assume ih : ∀ n_1 < n, 2 ≤ n_1 → ∃ (p : Nat), prime_factor p n_1
   assume h1 : 2 ≤ n
   by_cases h2 : prime n
   · -- Case 1. h2 : prime n
@@ -319,11 +317,11 @@ lemma exists_least_prime_factor {n : Nat} (h : 2 ≤ n) :
   done
 
 lemma all_prime_nil : all_prime [] := by
-  define     --Goal : ∀ (p : Nat), p ∈ [] → prime p
+  define     --Goal : ∀ p ∈ [], prime p
   fix p : Nat
-  contrapos  --Goal : ¬prime p → ¬p ∈ []
+  contrapos  --Goal : ¬prime p → p ∉ []
   assume h1 : ¬prime p
-  show ¬p ∈ [] from List.not_mem_nil p
+  show p ∉ [] from List.not_mem_nil p
   done
 
 lemma all_prime_cons (n : Nat) (L : List Nat) :
@@ -331,9 +329,9 @@ lemma all_prime_cons (n : Nat) (L : List Nat) :
   apply Iff.intro
   · -- (→)
     assume h1 : all_prime (n :: L)  --Goal : prime n ∧ all_prime L
-    define at h1  --h1 : ∀ (p : Nat), p ∈ n :: L → prime p
+    define at h1  --h1 : ∀ p ∈ n :: L, prime p
     apply And.intro (h1 n (List.mem_cons_self n L))
-    define        --Goal : ∀ (p : Nat), p ∈ L → prime p
+    define        --Goal : ∀ p ∈ L, prime p
     fix p : Nat
     assume h2 : p ∈ L
     show prime p from h1 p (List.mem_cons_of_mem n h2)
@@ -362,7 +360,7 @@ lemma nondec_nil : nondec [] := by
   done
 
 lemma nondec_cons (n : Nat) (L : List Nat) :
-    nondec (n :: L) ↔ (∀ (m : Nat), m ∈ L → n ≤ m) ∧ nondec L := by rfl
+    nondec (n :: L) ↔ (∀ m ∈ L, n ≤ m) ∧ nondec L := by rfl
 
 lemma prod_nil : prod [] = 1 := by rfl
 
@@ -394,7 +392,7 @@ lemma list_elt_dvd_prod_by_length (a : Nat) : ∀ (n : Nat),
     rewrite [h1]                            --Goal : a ∈ [] → a ∣ prod []
     contrapos
     assume h2 : ¬a ∣ prod []
-    show ¬a ∈ [] from List.not_mem_nil a
+    show a ∉ [] from List.not_mem_nil a
     done
   · -- Induction Step
     fix n : Nat
@@ -436,8 +434,8 @@ lemma exists_prime_factorization : ∀ (n : Nat), n ≥ 1 →
     ∃ (l : List Nat), prime_factorization n l := by
   by_strong_induc
   fix n : Nat
-  assume ih : ∀ (n_1 : Nat), n_1 < n →
-    n_1 ≥ 1 → ∃ (l : List Nat), prime_factorization n_1 l
+  assume ih : ∀ n_1 < n, n_1 ≥ 1 →
+    ∃ (l : List Nat), prime_factorization n_1 l
   assume h1 : n ≥ 1
   by_cases h2 : n = 1
   · -- Case 1. h2 : n = 1
@@ -618,19 +616,19 @@ lemma prime_not_one {p : Nat} (h : prime p) : p ≠ 1 := by
   done
 
 theorem Theorem_7_2_4 {p : Nat} (h1 : prime p) :
-    ∀ (l : List Nat), p ∣ prod l → ∃ (a : Nat), a ∈ l ∧ p ∣ a := by
+    ∀ (l : List Nat), p ∣ prod l → ∃ a ∈ l, p ∣ a := by
   apply List.rec
-  · -- Base Case.  Goal : p ∣ prod [] → ∃ (a : Nat), a ∈ [] ∧ p ∣ a
+  · -- Base Case.  Goal : p ∣ prod [] → ∃ a ∈ [], p ∣ a
     rewrite [prod_nil]
     assume h2 : p ∣ 1
-    show ∃ (a : Nat), a ∈ [] ∧ p ∣ a from
+    show ∃ a ∈ [], p ∣ a from
       absurd (eq_one_of_dvd_one h2) (prime_not_one h1)
     done
   · -- Induction Step
     fix b : Nat
     fix L : List Nat
-    assume ih : p ∣ prod L → ∃ (a : Nat), a ∈ L ∧ p ∣ a
-      --Goal : p ∣ prod (b :: L) → ∃ (a : Nat), a ∈ b :: L ∧ p ∣ a
+    assume ih : p ∣ prod L → ∃ a ∈ L, p ∣ a
+      --Goal : p ∣ prod (b :: L) → ∃ a ∈ b :: L, p ∣ a
     assume h2 : p ∣ prod (b :: L)
     rewrite [prod_cons] at h2
     have h3 : p ∣ b ∨ p ∣ prod L := Theorem_7_2_3 h1 h2
@@ -681,7 +679,7 @@ lemma first_le_first {p q : Nat} {l m : List Nat}
     linarith
     done
   · -- Case 2. h6 : q ∈ l
-    have h8 : ∀ (m : Nat), m ∈ l → p ≤ m := h7.left
+    have h8 : ∀ m ∈ l, p ≤ m := h7.left
     show p ≤ q from h8 q h6
     done
   done
@@ -691,7 +689,7 @@ lemma nondec_prime_list_tail {p : Nat} {l : List Nat}
   define at h
   define
   rewrite [all_prime_cons, nondec_cons] at h
-  show all_prime l ∧ nondec l from And.intro h.left.right h.right.right 
+  show all_prime l ∧ nondec l from And.intro h.left.right h.right.right
   done
 
 lemma cons_prod_not_one {p : Nat} {l : List Nat}
@@ -1006,7 +1004,7 @@ theorem Theorem_7_3_1 (m : Nat) [NeZero m] (a : Int) :
     done
   done
 
-lemma cc_eq_mod (m : Nat) (a : Int) : [a]_m = [a % m]_m := 
+lemma cc_eq_mod (m : Nat) (a : Int) : [a]_m = [a % m]_m :=
   (cc_eq_iff_congr m a (a % m)).rtl (congr_mod_mod m a)
 
 theorem Theorem_7_3_6_1 {m : Nat} (X Y : ZMod m) : X + Y = Y + X := by
@@ -1264,7 +1262,7 @@ lemma FG_prod {m a : Nat} (h1 : rel_prime m a) :
   done
 
 lemma G_maps_below (m a : Nat) [NeZero m] : maps_below m (G m a) := by
-  define             --Goal : ∀ (i : Nat), i < m → G m a i < m
+  define             --Goal : ∀ i < m, G m a i < m
   fix i : Nat
   assume h1 : i < m
   rewrite [G_def]    --Goal : a * i % m < m
@@ -1487,19 +1485,19 @@ lemma trivial_swap (u : Nat) : swap u u = id := by
   done
 
 lemma prod_eq_fun {m : Nat} (f g : Nat → ZMod m) (k : Nat) :
-    ∀ (n : Nat), (∀ (i : Nat), i < n → f (k + i) = g (k + i)) →
+    ∀ (n : Nat), (∀ i < n, f (k + i) = g (k + i)) →
       prod_seq n k f = prod_seq n k g := by
   by_induc
   · -- Base Case
-    assume h : (∀ (i : Nat), i < 0 → f (k + i) = g (k + i))
+    assume h : (∀ i < 0, f (k + i) = g (k + i))
     rewrite [prod_seq_base, prod_seq_base]
     rfl
     done
   · -- Induction Step
     fix n : Nat
-    assume ih : (∀ (i : Nat), i < n → f (k + i) = g (k + i)) → prod_seq n k f = prod_seq n k g
-    assume h1 : ∀ (i : Nat), i < n + 1 → f (k + i) = g (k + i)
-    have h2 : ∀ (i : Nat), i < n → f (k + i) = g (k + i) := by
+    assume ih : (∀ i < n, f (k + i) = g (k + i)) → prod_seq n k f = prod_seq n k g
+    assume h1 : ∀ i < n + 1, f (k + i) = g (k + i)
+    have h2 : ∀ i < n, f (k + i) = g (k + i) := by
       fix i : Nat
       assume h2 : i < n
       have h3 : i < n + 1 := by linarith
@@ -1735,7 +1733,7 @@ end Euler
 
 /- Section 7.5 -/
 lemma num_rp_prime {p : Nat} (h1 : prime p) :
-    ∀ (k : Nat), k < p → num_rp_below p (k + 1) = k := sorry
+    ∀ k < p, num_rp_below p (k + 1) = k := sorry
 
 lemma phi_prime {p : Nat} (h1 : prime p) : phi p = p - 1 := by
   have h2 : 1 ≤ p := prime_pos h1

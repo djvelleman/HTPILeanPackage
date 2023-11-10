@@ -48,7 +48,7 @@ lemma dvd_prime {a p : Nat}
 -- 2.
 -- Hints:  Start with apply List.rec.  You may find mul_ne_zero useful
 theorem prod_nonzero_nonzero : ∀ (l : List Nat),
-    (∀ (a : Nat), a ∈ l → a ≠ 0) → prod l ≠ 0 := sorry
+    (∀ a ∈ l, a ≠ 0) → prod l ≠ 0 := sorry
 
 -- 3.
 theorem rel_prime_iff_no_common_factor (a b : Nat) :
@@ -185,7 +185,7 @@ theorem Like_Exercise_7_4_12 {m a p q k : Nat} [NeZero m]
 -- 1.
 --Hint:  Use induction.
 lemma num_rp_prime {p : Nat} (h1 : prime p) :
-    ∀ (k : Nat), k < p → num_rp_below p (k + 1) = k := sorry
+    ∀ k < p, num_rp_below p (k + 1) = k := sorry
 
 -- 2.
 lemma three_prime : prime 3 := sorry
