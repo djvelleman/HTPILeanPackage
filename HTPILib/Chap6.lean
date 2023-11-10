@@ -153,9 +153,9 @@ lemma Lemma_6_2_1_1 {A : Type} {R : BinRel A} {B : Set A} {b c : A}
     (h1 : partial_order R) (h2 : b ∈ B) (h3 : minimalElt R c (B \ {b}))
     (h4 : R b c) : minimalElt R b B := by
   define at h3
-    --h3 : c ∈ B \ {b} ∧ ¬∃ (x : A), x ∈ B \ {b} ∧ R x c ∧ x ≠ c
-  define  --Goal : b ∈ B ∧ ¬∃ (x : A), x ∈ B ∧ R x b ∧ x ≠ b
-  apply And.intro h2    --Goal : ¬∃ (x : A), x ∈ B ∧ R x b ∧ x ≠ b
+    --h3 : c ∈ B \ {b} ∧ ¬∃ x ∈ B \ {b}, R x c ∧ x ≠ c
+  define  --Goal : b ∈ B ∧ ¬∃ x ∈ B, R x b ∧ x ≠ b
+  apply And.intro h2    --Goal : ¬∃ x ∈ B, R x b ∧ x ≠ b
   contradict h3.right with h5
   obtain (x : A) (h6 : x ∈ B ∧ R x b ∧ x ≠ b) from h5
   apply Exists.intro x  --Goal : x ∈ B \ {b} ∧ R x c ∧ x ≠ c
@@ -189,7 +189,7 @@ theorem Example_6_2_1 {A : Type} (R : BinRel A) (h : partial_order R) :
     rewrite [one_elt_iff_singleton] at h2
     obtain (b : A) (h3 : B = {b}) from h2
     apply Exists.intro b
-    define         --Goal : b ∈ B ∧ ¬∃ (x : A), x ∈ B ∧ R x b ∧ x ≠ b
+    define         --Goal : b ∈ B ∧ ¬∃ x ∈ B, R x b ∧ x ≠ b
     apply And.intro
     · -- Proof that b ∈ B
       rewrite [h3]    --Goal : b ∈ {b}
@@ -238,7 +238,7 @@ lemma extendPO_is_antisymm {A : Type} (R : BinRel A) (b : A)
     (h : partial_order R) : antisymmetric (extendPO R b) := sorry
 
 lemma extendPO_is_po {A : Type} (R : BinRel A) (b : A)
-    (h : partial_order R) : partial_order (extendPO R b) := 
+    (h : partial_order R) : partial_order (extendPO R b) :=
   And.intro (extendPO_is_ref R b h)
     (And.intro (extendPO_is_trans R b h) (extendPO_is_antisymm R b h))
 
@@ -477,7 +477,7 @@ theorem exists_eq_add_two_of_ne_zero_one {n : Nat}
 example : ∀ (n : Nat), Fib n < 2 ^ n := by
   by_strong_induc
   fix n : Nat
-  assume ih : ∀ (n_1 : Nat), n_1 < n → Fib n_1 < 2 ^ n_1
+  assume ih : ∀ n_1 < n, Fib n_1 < 2 ^ n_1
   by_cases h1 : n = 0
   · -- Case 1. h1 : n = 0
     rewrite [h1]   --Goal : Fib 0 < 2 ^ 0
@@ -509,20 +509,20 @@ example : ∀ (n : Nat), Fib n < 2 ^ n := by
   done
 
 theorem well_ord_princ (S : Set Nat) : (∃ (n : Nat), n ∈ S) →
-    ∃ (n : Nat), n ∈ S ∧ ∀ (m : Nat), m ∈ S → n ≤ m := by
+    ∃ n ∈ S, ∀ m ∈ S, n ≤ m := by
   contrapos
-  assume h1 : ¬∃ (n : Nat), n ∈ S ∧ ∀ (m : Nat), m ∈ S → n ≤ m
-  quant_neg                   --Goal : ∀ (n : Nat), ¬n ∈ S
+  assume h1 : ¬∃ n ∈ S, ∀ m ∈ S, n ≤ m
+  quant_neg                   --Goal : ∀ (n : Nat), n ∉ S
   by_strong_induc
   fix n : Nat
-  assume ih : ∀ (n_1 : Nat), n_1 < n → ¬n_1 ∈ S  --Goal : ¬n ∈ S
+  assume ih : ∀ n_1 < n, n_1 ∉ S  --Goal : n ∉ S
   contradict h1 with h2       --h2 : n ∈ S
-    --Goal : ∃ (n : Nat), n ∈ S ∧ ∀ (m : Nat), m ∈ S → n ≤ m
-  apply Exists.intro n
-  apply And.intro h2          --Goal : ∀ (m : Nat), m ∈ S → n ≤ m
+    --Goal : ∃ n ∈ S, ∀ m ∈ S, n ≤ m
+  apply Exists.intro n        --Goal : n ∈ S ∧ ∀ m ∈ S, n ≤ m
+  apply And.intro h2          --Goal : ∀ m ∈ S, n ≤ m
   fix m : Nat
   assume h3 : m ∈ S
-  have h4 : m < n → ¬m ∈ S := ih m
+  have h4 : m < n → m ∉ S := ih m
   contrapos at h4             --h4 : m ∈ S → ¬m < n
   have h5 : ¬m < n := h4 h3
   linarith
@@ -536,11 +536,10 @@ theorem Theorem_6_4_5 :
     { q : Nat | ∃ (p : Nat), p * p = 2 * (q * q) ∧ q ≠ 0 }
   by_contra h1
   have h2 : ∃ (q : Nat), q ∈ S := h1
-  have h3 : ∃ (q : Nat), q ∈ S ∧ ∀ (r : Nat), r ∈ S → q ≤ r :=
-    well_ord_princ S h2
-  obtain (q : Nat) (h4 : q ∈ S ∧ ∀ (r : Nat), r ∈ S → q ≤ r) from h3
+  have h3 : ∃ q ∈ S, ∀ r ∈ S, q ≤ r := well_ord_princ S h2
+  obtain (q : Nat) (h4 : q ∈ S ∧ ∀ r ∈ S, q ≤ r) from h3
   have qinS : q ∈ S := h4.left
-  have qleast : ∀ (r : ℕ), r ∈ S → q ≤ r := h4.right
+  have qleast : ∀ r ∈ S, q ≤ r := h4.right
   define at qinS     --qinS : ∃ (p : Nat), p * p = 2 * (q * q) ∧ q ≠ 0
   obtain (p : Nat) (h5 : p * p = 2 * (q * q) ∧ q ≠ 0) from qinS
   have pqsqrt2 : p * p = 2 * (q * q) := h5.left
@@ -597,11 +596,11 @@ lemma rep_image_sub_closed {A : Type} {f : A → A} {B D : Set A}
     fix x : A
     assume h3 : x ∈ rep_image f (n + 1) B  --Goal : x ∈ D
     rewrite [rep_image_step] at h3
-    define at h3    --h3 : ∃ (x_1 : A), x_1 ∈ rep_image f n B ∧ f x_1 = x
+    define at h3    --h3 : ∃ x_1 ∈ rep_image f n B, f x_1 = x
     obtain (b : A) (h4 : b ∈ rep_image f n B ∧ f b = x) from h3
-    rewrite [←h4.right]   --Goal : f b ∈ D    
+    rewrite [←h4.right]   --Goal : f b ∈ D
     have h5 : b ∈ D := ih h4.left
-    define at h2          --h2 : ∀ (x : A), x ∈ D → f x ∈ D
+    define at h2          --h2 : ∀ x ∈ D, f x ∈ D
     show f b ∈ D from h2 b h5
     done
   done
@@ -630,7 +629,7 @@ theorem Theorem_6_5_1 {A : Type} (f : A → A) (B : Set A) :
       define     --Goal : ∃ (n : Nat), f x ∈ rep_image f n B
       apply Exists.intro (m + 1) --Goal : f x ∈ rep_image f (m + 1) B
       rewrite [rep_image_step]   --Goal : f x ∈ image f (rep_image f m B)
-      define     --Goal : ∃ (x_1 : A), x_1 ∈ rep_image f m B ∧ f x_1 = f x
+      define     --Goal : ∃ x_1 ∈ rep_image f m B, f x_1 = f x
       apply Exists.intro x  --Goal : x ∈ rep_image f m B ∧ f x = f x
       apply And.intro h2
       rfl

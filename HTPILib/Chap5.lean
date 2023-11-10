@@ -24,7 +24,7 @@ def closure {A : Type} (f : A → A) (B C : Set A) : Prop :=
 def closed2 {A : Type} (f : A → A → A) (C : Set A) : Prop :=
   ∀ x ∈ C, ∀ y ∈ C, f x y ∈ C
 
-def closure2 {A : Type} (f : A → A → A) (B C : Set A) : Prop := 
+def closure2 {A : Type} (f : A → A → A) (B C : Set A) : Prop :=
   smallestElt (sub A) C { D : Set A | B ⊆ D ∧ closed2 f D }
 
 def closed_family {A : Type} (F : Set (A → A)) (C : Set A) : Prop :=
@@ -79,7 +79,7 @@ theorem func_from_graph_rtl {A B : Type} (F : Set (A × B)) :
   done
 
 theorem func_from_graph {A B : Type} (F : Set (A × B)) :
-    (∃ (f : A → B), graph f = F) ↔ is_func_graph F := 
+    (∃ (f : A → B), graph f = F) ↔ is_func_graph F :=
   Iff.intro (func_from_graph_ltr F) (func_from_graph_rtl F)
 
 theorem Theorem_5_1_4 {A B : Type} (f g : A → B) :
@@ -338,12 +338,12 @@ theorem Theorem_5_5_2_1 {A B : Type} (f : A → B) (W X : Set A) :
     image f (W ∩ X) ⊆ image f W ∩ image f X := by
   fix y : B
   assume h1 : y ∈ image f (W ∩ X)  --Goal : y ∈ image f W ∩ image f X
-  define at h1                     --h1 : ∃ (x : A), x ∈ W ∩ X ∧ f x = y
+  define at h1                     --h1 : ∃ x ∈ W ∩ X, f x = y
   obtain (x : A) (h2 : x ∈ W ∩ X ∧ f x = y) from h1
   define : x ∈ W ∩ X at h2         --h2 : (x ∈ W ∧ x ∈ X) ∧ f x = y
   apply And.intro
   · -- Proof that y ∈ image f W
-    define                         --Goal : ∃ (x : A), x ∈ W ∧ f x = y
+    define                         --Goal : ∃ x ∈ W, f x = y
     show ∃ (x : A), x ∈ W ∧ f x = y from
       Exists.intro x (And.intro h2.left.left h2.right)
     done
@@ -366,7 +366,7 @@ theorem Theorem_5_5_2_2 {A B : Type} (f : A → B) (W X : Set A)
     assume h2 : y ∈ image f W ∩ image f X  --Goal : y ∈ image f (W ∩ X)
     define at h2                  --h2 : y ∈ image f W ∧ y ∈ image f X
     rewrite [image_def, image_def] at h2
-          --h2 : (∃ (x : A), x ∈ W ∧ f x = y) ∧ ∃ (x : A), x ∈ X ∧ f x = y
+          --h2 : (∃ x ∈ W, f x = y) ∧ ∃ x ∈ X, f x = y
     obtain (x1 : A) (h3 : x1 ∈ W ∧ f x1 = y) from h2.left
     obtain (x2 : A) (h4 : x2 ∈ X ∧ f x2 = y) from h2.right
     have h5 : f x2 = y := h4.right
