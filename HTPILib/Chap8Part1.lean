@@ -73,7 +73,7 @@ theorem equinum_image {U V : Type} {A : Set U} {B : Set V} {f : U → V}
     define at h3       --h3 : x ∈ A ∧ f x = y
     apply And.intro h3.left
     define
-    show ∃ (x : U), x ∈ A ∧ f x = y from Exists.intro x h3
+    show ∃ x ∈ A, f x = y from Exists.intro x h3
     done
   · -- Proofs of fcnl_ons
     apply And.intro
@@ -204,7 +204,7 @@ lemma compRel_def {U V W : Type}
     compRel S R u w ↔ ∃ (x : V), R u x ∧ S x w := by rfl
 
 lemma inv_comp {U V W : Type} (R : Rel U V) (S : Rel V W) :
-    invRel (compRel S R) = compRel (invRel R) (invRel S) := 
+    invRel (compRel S R) = compRel (invRel R) (invRel S) :=
   calc invRel (compRel S R)
     _ = RelFromExt (inv (comp (extension S) (extension R))) := by rfl
     _ = RelFromExt (comp (inv (extension R)) (inv (extension S))) := by
@@ -529,7 +529,7 @@ theorem remove_one_numElts {U : Type} {A : Set U} {n : Nat} {a : U}
   rewrite [I_diff] at h4          --h4 : I n ∼ A \ {a}
   show numElts (A \ {a}) n from h4
   done
-  
+
 lemma one_match_def {U V : Type} (a x : U) (b y : V) :
     one_match a b x y ↔ x = a ∧ y = b := by rfl
 

@@ -427,13 +427,13 @@ lemma enum_not_skip {A : Set Nat} : ∀ ⦃m s : Nat⦄, num_elts_below A m s �
     done
   · -- Induction Step
     fix m : Nat
-    assume ih : ∀ ⦃s : Nat⦄, num_elts_below A m s → ∀ (t : Nat), t < s → ∃ (n : Nat), enum A t n
+    assume ih : ∀ ⦃s : Nat⦄, num_elts_below A m s → ∀ t < s, ∃ (n : Nat), enum A t n
     fix s : Nat
     assume h1 : num_elts_below A (m + 1) s
     by_cases h2 : m ∈ A
     · -- Case 1. h2 : m ∈ A
       rewrite [neb_step_elt h2] at h1
-      have h3 : ∀ (t : Nat), t < s - 1 → ∃ (n : Nat), enum A t n := ih h1.right
+      have h3 : ∀ t < s - 1, ∃ (n : Nat), enum A t n := ih h1.right
       fix t : Nat
       assume h4 : t < s
       by_cases h5 : t = s - 1
@@ -452,7 +452,7 @@ lemma enum_not_skip {A : Set Nat} : ∀ ⦃m s : Nat⦄, num_elts_below A m s �
       done
     · -- Case 2. h2 : m ∉ A
       rewrite [neb_step_not_elt h2] at h1
-      show ∀ (t : Nat), t < s → ∃ (n : Nat), enum A t n from ih h1
+      show ∀ t < s, ∃ (n : Nat), enum A t n from ih h1
       done
     done
   done
@@ -497,7 +497,7 @@ lemma inv_enum_fcnl (A : Set Nat) : fcnl_on (invRel (enum A)) A := by
   done
 
 lemma bdd_subset_nat_match {A : Set Nat} {m s : Nat}
-    (h1 : ∀ (n : Nat), n ∈ A → n < m) (h2 : num_elts_below A m s) :
+    (h1 : ∀ n ∈ A, n < m) (h2 : num_elts_below A m s) :
     matching (enum A) (I s) A := by
   define
   apply And.intro
@@ -537,10 +537,10 @@ lemma bdd_subset_nat_match {A : Set Nat} {m s : Nat}
   done
 
 lemma bdd_subset_nat {A : Set Nat} {m s : Nat}
-    (h1 : ∀ (n : Nat), n ∈ A → n < m) (h2 : num_elts_below A m s) :
+    (h1 : ∀ n ∈ A, n < m) (h2 : num_elts_below A m s) :
     I s ∼ A := Exists.intro (enum A) (bdd_subset_nat_match h1 h2)
 
-lemma enum_fcnl_of_unbdd {A : Set Nat} (h1 : ∀ (m : Nat), ∃ (n : Nat), n ∈ A ∧ n ≥ m) :
+lemma enum_fcnl_of_unbdd {A : Set Nat} (h1 : ∀ (m : Nat), ∃ n ∈ A, n ≥ m) :
     fcnl_on (enum A) (Univ Nat) := by
   define
   by_induc
@@ -590,7 +590,7 @@ lemma enum_fcnl_of_unbdd {A : Set Nat} (h1 : ∀ (m : Nat), ∃ (n : Nat), n ∈
   done
 
 lemma unbdd_subset_nat_match {A : Set Nat}
-    (h1 : ∀ (m : Nat), ∃ (n : Nat), n ∈ A ∧ n ≥ m) :
+    (h1 : ∀ (m : Nat), ∃ n ∈ A, n ≥ m) :
     matching (enum A) (Univ Nat) A := by
   define
   apply And.intro
@@ -613,23 +613,23 @@ lemma unbdd_subset_nat_match {A : Set Nat}
   done
 
 lemma unbdd_subset_nat {A : Set Nat}
-    (h1 : ∀ (m : Nat), ∃ (n : Nat), n ∈ A ∧ n ≥ m) :
+    (h1 : ∀ (m : Nat), ∃ n ∈ A, n ≥ m) :
     denum A := Exists.intro (enum A) (unbdd_subset_nat_match h1)
 
 lemma subset_nat_ctble (A : Set Nat) : ctble A := by
   define          --Goal : finite A ∨ denum A
-  by_cases h1 : ∃ (m : Nat), ∀ (n : Nat), n ∈ A → n < m
-  · -- Case 1. h1 : ∃ (m : Nat), ∀ (n : Nat), n ∈ A → n < m
+  by_cases h1 : ∃ (m : Nat), ∀ n ∈ A, n < m
+  · -- Case 1. h1 : ∃ (m : Nat), ∀ n ∈ A, n < m
     apply Or.inl  --Goal : finite A
-    obtain (m : Nat) (h2 : ∀ (n : Nat), n ∈ A → n < m) from h1
+    obtain (m : Nat) (h2 : ∀ n ∈ A, n < m) from h1
     obtain (s : Nat) (h3 : num_elts_below A m s) from neb_exists A m
     apply Exists.intro s
     show I s ∼ A from bdd_subset_nat h2 h3
     done
-  · -- Case 2. h1 : ¬∃ (m : Nat), ∀ (n : Nat), n ∈ A → n < m
+  · -- Case 2. h1 : ¬∃ (m : Nat), ∀ n ∈ A, n < m
     apply Or.inr  --Goal : denum A
     push_neg at h1
-      --This tactic converts h1 to ∀ (m : Nat), ∃ (n : Nat), n ∈ A ∧ m ≤ n
+      --This tactic converts h1 to ∀ (m : Nat), ∃ n ∈ A, m ≤ n
     show denum A from unbdd_subset_nat h1
     done
   done
@@ -637,7 +637,7 @@ lemma subset_nat_ctble (A : Set Nat) : ctble A := by
 lemma ctble_of_equinum_ctble {U V : Type} {A : Set U} {B : Set V}
     (h1 : A ∼ B) (h2 : ctble A) : ctble B := sorry
 
-lemma ctble_iff_equinum_set_nat {U : Type} (A : Set U) : 
+lemma ctble_iff_equinum_set_nat {U : Type} (A : Set U) :
     ctble A ↔ ∃ (I : Set Nat), I ∼ A := by
   apply Iff.intro
   · -- (→)
@@ -779,7 +779,7 @@ theorem Theorem_8_1_5_3_to_1 {U : Type} {A : Set U}
         fix x1 : U; fix x2 : U
         assume h4 : R n x1
         assume h5 : R n x2
-        define at h4      --h4 : x1 ∈ A ∧ S x1 n; 
+        define at h4      --h4 : x1 ∈ A ∧ S x1 n;
         define at h5      --h5 : x2 ∈ A ∧ S x2 n
         show x1 = x2 from h2.right h4 h5
         done
@@ -856,7 +856,7 @@ lemma fqn_one_one : one_to_one fqn := by
   done
 
 lemma image_fqn_unbdd :
-    ∀ (m : Nat), ∃ (n : Nat), n ∈ image fqn (Univ Rat) ∧ n ≥ m := by
+    ∀ (m : Nat), ∃ n ∈ image fqn (Univ Rat), n ≥ m := by
   fix m : Nat
   set n : Nat := fqn ↑m
   apply Exists.intro n
@@ -1576,7 +1576,7 @@ theorem Cantor_Schroeder_Bernstein_theorem
     assume h5 : a ∈ A \ X
     contradict h5.right with h6  --h6 : ¬a ∈ C;  Goal : a ∈ X
     define  --Goal : ∃ (n : Nat), a ∈ rep_common_image R S X0 n
-    apply Exists.intro 0 
+    apply Exists.intro 0
     define
     show a ∈ A ∧ ¬a ∈ C from And.intro h5.left h6
     done
