@@ -427,7 +427,7 @@ lemma remove_one_inv {U V : Type} (R : Rel U V) (u : U) (v : V) :
 lemma remove_one_iff {U V : Type}
     {A : Set U} {B : Set V} {R : Rel U V} (h1 : matching R A B)
     {u : U} (h2 : u ∈ A) (v : V) {x : U} (h3 : x ∈ A \ {u}) :
-    ∃ (w : U), w ∈ A ∧ ∀ (y : V), remove_one R u v x y ↔ R w y := sorry
+    ∃ w ∈ A, ∀ (y : V), remove_one R u v x y ↔ R w y := sorry
 
 theorem remove_one_fcnl {U V : Type}
     {R : Rel U V} {A : Set U} {B : Set V} {u : U}

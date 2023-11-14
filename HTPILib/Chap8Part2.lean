@@ -954,7 +954,7 @@ lemma neb_phi (m : Nat) :
 lemma phi_is_numElts (m : Nat) :
     numElts (Set_rp_below m) (phi m) := by
   rewrite [numElts_def]    --Goal : I (phi m) ∼ Set_rp_below m
-  have h1 : ∀ (n : Nat), n ∈ Set_rp_below m → n < m := by
+  have h1 : ∀ n ∈ Set_rp_below m, n < m := by
     fix n : Nat
     assume h2 : n ∈ Set_rp_below m
     define at h2
