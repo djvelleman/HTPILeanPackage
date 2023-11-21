@@ -10,7 +10,7 @@ def fzn (a : Int) : Nat := if a ≥ 0 then 2 * Int.toNat a else 2 * Int.toNat (-
 
 def tri (k : Nat) : Nat := k * (k + 1) / 2
 
-def fnnn (p : Nat × Nat) : Nat := tri (p.fst + p.snd) + p.fst
+def fnnn (p : Nat × Nat) : Nat := tri (p.1 + p.2) + p.1
 
 def num_elts_below (A : Set Nat) (m s : Nat) : Prop :=
   match m with
@@ -49,7 +49,7 @@ def Set_prod {U V : Type} (A : Set U) (B : Set V) : Set (U × V) :=
 notation:75 A:75 " ×ₛ " B:75 => Set_prod A B
 
 def Rel_prod {U V W X : Type} (R : Rel U V) (S : Rel W X)
-  (p : U × W) (q : V × X) : Prop := R p.fst q.fst ∧ S p.snd q.snd
+  (p : U × W) (q : V × X) : Prop := R p.1 q.1 ∧ S p.2 q.2
 
 notation:75 R:75 " ×ᵣ " S:75 => Rel_prod R S
 
@@ -60,15 +60,15 @@ def mod_mod (m n a : Nat) : Nat × Nat := (a % m, a % n)
 def enum_union_fam {U : Type}
   (F : Set (Set U)) (f : Set U → Rel Nat U) (R : Rel Nat (Set U))
   (n : Nat) (a : U) : Prop := ∃ (p : Nat × Nat), fnnn p = n ∧
-    ∃ (A : Set U), A ∈ F ∧ R p.fst A ∧ (f A) p.snd a
+    ∃ A ∈ F, R p.1 A ∧ (f A) p.2 a
 
 def seq {U : Type} (A : Set U) : Set (List U) :=
-  { l : List U | ∀ (x : U), x ∈ l → x ∈ A }
+  { l : List U | ∀ x ∈ l, x ∈ A }
 
 def seq_by_length {U : Type} (A : Set U) (n : Nat) : Set (List U) :=
   { l : List U | l ∈ seq A ∧ l.length = n }
 
-def seq_cons (U : Type) (p : U × (List U)) : List U := p.fst :: p.snd
+def seq_cons (U : Type) (p : U × (List U)) : List U := p.1 :: p.2
 
 def sbl_set {U : Type} (A : Set U) : Set (Set (List U)) :=
   { S : Set (List U) | ∃ (n : Nat), seq_by_length A n = S }
@@ -1252,11 +1252,11 @@ lemma Lemma_8_2_2_1 {U : Type} {F : Set (Set U)} {f : Set U → Rel Nat U}
     assume Sna2 : S n a2         --Goal : a1 = a2
     define at Sna1; define at Sna2
     obtain ((i1, j1) : Nat × Nat) (h4 : fnnn (i1, j1) = n ∧
-      ∃ (A : Set U), A ∈ F ∧ R i1 A ∧ f A j1 a1) from Sna1
+      ∃ A ∈ F, R i1 A ∧ f A j1 a1) from Sna1
     obtain (A1 : Set U) (Aija1 : A1 ∈ F ∧ R i1 A1 ∧ f A1 j1 a1)
       from h4.right
     obtain ((i2, j2) : Nat × Nat) (h5 : fnnn (i2, j2) = n ∧
-      ∃ (A : Set U), A ∈ F ∧ R i2 A ∧ f A j2 a2) from Sna2
+      ∃ A ∈ F, R i2 A ∧ f A j2 a2) from Sna2
     obtain (A2 : Set U) (Aija2 : A2 ∈ F ∧ R i2 A2 ∧ f A2 j2 a2)
       from h5.right
     rewrite [←h5.left] at h4
@@ -1289,16 +1289,15 @@ lemma Lemma_8_2_2_1 {U : Type} {F : Set (Set U)} {f : Set U → Rel Nat U}
     obtain (j : Nat) (h7 : f A j x) from fAonto h5.right
     apply Exists.intro (fnnn (i, j))
     define    --Goal : ∃ (p : Nat × Nat), fnnn p = fnnn (i, j) ∧
-              --       ∃ (A : Set U), A ∈ F ∧ R p.fst A ∧ f A p.snd x
+              --       ∃ A ∈ F, R p.1 A ∧ f A p.2 x
     apply Exists.intro (i, j)
     apply And.intro
     · -- Proof that fnnn (i, j) = fnnn (i, j)
       rfl
       done
-    · -- Proof that ∃ (A : Set U), A ∈ F ∧
-      --            R (i, j).fst A ∧ f A (i, j).snd x
+    · -- Proof that ∃ A ∈ F, R (i, j).1 A ∧ f A (i, j).2 x
       apply Exists.intro A
-      show A ∈ F ∧ R (i, j).fst A ∧ f A (i, j).snd x from
+      show A ∈ F ∧ R (i, j).1 A ∧ f A (i, j).2 x from
         And.intro h5.left (And.intro h6 h7)
       done
     done
@@ -1332,13 +1331,13 @@ lemma Lemma_8_2_2_2 {U : Type} {F : Set (Set U)} (h : ∀ A ∈ F, ctble A) :
 
 theorem Theorem_8_2_2 {U : Type} {F : Set (Set U)}
     (h1 : ctble F) (h2 : ∀ A ∈ F, ctble A) : ctble (⋃₀ F) := by
-  obtain (f : Set U → Rel Nat U) (h3 : ∀ (A : Set U), A ∈ F →
-    fcnl_onto_from_nat (f A) A) from Lemma_8_2_2_2 h2
+  obtain (f : Set U → Rel Nat U) (h3 : ∀ A ∈ F, fcnl_onto_from_nat (f A) A)
+    from Lemma_8_2_2_2 h2
   show ctble (⋃₀ F) from Lemma_8_2_2_1 h1 h3
   done
 
 lemma seq_def {U : Type} (A : Set U) (l : List U) :
-    l ∈ seq A ↔ ∀ (x : U), x ∈ l → x ∈ A := by rfl
+    l ∈ seq A ↔ ∀ x ∈ l, x ∈ A := by rfl
 
 lemma sbl_base {U : Type} (A : Set U) : seq_by_length A 0 = {[]} := by
   apply Set.ext
@@ -1356,12 +1355,12 @@ lemma sbl_base {U : Type} (A : Set U) : seq_by_length A 0 = {[]} := by
     define at h1     --h1 : l = []
     define           --Goal : l ∈ seq A ∧ List.length l = 0
     apply And.intro _ (List.length_eq_zero.rtl h1)
-    define           --Goal : ∀ (x : U), x ∈ l → x ∈ A
+    define           --Goal : ∀ x ∈ l, x ∈ A
     fix x : U
     assume h2 : x ∈ l
     contradict h2 with h3
     rewrite [h1]
-    show ¬x ∈ [] from List.not_mem_nil x
+    show x ∉ [] from List.not_mem_nil x
     done
   done
 
@@ -1494,16 +1493,16 @@ theorem Cantor's_theorem : ¬ctble (𝒫 (Univ Nat)) := by
   · -- Case 1. h7 : n ∈ D
     contradict h7
     define at h7
-    obtain (X : Set Nat) (h8 : R n X ∧ ¬n ∈ X) from h7
+    obtain (X : Set Nat) (h8 : R n X ∧ n ∉ X) from h7
     define at h3
     have h9 : D = X := h3 h6 h8.left
     rewrite [h9]
-    show ¬n ∈ X from h8.right
+    show n ∉ X from h8.right
     done
   · -- Case 2. h7 : n ∉ D
     contradict h7
     define
-    show ∃ (X : Set Nat), R n X ∧ ¬n ∈ X from
+    show ∃ (X : Set Nat), R n X ∧ n ∉ X from
       Exists.intro D (And.intro h6 h7)
     done
   done
