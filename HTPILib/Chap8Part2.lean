@@ -77,8 +77,8 @@ def rep_common_image
   {U V : Type} (R S : Rel U V) (X0 : Set U) (n : Nat) : Set U :=
   match n with
     | 0 => X0
-    | m + 1 => { a : U | ∃ (x : U),
-                x ∈ rep_common_image R S X0 m ∧ ∃ (y : V), R x y ∧ S a y }
+    | m + 1 => { a : U | ∃ x ∈ rep_common_image R S X0 m,
+                          ∃ (y : V), R x y ∧ S a y }
 
 def cum_rep_image {U V : Type} (R S : Rel U V) (X0 : Set U) : Set U :=
   { a : U | ∃ (n : Nat), a ∈ rep_common_image R S X0 n }
@@ -1510,8 +1510,8 @@ theorem Cantor's_theorem : ¬ctble (𝒫 (Univ Nat)) := by
 /- Section 8.3 -/
 lemma rep_common_image_step
     {U V : Type} (R S : Rel U V) (X0 : Set U) (m : Nat) (a : U) :
-    a ∈ rep_common_image R S X0 (m + 1) ↔ ∃ (x : U),
-      x ∈ rep_common_image R S X0 m ∧ ∃ (y : V), R x y ∧ S a y := by rfl
+    a ∈ rep_common_image R S X0 (m + 1) ↔
+    ∃ x ∈ rep_common_image R S X0 m, ∃ (y : V), R x y ∧ S a y := by rfl
 
 lemma csb_match_cri {U V : Type} {R S : Rel U V} {X0 : Set U}
     {x : U} {y : V} (h1 : csb_match R S X0 x y)
@@ -1520,7 +1520,7 @@ lemma csb_match_cri {U V : Type} {R S : Rel U V} {X0 : Set U}
   · -- Case 1. h1 : x ∈ cum_rep_image R S X0 ∧ R x y
     show R x y from h1.right
     done
-  · -- Case 2. h1 : ¬x ∈ cum_rep_image R S X0 ∧ S x y
+  · -- Case 2. h1 : x ∉ cum_rep_image R S X0 ∧ S x y
     show R x y from absurd h2 h1.left
     done
   done
@@ -1532,7 +1532,7 @@ lemma csb_match_not_cri {U V : Type} {R S : Rel U V} {X0 : Set U}
   · -- Case 1. h1 : x ∈ cum_rep_image R S X0 ∧ R x y
     show S x y from absurd h1.left h2
     done
-  · -- Case 2. h1 : ¬x ∈ cum_rep_image R S X0 ∧ S x y
+  · -- Case 2. h1 : x ∉ cum_rep_image R S X0 ∧ S x y
     show S x y from h1.right
     done
   done
@@ -1573,11 +1573,11 @@ theorem Cantor_Schroeder_Bernstein_theorem
   have A_not_X_in_C : A \ X ⊆ C := by
     fix a : U
     assume h5 : a ∈ A \ X
-    contradict h5.right with h6  --h6 : ¬a ∈ C;  Goal : a ∈ X
+    contradict h5.right with h6  --h6 : a ∉ C;  Goal : a ∈ X
     define  --Goal : ∃ (n : Nat), a ∈ rep_common_image R S X0 n
     apply Exists.intro 0
     define
-    show a ∈ A ∧ ¬a ∈ C from And.intro h5.left h6
+    show a ∈ A ∧ a ∉ C from And.intro h5.left h6
     done
   define    --Goal : ∃ (R : Rel U V), matching R A B
   apply Exists.intro T
@@ -1587,7 +1587,7 @@ theorem Cantor_Schroeder_Bernstein_theorem
     define
     fix a : U; fix b : V
     assume h5 : T a b
-    rewrite [Tdef] at h5   --h5 : a ∈ X ∧ R a b ∨ ¬a ∈ X ∧ S a b
+    rewrite [Tdef] at h5   --h5 : a ∈ X ∧ R a b ∨ a ∉ X ∧ S a b
     by_cases on h5
     · -- Case 1. h5 : a ∈ X ∧ R a b
       have h6 : a ∈ A ∧ b ∈ D := R_match_AD.left h5.right
@@ -1612,7 +1612,7 @@ theorem Cantor_Schroeder_Bernstein_theorem
             fcnl_exists R_match_AD.right.left aA
           apply Exists.intro b
           rewrite [Tdef]
-          show a ∈ X ∧ R a b ∨ ¬a ∈ X ∧ S a b from
+          show a ∈ X ∧ R a b ∨ a ∉ X ∧ S a b from
             Or.inl (And.intro h5 Rab)
           done
         · -- Case 2. h5 : a ∉ X
@@ -1621,7 +1621,7 @@ theorem Cantor_Schroeder_Bernstein_theorem
             fcnl_exists S_match_CB.right.left aC
           apply Exists.intro b
           rewrite [Tdef]
-          show a ∈ X ∧ R a b ∨ ¬a ∈ X ∧ S a b from
+          show a ∈ X ∧ R a b ∨ a ∉ X ∧ S a b from
             Or.inr (And.intro h5 Sab)
           done
         done
@@ -1636,7 +1636,7 @@ theorem Cantor_Schroeder_Bernstein_theorem
           show b1 = b2 from
             fcnl_unique R_match_AD.right.left aA Rab1 Rab2
           done
-        · -- Case 2. h5 : ¬a ∈ X
+        · -- Case 2. h5 : a ∉ X
           have Sab1 : S a b1 := csb_match_not_cri Tab1 h5
           have Sab2 : S a b2 := csb_match_not_cri Tab2 h5
           have aC : a ∈ C := A_not_X_in_C (And.intro aA h5)
@@ -1661,7 +1661,7 @@ theorem Cantor_Schroeder_Bernstein_theorem
           have h7 : n ≠ 0 := by
             by_contra h7
             rewrite [h7] at h6
-            define at h6       --h6 : c ∈ A ∧ ¬c ∈ C
+            define at h6       --h6 : c ∈ A ∧ c ∉ C
             show False from h6.right cC
             done
           obtain (m : Nat) (h8 : n = m + 1) from
@@ -1682,7 +1682,7 @@ theorem Cantor_Schroeder_Bernstein_theorem
           show ∃ (n : Nat), a ∈ rep_common_image R S X0 n from
             Exists.intro m h9.left
           done
-        · -- Case 2. h5 : ¬c ∈ X
+        · -- Case 2. h5 : c ∉ X
           apply Exists.intro c
           rewrite [invRel_def, Tdef]
           show c ∈ X ∧ R c b ∨ c ∉ X ∧ S c b from
