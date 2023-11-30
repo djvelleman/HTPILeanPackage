@@ -586,7 +586,7 @@ theorem one_elt_iff_singleton {U : Type} (A : Set U) :
   apply Iff.intro
   · -- (→)
     assume h1 : numElts A 1  --Goal : ∃ (x : U), A = {x}
-    have h2 : 1 > 0 := by norm_num
+    have h2 : 1 > 0 := by decide
     obtain (x : U) (h3 : x ∈ A) from nonempty_of_pos_numElts h1 h2
     have h4 : numElts (A \ {x}) 0 := remove_one_numElts h1 h3
     rewrite [zero_elts_iff_empty] at h4

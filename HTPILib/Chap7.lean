@@ -212,7 +212,7 @@ theorem gcd_lin_comb : ∀ (b a : Nat),
   · -- Case 1. h1 : b = 0
     rewrite [h1, gcd_c1_base, gcd_c2_base, gcd_base]
       --Goal : 1 * ↑a + 0 * ↑0 = ↑a
-    norm_num
+    ring
     done
   · -- Case 2. h1 : b ≠ 0
     rewrite [gcd_c1_nonzero a h1, gcd_c2_nonzero a h1, gcd_nonzero a h1]
@@ -470,7 +470,7 @@ lemma exists_prime_factorization : ∀ (n : Nat), n ≥ 1 →
           _ = p * 0 := by rw [h6]
           _ = 0 := by ring
       rewrite [h7]
-      norm_num
+      decide
       done
     have m_pos : 0 < m := Nat.pos_of_ne_zero h5
     have m_lt_n : m < n := by
@@ -548,7 +548,7 @@ lemma le_nonzero_prod_left {a b : Nat} (h : a * b ≠ 0) : a ≤ a * b := by
   have h1 : b ≠ 0 := by
     contradict h with h1
     rewrite [h1]
-    norm_num
+    ring
     done
   have h2 : 1 ≤ b := Nat.pos_of_ne_zero h1
   show a ≤ a * b from
@@ -592,7 +592,7 @@ lemma ge_one_of_prod_one {a b : Nat} (h : a * b = 1) : a ≥ 1 := by
     by_contra h1
     rewrite [h1] at h
     contradict h
-    norm_num
+    linarith
     done
   show a ≥ 1 from Nat.pos_of_ne_zero h1
   done
@@ -799,7 +799,7 @@ theorem congr_refl (m : Nat) : ∀ (a : Int), a ≡ a (MOD m) := by
   fix a : Int
   define                --Goal : ∃ (c : Int), a - a = ↑m * c
   apply Exists.intro 0
-  norm_num
+  ring
   done
 
 theorem congr_symm {m : Nat} : ∀ {a b : Int},
@@ -918,7 +918,7 @@ lemma cc_nat_zero_iff_dvd (m k : Nat) : [k]_m = [0]_m ↔ m ∣ k :=
         assume h1 : 0 ∣ k
         obtain (c : Nat) (h2 : k = 0 * c) from h1
         rewrite [h2]
-        norm_num
+        ring
         done
       done
     | n + 1 => by

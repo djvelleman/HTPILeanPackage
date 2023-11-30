@@ -106,7 +106,7 @@ theorem Like_Example_6_1_1 :
 theorem Example_6_1_3 : ∀ n ≥ 5, 2 ^ n > n ^ 2 := by
   by_induc
   · -- Base Case
-    norm_num
+    decide
     done
   · -- Induction Step
     fix n : Nat
@@ -350,7 +350,7 @@ theorem Exercise_6_2_2 {A : Type} (R : BinRel A) (h : partial_order R) :
 theorem Example_6_3_1 : ∀ n ≥ 4, fact n > 2 ^ n := by
   by_induc
   · -- Base Case
-    norm_num
+    decide
     done
   · -- Induction Step
     fix n : Nat
@@ -481,13 +481,13 @@ example : ∀ (n : Nat), Fib n < 2 ^ n := by
   by_cases h1 : n = 0
   · -- Case 1. h1 : n = 0
     rewrite [h1]   --Goal : Fib 0 < 2 ^ 0
-    norm_num
+    decide
     done
   · -- Case 2. h1 : ¬n = 0
     by_cases h2 : n = 1
     · -- Case 2.1. h2 : n = 1
       rewrite [h2]
-      norm_num
+      decide
       done
     · -- Case 2.2. h2 : ¬n = 1
       obtain (k : Nat) (h3 : n = k + 2) from
@@ -551,7 +551,7 @@ theorem Theorem_6_4_5 :
     rewrite [←pqsqrt2, p'halfp]
     ring
     done
-  have h8 : 2 > 0 := by norm_num
+  have h8 : 2 > 0 := by decide
   rewrite [mul_left_cancel_iff_of_pos h8] at h7
     --h7 : 2 * (p' * p') = q * q
   have h9 : nat_even (q * q) := Exists.intro (p' * p') h7.symm

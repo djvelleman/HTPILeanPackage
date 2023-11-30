@@ -2,3 +2,4 @@
 /lake-packages/*
 .DS_Store
 /HTPILib/.DS_Store
+/.lake/*
