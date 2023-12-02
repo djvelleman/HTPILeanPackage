@@ -193,7 +193,7 @@ lemma three_prime : prime 3 := sorry
 -- 3.
 --Hint:  Use the previous exercise, Exercise_7_2_7, and Theorem_7_4_2.
 theorem Exercise_7_5_13a (a : Nat) (h1 : rel_prime 561 a) :
-    ↑(a ^ 560) ≡ 1 (MOD 3) := sorry
+    a ^ 560 ≡ 1 (MOD 3) := sorry
 
 -- 4.
 --Hint:  Imitate the way Theorem_7_2_2_Int was proven from Theorem_7_2_2.
