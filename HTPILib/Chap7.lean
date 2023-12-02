@@ -1713,7 +1713,7 @@ lemma Exercise_7_4_5_Int (m : Nat) (a : Int) :
 
 lemma Exercise_7_4_5_Nat (m a n : Nat) :
     [a]_m ^ n = [a ^ n]_m := by
-  rewrite [Exercise_7_4_5_Int, Nat.cast_pow]
+  rewrite [Exercise_7_4_5_Int]
   rfl
   done
 
@@ -1721,7 +1721,7 @@ theorem Euler's_theorem {m a : Nat} [NeZero m]
     (h1 : rel_prime m a) : a ^ (phi m) ≡ 1 (MOD m) := by
   have h2 : [a]_m ^ (phi m) = [1]_m := Theorem_7_4_2 h1
   rewrite [Exercise_7_4_5_Nat m a (phi m)] at h2
-    --h2 : [↑(a ^ phi m)]_m = [1]_m
+    --h2 : [a ^ phi m]_m = [1]_m
   show a ^ (phi m) ≡ 1 (MOD m) from (cc_eq_iff_congr _ _ _).ltr h2
   done
 
@@ -1783,6 +1783,7 @@ lemma Lemma_7_4_5 {m n : Nat} (a b : Int) (h1 : rel_prime m n) :
     have h5 : ↑n ∣ j := Theorem_7_2_2_Int h4 h1
     obtain (k : Int) (h6 : j = n * k) from h5
     apply Exists.intro k    --Goal : a - b = ↑(m * n) * k
+    rewrite [Nat.cast_mul]  --Goal : a - b = ↑m * ↑n * k
     show a - b = (m * n) * k from
       calc a - b
         _ = m * j := h3
@@ -1803,7 +1804,7 @@ lemma prime_NeZero {p : Nat} (h : prime p) : NeZero p := by
 
 lemma Lemma_7_5_1 {p e d m c s : Nat} {t : Int}
     (h1 : prime p) (h2 : e * d = (p - 1) * s + 1)
-    (h3 : ↑(m ^ e) - ↑c = ↑p * t) :
+    (h3 : m ^ e - c = p * t) :
     c ^ d ≡ m (MOD p) := by
   have h4 : m ^ e ≡ c (MOD p) := Exists.intro t h3
   have h5 : [m ^ e]_p = [c]_p := (cc_eq_iff_congr _ _ _).rtl h4
@@ -1864,14 +1865,14 @@ theorem Theorem_7_5_1 (p q n e d k m c : Nat)
     --h1 : m ^ e ≡ c (MOD n)
   rewrite [Exercise_7_4_5_Nat, cc_eq_iff_congr]
     --Goal : c ^ d ≡ m (MOD n)
-  obtain (j : Int) (h2 : ↑(m ^ e) - ↑c = ↑n * j) from h1
+  obtain (j : Int) (h2 : m ^ e - c = n * j) from h1
   rewrite [n_pq, Nat.cast_mul] at h2
-    --h2 : ↑(m ^ e) - ↑c = ↑p * ↑q * j
+    --h2 : m ^ e - c = p * q * j
   have h3 : e * d = (p - 1) * (k * (q - 1)) + 1 := by
     rewrite [ed_congr_1]
     ring
     done
-  have h4 : ↑(m ^ e) - ↑c = ↑p * (↑q * j) := by
+  have h4 : m ^ e - c = p * (q * j) := by
     rewrite [h2]
     ring
     done
@@ -1880,7 +1881,7 @@ theorem Theorem_7_5_1 (p q n e d k m c : Nat)
     rewrite [ed_congr_1]
     ring
     done
-  have h6 : ↑(m ^ e) - ↑c = ↑q * (↑p * j) := by
+  have h6 : m ^ e - c = q * (p * j) := by
     rewrite [h2]
     ring
     done
