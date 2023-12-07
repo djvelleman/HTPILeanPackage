@@ -41,11 +41,11 @@ theorem Exercise_4_2_14d {A B C : Type}
 /- Section 4.3 -/
 -- 1.
 example :
-    elementhood Int 6 { n : Int | ∃ (k : Int), n = 2 * k } := sorry
+    elementhood Int 6 {n : Int | ∃ (k : Int), n = 2 * k} := sorry
 
 -- 2.
 theorem Theorem_4_3_4_1 {A : Type} (R : BinRel A) :
-    reflexive R ↔ { (x, y) : A × A | x = y } ⊆ extension R := sorry
+    reflexive R ↔ {(x, y) : A × A | x = y} ⊆ extension R := sorry
 
 -- 3.
 theorem Theorem_4_3_4_3 {A : Type} (R : BinRel A) :
@@ -149,7 +149,7 @@ theorem Exercise_4_4_22 {A : Type}
 -- 10.
 theorem Exercise_4_4_24 {A : Type} (R : Set (A × A)) :
     smallestElt (sub (A × A)) (R ∪ (inv R))
-    { T : Set (A × A) | R ⊆ T ∧ symmetric (RelFromExt T) } := sorry
+    {T : Set (A × A) | R ⊆ T ∧ symmetric (RelFromExt T)} := sorry
 
 /- Section 4.5 -/
 -- 1.
@@ -180,7 +180,7 @@ lemma elt_mod_equiv_class_of_elt
 
 -- Definitions for next three exercises:
 def dot {A : Type} (F G : Set (Set A)) : Set (Set A) :=
-    { Z : Set A | ¬empty Z ∧ ∃ X ∈ F, ∃ Y ∈ G, Z = X ∩ Y }
+    {Z : Set A | ¬empty Z ∧ ∃ X ∈ F, ∃ Y ∈ G, Z = X ∩ Y}
 
 def conj {A : Type} (R S : BinRel A) (x y : A) : Prop :=
     R x y ∧ S x y

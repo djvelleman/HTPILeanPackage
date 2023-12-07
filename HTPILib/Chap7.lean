@@ -310,7 +310,7 @@ lemma exists_prime_factor : ∀ (n : Nat), 2 ≤ n →
 lemma exists_least_prime_factor {n : Nat} (h : 2 ≤ n) :
     ∃ (p : Nat), prime_factor p n ∧
     ∀ (q : Nat), prime_factor q n → p ≤ q := by
-  set S : Set Nat := { p : Nat | prime_factor p n }
+  set S : Set Nat := {p : Nat | prime_factor p n}
   have h2 : ∃ (p : Nat), p ∈ S := exists_prime_factor n h
   show ∃ (p : Nat), prime_factor p n ∧
     ∀ (q : Nat), prime_factor q n → p ≤ q from well_ord_princ S h2

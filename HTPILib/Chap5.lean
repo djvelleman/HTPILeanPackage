@@ -5,7 +5,7 @@ namespace HTPI
 
 /- Definitions -/
 def graph {A B : Type} (f : A → B) : Set (A × B) :=
-    { (a, b) : A × B | f a = b }
+    {(a, b) : A × B | f a = b}
 
 def is_func_graph {A B : Type} (G : Set (A × B)) : Prop :=
     ∀ (x : A), ∃! (y : B), (x, y) ∈ G
@@ -19,25 +19,25 @@ def one_to_one {A B : Type} (f : A → B) : Prop :=
 def closed {A : Type} (f : A → A) (C : Set A) : Prop := ∀ x ∈ C, f x ∈ C
 
 def closure {A : Type} (f : A → A) (B C : Set A) : Prop :=
-  smallestElt (sub A) C { D : Set A | B ⊆ D ∧ closed f D }
+  smallestElt (sub A) C {D : Set A | B ⊆ D ∧ closed f D}
 
 def closed2 {A : Type} (f : A → A → A) (C : Set A) : Prop :=
   ∀ x ∈ C, ∀ y ∈ C, f x y ∈ C
 
 def closure2 {A : Type} (f : A → A → A) (B C : Set A) : Prop :=
-  smallestElt (sub A) C { D : Set A | B ⊆ D ∧ closed2 f D }
+  smallestElt (sub A) C {D : Set A | B ⊆ D ∧ closed2 f D}
 
 def closed_family {A : Type} (F : Set (A → A)) (C : Set A) : Prop :=
   ∀ f ∈ F, closed f C
 
 def closure_family {A : Type} (F : Set (A → A)) (B C : Set A) : Prop :=
-  smallestElt (sub A) C { D : Set A | B ⊆ D ∧ closed_family F D }
+  smallestElt (sub A) C {D : Set A | B ⊆ D ∧ closed_family F D}
 
 def image {A B : Type} (f : A → B) (X : Set A) : Set B :=
-  { f x | x ∈ X }
+  {f x | x ∈ X}
 
 def inverse_image {A B : Type} (f : A → B) (Y : Set B) : Set A :=
-  { a : A | f a ∈ Y }
+  {a : A | f a ∈ Y}
 
 /- Section 5.1 -/
 theorem graph_def {A B : Type} (f : A → B) (a : A) (b : B) :
@@ -269,7 +269,7 @@ theorem Theorem_5_3_5 {A B : Type} (f : A → B) (g : B → A)
 /- Section 5.4 -/
 theorem Theorem_5_4_5 {A : Type} (f : A → A) (B : Set A) :
     ∃ (C : Set A), closure f B C := by
-  set F : Set (Set A) := { D : Set A | B ⊆ D ∧ closed f D }
+  set F : Set (Set A) := {D : Set A | B ⊆ D ∧ closed f D}
   set C : Set A := ⋂₀ F
   apply Exists.intro C    --Goal : closure f B C
   define                  --Goal : C ∈ F ∧ ∀ x ∈ F, C ⊆ x

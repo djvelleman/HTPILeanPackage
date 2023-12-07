@@ -57,7 +57,7 @@ def rep_image {A : Type} (f : A → A) (n : Nat) (B : Set A) : Set A :=
     | k + 1 => image f (rep_image f k B)
 
 def cumul_image {A : Type} (f : A → A) (B : Set A) : Set A :=
-  { x : A | ∃ (n : Nat), x ∈ rep_image f n B }
+  {x : A | ∃ (n : Nat), x ∈ rep_image f n B}
 
 /- Section 6.1 -/
 theorem Like_Example_6_1_2 :
@@ -533,7 +533,7 @@ lemma sq_even_iff_even (n : Nat) : nat_even (n * n) ↔ nat_even n := sorry
 theorem Theorem_6_4_5 :
     ¬∃ (q p : Nat), p * p = 2 * (q * q) ∧ q ≠ 0 := by
   set S : Set Nat :=
-    { q : Nat | ∃ (p : Nat), p * p = 2 * (q * q) ∧ q ≠ 0 }
+    {q : Nat | ∃ (p : Nat), p * p = 2 * (q * q) ∧ q ≠ 0}
   by_contra h1
   have h2 : ∃ (q : Nat), q ∈ S := h1
   have h3 : ∃ q ∈ S, ∀ r ∈ S, q ≤ r := well_ord_princ S h2
@@ -609,7 +609,7 @@ theorem Theorem_6_5_1 {A : Type} (f : A → A) (B : Set A) :
     closure f B (cumul_image f B) := by
   define
   apply And.intro
-  · -- Proof that cumul_image f B ∈ { D : Set A | B ⊆ D ∧ closed f D }
+  · -- Proof that cumul_image f B ∈ {D : Set A | B ⊆ D ∧ closed f D}
     define  --Goal : B ⊆ cumul_image f B ∧ closed f (cumul_image f B)
     apply And.intro
     · -- Proof that B ⊆ cumul_image f B
@@ -637,7 +637,7 @@ theorem Theorem_6_5_1 {A : Type} (f : A → A) (B : Set A) :
     done
   · -- Proof that cumul_image f B is smallest
     fix D : Set A
-    assume h1 : D ∈ { D : Set A | B ⊆ D ∧ closed f D }
+    assume h1 : D ∈ {D : Set A | B ⊆ D ∧ closed f D}
     define at h1  --h1 : B ⊆ D ∧ closed f D
     define   --Goal : ∀ ⦃a : A⦄, a ∈ cumul_image f B → a ∈ D
     fix x : A

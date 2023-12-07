@@ -41,10 +41,10 @@ def restrict_to {U V : Type} (S : Rel U V) (A : Set U)
 
 def fqn (q : Rat) : Nat := fnnn (fzn q.num, q.den)
 
-def Set_rp_below (m : Nat) : Set Nat := { n : Nat | rel_prime m n ∧ n < m }
+def Set_rp_below (m : Nat) : Set Nat := {n : Nat | rel_prime m n ∧ n < m}
 
 def Set_prod {U V : Type} (A : Set U) (B : Set V) : Set (U × V) :=
-  { (a, b) : U × V | a ∈ A ∧ b ∈ B }
+  {(a, b) : U × V | a ∈ A ∧ b ∈ B}
 
 notation:75 A:75 " ×ₛ " B:75 => Set_prod A B
 
@@ -63,25 +63,25 @@ def enum_union_fam {U : Type}
     ∃ A ∈ F, R p.1 A ∧ (f A) p.2 a
 
 def seq {U : Type} (A : Set U) : Set (List U) :=
-  { l : List U | ∀ x ∈ l, x ∈ A }
+  {l : List U | ∀ x ∈ l, x ∈ A}
 
 def seq_by_length {U : Type} (A : Set U) (n : Nat) : Set (List U) :=
-  { l : List U | l ∈ seq A ∧ l.length = n }
+  {l : List U | l ∈ seq A ∧ l.length = n}
 
 def seq_cons (U : Type) (p : U × (List U)) : List U := p.1 :: p.2
 
 def sbl_set {U : Type} (A : Set U) : Set (Set (List U)) :=
-  { S : Set (List U) | ∃ (n : Nat), seq_by_length A n = S }
+  {S : Set (List U) | ∃ (n : Nat), seq_by_length A n = S}
 
 def rep_common_image
   {U V : Type} (R S : Rel U V) (X0 : Set U) (n : Nat) : Set U :=
   match n with
     | 0 => X0
-    | m + 1 => { a : U | ∃ x ∈ rep_common_image R S X0 m,
-                          ∃ (y : V), R x y ∧ S a y }
+    | m + 1 => {a : U | ∃ x ∈ rep_common_image R S X0 m,
+                          ∃ (y : V), R x y ∧ S a y}
 
 def cum_rep_image {U V : Type} (R S : Rel U V) (X0 : Set U) : Set U :=
-  { a : U | ∃ (n : Nat), a ∈ rep_common_image R S X0 n }
+  {a : U | ∃ (n : Nat), a ∈ rep_common_image R S X0 n}
 
 def csb_match {U V : Type} (R S : Rel U V) (X0 : Set U)
   (x : U) (y : V) : Prop := x ∈ cum_rep_image R S X0 ∧ R x y ∨
@@ -690,7 +690,7 @@ theorem Theorem_8_1_5_1_to_2 {U : Type} {A : Set U} (h1 : ctble A) :
 
 lemma exists_least_rel_to {U : Type} {S : Rel Nat U} {x : U}
     (h1 : ∃ (n : Nat), S n x) : ∃ (n : Nat), least_rel_to S x n := by
-  set W : Set Nat := { n : Nat | S n x }
+  set W : Set Nat := {n : Nat | S n x}
   have h2 : ∃ (n : Nat), n ∈ W := h1
   show ∃ (n : Nat), least_rel_to S x n from well_ord_princ W h2
   done
@@ -744,7 +744,7 @@ theorem Theorem_8_1_5_3_to_1 {U : Type} {A : Set U}
                 --x1 ∈ A ∧ S x1 n → x2 ∈ A ∧ S x2 n → x1 = x2
   rewrite [ctble_iff_equinum_set_nat]  --Goal : ∃ (I : Set Nat), I ∼ A
   set R : Rel Nat U := invRel (restrict_to S A)
-  set I : Set Nat := { n : Nat | ∃ (x : U), R n x }
+  set I : Set Nat := {n : Nat | ∃ (x : U), R n x}
   apply Exists.intro I
   define        --Goal : ∃ (R : Rel Nat U), matching R I A
   apply Exists.intro R
@@ -1485,7 +1485,7 @@ theorem Cantor's_theorem : ¬ctble (𝒫 (Univ Nat)) := by
   define at h2
   have h3 : unique_val_on_N R := h2.left
   have h4 : nat_rel_onto R (𝒫 (Univ Nat)) := h2.right
-  set D : Set Nat := { n : Nat | ∃ (X : Set Nat), R n X ∧ n ∉ X }
+  set D : Set Nat := {n : Nat | ∃ (X : Set Nat), R n X ∧ n ∉ X}
   have h5 : D ∈ 𝒫 (Univ Nat) := set_elt_powerset_univ D
   define at h4
   obtain (n : Nat) (h6 : R n D) from h4 h5

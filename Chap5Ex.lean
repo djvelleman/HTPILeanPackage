@@ -66,7 +66,7 @@ theorem Exercise_5_2_11b {A B C : Type} (f: A → B) (g : B → C) :
 
 -- 5.
 theorem Exercise_5_2_12 {A B : Type} (f : A → B) (g : B → Set A)
-    (h : ∀ (b : B), g b = { a : A | f a = b }) :
+    (h : ∀ (b : B), g b = {a : A | f a = b}) :
     onto f → one_to_one g := sorry
 
 -- 6.
@@ -140,7 +140,7 @@ example {A : Type} (F : Set (Set A)) (B : Set A) :
     smallestElt (sub A) B F → B = ⋂₀ F := sorry
 
 -- 2.
-def complement {A : Type} (B : Set A) : Set A := { a : A | a ∉ B }
+def complement {A : Type} (B : Set A) : Set A := {a : A | a ∉ B}
 
 theorem Exercise_5_4_7 {A : Type} (f g : A → A) (C : Set A)
     (h1 : f ∘ g = id) (h2 : closed f C) : closed g (complement C) := sorry

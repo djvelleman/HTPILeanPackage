@@ -16,10 +16,11 @@ def Iff.rtl {p q : Prop} (h : p ↔ q) := h.mpr
 
 --New set theory notation.
 --Lower priority than all other set theory notation
-macro (priority := low-1) "{ " pat:term " : " t:term " | " p:term " }" : term =>
+--Will be in Mathlib v4.4.0
+macro (priority := low-1) "{" pat:term " : " t:term " | " p:term "}" : term =>
   `({ x : $t | match x with | $pat => $p })
 
-macro (priority := low-1) "{ " pat:term " | " p:term " }" : term =>
+macro (priority := low-1) "{" pat:term " | " p:term "}" : term =>
   `({ x | match x with | $pat => $p })
 
 @[app_unexpander setOf]
@@ -28,7 +29,7 @@ def setOf.unexpander : Lean.PrettyPrinter.Unexpander
       if x == y then
         `({ $pat:term | $p:term })
       else
-        throw ()  --Or could use `({ $x:ident | match $y:ident with | $pat => $p})
+        throw ()
   | `($_ fun ($x:ident : $ty:term) => match $y:ident with | $pat => $p) =>
       if x == y then
         `({ $pat:term : $ty:term | $p:term })
@@ -126,8 +127,8 @@ def binderString (bi : BinderInfo) : String :=
   match bi with
     | .default => "default"
     | _ => "not default"
-    
-def ExprToString (e : Expr) : String := 
+
+def ExprToString (e : Expr) : String :=
 match e with
   | .bvar n => "(bvar " ++ (toString n) ++ ")" -- bound variables
   | .fvar f => "(fvar " ++ (toString f.name) ++ ")"  -- free variables
@@ -284,10 +285,10 @@ def fixElt (e : Expr) (doFix : Bool) : TacticM Expr := do
       | _ => return e
   else
     return e
-  
+
 --Unfold if possible, else return input.  Input should have no MData.
 partial def unfoldHeadCore (e : Expr) (first rep : Bool) : TacticM Expr := do
-  match e with  --Don't unfold { x | p } if not applied to anything
+  match e with  --Don't unfold {x | p} if not applied to anything
     | (app (app (const ``setOf _) _) _) => return e
     | _ => pure ()
   let (h, args) := getHeadData e
@@ -301,7 +302,7 @@ partial def unfoldHeadCore (e : Expr) (first rep : Bool) : TacticM Expr := do
             pure (applyToExData unfoldExUn lev l r)
           else
             return e
-        | _ => 
+        | _ =>
           if !first then
             if c ∈ dontUnfold then
               return e
@@ -323,7 +324,7 @@ partial def unfoldHeadCore (e : Expr) (first rep : Bool) : TacticM Expr := do
     return (← unfoldHeadCore (consumeMData e1) false true)
   else
     return e1
-  
+
 def unfoldHead (e : Expr) (tac : Name) (first rep : Bool) : TacticM Expr := do
   let e1 := consumeMData e
   let e2 ← unfoldHeadCore e1 first rep
@@ -463,7 +464,7 @@ def dmRuleFromInfoNoNeg (l r : Expr) (conn : Expr → Expr → Expr) (rs : Array
       match (← getPropForm r) with
         | PropForm.not nr => return (rs[0]!, conn nl nr)
         | _ => return (rs[1]!, conn nl (mkNot r))
-  | _ => 
+  | _ =>
       match (← getPropForm r) with
         | PropForm.not nr => return (rs[2]!, conn (mkNot l) nr)
         | _ => return (rs[3]!, conn (mkNot l) (mkNot r))
@@ -520,7 +521,7 @@ def qnRuleFromInfo (v : Name) (t b : Expr) (qf : Name → BinderInfo → Expr �
 def qnRule (form : Expr) : TacticM ruleType := do
   match (← getPropForm form) with
     | PropForm.not p => match (← getPropForm p) with
-      | PropForm.all v t b _ =>           
+      | PropForm.all v t b _ =>
         qnRuleFromInfo v t b (mkExists (← Meta.getLevel t)) false
           (`not_forall_not, `not_forall)
       | PropForm.ex _ v t b _ =>
@@ -530,7 +531,7 @@ def qnRule (form : Expr) : TacticM ruleType := do
     | PropForm.all v t b _ =>
       qnRuleFromInfo v t b (mkExists (← Meta.getLevel t)) true
         (`not_exists.symm, `not_exists_not.symm)
-    | PropForm.ex _ v t b _ => 
+    | PropForm.ex _ v t b _ =>
       qnRuleFromInfo v t b mkForall true
         (`not_forall.symm, `not_forall_not.symm)
     | _ => myFail `quant_neg "quantifier negation laws don't apply"
@@ -595,7 +596,7 @@ partial def checkIdUsed (tac : Name) (i : Syntax) : TacticM Unit := do
     | .missing => return ()
     | .node _ _ as => for a in as do checkIdUsed tac a
     | .atom _ _ => return ()
-    | .ident _ _ v _ => 
+    | .ident _ _ v _ =>
         if (← getLCtx).usesUserName v then
           myFail tac ("identifier " ++ (toString v) ++ " already in use")
         else
@@ -604,7 +605,7 @@ partial def checkIdUsed (tac : Name) (i : Syntax) : TacticM Unit := do
 -- Get label from "with" clause, or default label.  Used by several tactics
 def getLabel (tac : Name) (w : Option WithId) (dflt : Ident := mkIdent `this) : TacticM Ident := do
   match w with
-    | some h => 
+    | some h =>
       let i := h.raw[1]
       checkIdUsed tac i
       return ⟨i⟩
@@ -717,7 +718,7 @@ def ensureContra (w : Option WithId) : TacticM Unit :=
     match (← getPropForm t) with
       | PropForm.f => return ()
       | _ => evalTactic (← `(tactic| by_contra $label:ident))
- 
+
 elab "contradict" h:term w:(withId)? : tactic => do
   ensureContra w
   withMainContext do
@@ -847,7 +848,7 @@ def mkUn (lev: Level) (v : Name) (t b : Expr) : TacticM Expr := do
   let v2 := Name.appendIndexAfter v 2
   let f1 := mkLambda v1 BinderInfo.default t b
   let f2 := mkLambda v2 BinderInfo.default t b
-  Meta.lambdaTelescope f1 fun fv1 e1 => 
+  Meta.lambdaTelescope f1 fun fv1 e1 =>
     Meta.lambdaTelescope f2 fun fv2 e2 => do
       let body ← mkArrow e1 (← mkArrow e2
         (mkApp3 (const ``Eq [lev]) t fv1[0]! fv2[0]!))
@@ -1115,7 +1116,7 @@ theorem sum_base {A : Type} [AddZeroClass A] {k : Nat} {f : Nat → A} :
   rewrite [zero_add, add_zero]
   rfl
   done
- 
+
 theorem sum_step {A : Type} [AddZeroClass A] {k n : Nat} {f : Nat → A}
     (h : k ≤ n) : Sum i from k to (n + 1), f i = (Sum i from k to n, f i) + f (n + 1) := by
   define : Sum i from k to (n + 1), f i

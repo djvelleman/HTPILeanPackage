@@ -20,11 +20,11 @@ lemma ctble_of_equinum_ctble {U V : Type} {A : Set U} {B : Set V}
     (h1 : A ∼ B) (h2 : ctble A) : ctble B := sorry
 
 -- 6.
-theorem Exercise_8_1_1_b : denum { n : Int | even n } := sorry
+theorem Exercise_8_1_1_b : denum {n : Int | even n} := sorry
 
 -- Definition for next four exercises
 def Rel_image {U V : Type} (R : Rel U V) (A : Set U) : Set V :=
-  { y : V | ∃ (x : U), x ∈ A ∧ R x y }
+  {y : V | ∃ (x : U), x ∈ A ∧ R x y}
 
 -- 7.
 lemma Rel_image_on_power_set {U V : Type} {R : Rel U V}
@@ -158,7 +158,7 @@ lemma set_to_list {U : Type} {A : Set U} (h : finite A) :
 -- 5.
 --Hint:  Use the previous exercise and Theorem_8_2_4
 theorem Like_Exercise_8_2_4 {U : Type} {A : Set U} (h : ctble A) :
-    ctble { X : Set U | X ⊆ A ∧ finite X } := sorry
+    ctble {X : Set U | X ⊆ A ∧ finite X} := sorry
 
 -- 6.
 theorem Exercise_8_2_6b (A B C : Type) :
@@ -170,7 +170,7 @@ theorem Like_Exercise_8_2_7 : ∃ (P : Set (Set Nat)),
 
 -- 8.
 theorem unctbly_many_inf_set_nat :
-    ¬ctble { X : Set Nat | ¬finite X } := sorry
+    ¬ctble {X : Set Nat | ¬finite X} := sorry
 
 -- 9.
 theorem Exercise_8_2_8 {U : Type} {A B : Set U}
@@ -183,23 +183,23 @@ theorem CSB_func {U V : Type} {f : U → V} {g : V → U}
 
 -- 2.
 theorem intervals_equinum :
-    { x : Real | 0 < x ∧ x < 1 } ∼ { x : Real | 0 < x ∧ x ≤ 1 } := sorry
+    {x : Real | 0 < x ∧ x < 1} ∼ {x : Real | 0 < x ∧ x ≤ 1} := sorry
 
 -- Definitions for next six exercises
 def EqRel (A : Type) : Set (BinRel A) :=
-  { R : BinRel A | equiv_rel R }
+  {R : BinRel A | equiv_rel R}
 
 def Part (A : Type) : Set (Set (Set A)) :=
-  { P : Set (Set A) | partition P }
+  {P : Set (Set A) | partition P}
 
 def EqRelExt (A : Type) : Set (Set (A × A)) :=
-  { E : Set (A × A) | ∃ (R : BinRel A), equiv_rel R ∧ extension R = E}
+  {E : Set (A × A) | ∃ (R : BinRel A), equiv_rel R ∧ extension R = E}
 
 def shift_and_zero (X : Set Nat) : Set Nat :=
-  { x + 2 | x ∈ X } ∪ {0}
+  {x + 2 | x ∈ X} ∪ {0}
 
 def saz_pair (X : Set Nat) : Set (Set Nat) :=
-  { shift_and_zero X, (Univ Nat) \ (shift_and_zero X) }
+  {shift_and_zero X, (Univ Nat) \ (shift_and_zero X)}
 
 -- 3.
 theorem EqRel_equinum_Part (A : Type) : EqRel A ∼ Part A := sorry

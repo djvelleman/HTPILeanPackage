@@ -5,20 +5,20 @@ namespace HTPI
 
 /- Definitions -/
 def Dom {A B : Type} (R : Set (A × B)) : Set A :=
-  { a : A | ∃ (b : B), (a, b) ∈ R }
+  {a : A | ∃ (b : B), (a, b) ∈ R}
 
 def Ran {A B : Type} (R : Set (A × B)) : Set B :=
-  { b : B | ∃ (a : A), (a, b) ∈ R }
+  {b : B | ∃ (a : A), (a, b) ∈ R}
 
 def inv {A B : Type} (R : Set (A × B)) : Set (B × A) :=
-  { (b, a) : B × A | (a, b) ∈ R }
+  {(b, a) : B × A | (a, b) ∈ R}
 
 def comp {A B C : Type}
     (S : Set (B × C)) (R : Set (A × B)) : Set (A × C) :=
-  { (a, c) : A × C | ∃ (x : B), (a, x) ∈ R ∧ (x, c) ∈ S }
+  {(a, c) : A × C | ∃ (x : B), (a, x) ∈ R ∧ (x, c) ∈ S}
 
 def extension {A B : Type} (R : Rel A B) : Set (A × B) :=
-  { (a, b) : A × B | R a b }
+  {(a, b) : A × B | R a b}
 
 def reflexive {A : Type} (R : BinRel A) : Prop :=
   ∀ (x : A), R x x
@@ -55,16 +55,16 @@ def upperBd {A : Type} (R : BinRel A) (a : A) (B : Set A) : Prop :=
   ∀ x ∈ B, R x a
 
 def lub {A : Type} (R : BinRel A) (a : A) (B : Set A) : Prop :=
-  smallestElt R a { c : A | upperBd R c B }
+  smallestElt R a {c : A | upperBd R c B}
 
 def equiv_rel {A : Type} (R : BinRel A) : Prop :=
   reflexive R ∧ symmetric R ∧ transitive R
 
 def equivClass {A : Type} (R : BinRel A) (x : A) : Set A :=
-  { y : A | R y x }
+  {y : A | R y x}
 
 def mod (A : Type) (R : BinRel A) : Set (Set A) :=
-  { equivClass R x | x : A }
+  {equivClass R x | x : A}
 
 def empty {A : Type} (X : Set A) : Prop := ¬∃ (x : A), x ∈ X
 

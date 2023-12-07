@@ -71,7 +71,7 @@ theorem Like_Exercise_6_2_16 {A : Type} (f : A → A)
 -- 8.
 --Hint:  Use Exercise_6_2_2
 theorem Example_6_2_2 {A : Type} (R : BinRel A)
-    (h1 : ∃ (n : Nat), numElts { x : A | x = x } n)
+    (h1 : ∃ (n : Nat), numElts {x : A | x = x} n)
     (h2 : partial_order R) : ∃ (T : BinRel A),
       total_order T ∧ ∀ (x y : A), R x y → T x y := sorry
 
@@ -187,14 +187,14 @@ def rep_image_family {A : Type}
     (F : Set (A → A)) (n : Nat) (B : Set A) : Set A :=
   match n with
     | 0 => B
-    | k + 1 => { x : A | ∃ f ∈ F, x ∈ image f (rep_image_family F k B) }
+    | k + 1 => {x : A | ∃ f ∈ F, x ∈ image f (rep_image_family F k B)}
 
 def cumul_image_family {A : Type}
     (F : Set (A → A)) (B : Set A) : Set A :=
-  { x : A | ∃ (n : Nat), x ∈ rep_image_family F n B }
+  {x : A | ∃ (n : Nat), x ∈ rep_image_family F n B}
 
 def image2 {A : Type} (f : A → A → A) (B : Set A) : Set A :=
-  { z : A | ∃ (x y : A), x ∈ B ∧ y ∈ B ∧ z = f x y }
+  {z : A | ∃ (x y : A), x ∈ B ∧ y ∈ B ∧ z = f x y}
 
 def rep_image2 {A : Type}
     (f : A → A → A) (n : Nat) (B : Set A) : Set A :=
@@ -203,7 +203,7 @@ def rep_image2 {A : Type}
     | k + 1 => image2 f (rep_image2 f k B)
 
 def cumul_image2 {A : Type} (f : A → A → A) (B : Set A) : Set A :=
-  { x : A | ∃ (n : Nat), x ∈ rep_image2 f n B }
+  {x : A | ∃ (n : Nat), x ∈ rep_image2 f n B}
 
 def un_image2 {A : Type} (f : A → A → A) (B : Set A) : Set A :=
   B ∪ (image2 f B)
@@ -216,7 +216,7 @@ def rep_un_image2 {A : Type}
 
 def cumul_un_image2 {A : Type}
     (f : A → A → A) (B : Set A) : Set A :=
-  { x : A | ∃ (n : Nat), x ∈ rep_un_image2 f n B }
+  {x : A | ∃ (n : Nat), x ∈ rep_un_image2 f n B}
 
 -- 1.
 theorem rep_image_family_base {A : Type}
@@ -225,7 +225,7 @@ theorem rep_image_family_base {A : Type}
 theorem rep_image_family_step {A : Type}
     (F : Set (A → A)) (n : Nat) (B : Set A) :
     rep_image_family F (n + 1) B =
-    { x : A | ∃ f ∈ F, x ∈ image f (rep_image_family F n B) } := by rfl
+    {x : A | ∃ f ∈ F, x ∈ image f (rep_image_family F n B)} := by rfl
 
 lemma rep_image_family_sub_closed {A : Type}
     (F : Set (A → A)) (B D : Set A)
@@ -274,7 +274,7 @@ theorem Exercise_6_5_8b {A : Type} (f : A → A → A) (B : Set A) :
     closure2 f B (cumul_un_image2 f B) := sorry
 
 -- Definitions for next four exercises
-def idExt (A : Type) : Set (A × A) := { (x, y) : A × A | x = y }
+def idExt (A : Type) : Set (A × A) := {(x, y) : A × A | x = y}
 
 def rep_comp {A : Type} (R : Set (A × A)) (n : Nat) : Set (A × A) :=
   match n with
@@ -282,7 +282,7 @@ def rep_comp {A : Type} (R : Set (A × A)) (n : Nat) : Set (A × A) :=
     | k + 1 => comp (rep_comp R k) R
 
 def cumul_comp {A : Type} (R : Set (A × A)) : Set (A × A) :=
-  { (x, y) : A × A | ∃ n ≥ 1, (x, y) ∈ rep_comp R n }
+  {(x, y) : A × A | ∃ n ≥ 1, (x, y) ∈ rep_comp R n}
 -- 4.
 theorem rep_comp_one {A : Type} (R : Set (A × A)) :
     rep_comp R 1 = R := sorry
@@ -300,5 +300,4 @@ lemma rep_comp_sub_trans {A : Type} {R S : Set (A × A)}
 -- 7.
 theorem Exercise_6_5_14 {A : Type} (R : Set (A × A)) :
     smallestElt (sub (A × A)) (cumul_comp R)
-    { S : Set (A × A) | R ⊆ S ∧ transitive (RelFromExt S) } := sorry
-
+    {S : Set (A × A) | R ⊆ S ∧ transitive (RelFromExt S)} := sorry

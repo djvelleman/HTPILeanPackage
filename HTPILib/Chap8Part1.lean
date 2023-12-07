@@ -27,12 +27,12 @@ def RelWithinFromFunc {U V : Type} (f : U → V) (A : Set U)
 def one_one_on {U V : Type} (f : U → V) (A : Set U) : Prop :=
   ∀ ⦃x1 x2 : U⦄, x1 ∈ A → x2 ∈ A → f x1 = f x2 → x1 = x2
 
-def Univ (U : Type) : Set U := { x : U | True }
+def Univ (U : Type) : Set U := {x : U | True}
 
 def compRel {U V W : Type} (S : Rel V W) (R : Rel U V) : Rel U W :=
   RelFromExt (comp (extension S) (extension R))
 
-def I (n : Nat) : Set Nat := { k : Nat | k < n }
+def I (n : Nat) : Set Nat := {k : Nat | k < n}
 
 def finite {U : Type} (A : Set U) : Prop :=
   ∃ (n : Nat), I n ∼ A
