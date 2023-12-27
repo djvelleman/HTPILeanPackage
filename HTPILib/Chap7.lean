@@ -80,7 +80,7 @@ def num_rp_below (m k : Nat) : Nat :=
     | j + 1 => if gcd m j = 1 then (num_rp_below m j) + 1
                 else num_rp_below m j
 
-def phi (m : Nat) := num_rp_below m m
+def phi (m : Nat) : Nat := num_rp_below m m
 
 def prod_seq {m : Nat}
     (j k : Nat) (f : Nat → ZMod m) : ZMod m :=
