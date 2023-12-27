@@ -166,7 +166,7 @@ theorem Exercise_8_2_6b (A B C : Type) :
 
 -- 7.
 theorem Like_Exercise_8_2_7 : ∃ (P : Set (Set Nat)),
-    partition P ∧ ctble P ∧ ∀ X ∈ P, ctble X := sorry
+    partition P ∧ denum P ∧ ∀ X ∈ P, denum X := sorry
 
 -- 8.
 theorem unctbly_many_inf_set_nat :
