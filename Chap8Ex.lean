@@ -162,7 +162,7 @@ theorem Like_Exercise_8_2_4 {U : Type} {A : Set U} (h : ctble A) :
 
 -- 6.
 theorem Exercise_8_2_6b (A B C : Type) :
-    Univ (A × B → C) ∼ Univ (A → B → C) := sorry
+    Univ ((A × B) → C) ∼ Univ (A → (B → C)) := sorry
 
 -- 7.
 theorem Like_Exercise_8_2_7 : ∃ (P : Set (Set Nat)),
