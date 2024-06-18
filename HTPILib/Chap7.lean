@@ -15,7 +15,7 @@ def gcd (a b : Nat) : Nat :=
     | n + 1 =>
       have : a % (n + 1) < n + 1 := mod_succ_lt a n
       gcd (n + 1) (a % (n + 1))
-  termination_by gcd a b => b
+  termination_by b
 
 mutual
   def gcd_c1 (a b : Nat) : Int :=
@@ -25,6 +25,7 @@ mutual
         have : a % (n + 1) < n + 1 := mod_succ_lt a n
         gcd_c2 (n + 1) (a % (n + 1))
           --Corresponds to s = t'
+    termination_by b
 
   def gcd_c2 (a b : Nat) : Int :=
     match b with
@@ -34,10 +35,8 @@ mutual
         gcd_c1 (n + 1) (a % (n + 1)) -
           (gcd_c2 (n + 1) (a % (n + 1))) * ↑(a / (n + 1))
           --Corresponds to t = s' - t'q
+    termination_by b
 end
-  termination_by
-    gcd_c1 a b => b
-    gcd_c2 a b => b
 
 def prime (n : Nat) : Prop :=
   2 ≤ n ∧ ¬∃ (a b : Nat), a * b = n ∧ a < n ∧ b < n
@@ -240,7 +239,7 @@ theorem gcd_lin_comb : ∀ (b a : Nat),
 
 theorem Theorem_7_1_6 {d a b : Nat} (h1 : d ∣ a) (h2 : d ∣ b) :
     d ∣ gcd a b := by
-  rewrite [←Int.coe_nat_dvd]    --Goal : ↑d ∣ ↑(gcd a b)
+  rewrite [←Int.natCast_dvd_natCast]    --Goal : ↑d ∣ ↑(gcd a b)
   set s : Int := gcd_c1 a b
   set t : Int := gcd_c2 a b
   have h3 : s * ↑a + t * ↑b = ↑(gcd a b) := gcd_lin_comb b a
@@ -526,7 +525,7 @@ lemma exists_prime_factorization : ∀ (n : Nat), n ≥ 1 →
 
 theorem Theorem_7_2_2 {a b c : Nat}
     (h1 : c ∣ a * b) (h2 : rel_prime a c) : c ∣ b := by
-  rewrite [←Int.coe_nat_dvd]  --Goal : ↑c ∣ ↑b
+  rewrite [←Int.natCast_dvd_natCast]  --Goal : ↑c ∣ ↑b
   define at h1; define at h2; define
   obtain (j : Nat) (h3 : a * b = c * j) from h1
   set s : Int := gcd_c1 a c
@@ -822,7 +821,7 @@ theorem congr_trans {m : Nat} : ∀ {a b c : Int},
 
 /- Fundamental properties of congruence classes -/
 lemma cc_eq_iff_val_eq {n : Nat} (X Y : ZMod (n + 1)) :
-    X = Y ↔ X.val = Y.val := Fin.eq_iff_veq X Y
+    X = Y ↔ X.val = Y.val := Fin.ext_iff
 
 lemma val_nat_eq_mod (n k : Nat) :
     ([k]_(n + 1)).val = k % (n + 1) := by rfl
@@ -931,11 +930,11 @@ lemma cc_zero_iff_dvd (m : Nat) (a : Int) : [a]_m = [0]_m ↔ ↑m ∣ a := by
   obtain (k : Nat) (h1 : a = ↑k ∨ a = -↑k) from Int.eq_nat_or_neg a
   by_cases on h1
   · -- Case 1. h1: a = ↑k
-    rewrite [h1, Int.coe_nat_dvd]
+    rewrite [h1, Int.natCast_dvd_natCast]
     show [↑k]_m = [0]_m ↔ m ∣ k from cc_nat_zero_iff_dvd m k
     done
   · -- Case 2. h1: a = -↑k
-    rewrite [h1, cc_neg_zero_iff_cc_zero, Int.dvd_neg, Int.coe_nat_dvd]
+    rewrite [h1, cc_neg_zero_iff_cc_zero, Int.dvd_neg, Int.natCast_dvd_natCast]
     show [↑k]_m = [0]_m ↔ m ∣ k from cc_nat_zero_iff_dvd m k
     done
   done
@@ -1747,9 +1746,9 @@ lemma phi_prime {p : Nat} (h1 : prime p) : phi p = p - 1 := by
 
 theorem Theorem_7_2_2_Int {a c : Nat} {b : Int}
     (h1 : ↑c ∣ ↑a * b) (h2 : rel_prime a c) : ↑c ∣ b := by
-  rewrite [Int.coe_nat_dvd_left, Int.natAbs_mul,
+  rewrite [Int.natCast_dvd, Int.natAbs_mul,
     Int.natAbs_ofNat] at h1        --h1 : c ∣ a * Int.natAbs b
-  rewrite [Int.coe_nat_dvd_left]   --Goal : c ∣ Int.natAbs b
+  rewrite [Int.natCast_dvd]        --Goal : c ∣ Int.natAbs b
   show c ∣ Int.natAbs b from Theorem_7_2_2 h1 h2
   done
 
@@ -1818,10 +1817,9 @@ lemma Lemma_7_5_1 {p e d m c s : Nat} {t : Int}
       ring
       done
     have h8 : [m]_p = [0]_p := (cc_eq_iff_congr _ _ _).rtl h7
-    have h9 : 0 < (e * d) := by
+    have h9 : e * d ≠ 0 := by
       rewrite [h2]
-      have h10 : 0 ≤ (p - 1) * s := Nat.zero_le _
-      linarith
+      show (p - 1) * s + 1 ≠ 0 from Nat.add_one_ne_zero _
       done
     have h10 : (0 : Int) ^ (e * d) = 0 := zero_pow h9
     have h11 : [c ^ d]_p = [m]_p :=
@@ -1833,7 +1831,7 @@ lemma Lemma_7_5_1 {p e d m c s : Nat} {t : Int}
         _ = [0 ^ (e * d)]_p := Exercise_7_4_5_Int _ _ _
         _ = [0]_p := by rw [h10]
         _ = [m]_p := by rw [h8]
-    show c ^ d ≡ m (MOD p)  from (cc_eq_iff_congr _ _ _).ltr h11
+    show c ^ d ≡ m (MOD p) from (cc_eq_iff_congr _ _ _).ltr h11
     done
   · -- Case 2. h6 : ¬p ∣ m
     have h7 : rel_prime m p := rel_prime_of_prime_not_dvd h1 h6
@@ -1853,7 +1851,7 @@ lemma Lemma_7_5_1 {p e d m c s : Nat} {t : Int}
         _ = [1]_p * [m]_p := by rw [h10]
         _ = [m]_p * [1]_p := by ring
         _ = [m]_p := Theorem_7_3_6_7 _
-    show c ^ d ≡ m (MOD p)  from (cc_eq_iff_congr _ _ _).ltr h11
+    show c ^ d ≡ m (MOD p) from (cc_eq_iff_congr _ _ _).ltr h11
     done
   done
 

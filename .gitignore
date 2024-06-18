@@ -2,3 +2,4 @@
 /.lake/*
 .DS_Store
 /HTPILib/.DS_Store
+lakefile.lean.bak

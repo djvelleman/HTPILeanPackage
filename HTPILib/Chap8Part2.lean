@@ -360,7 +360,7 @@ lemma neb_unique (A : Set Nat) : ∀ ⦃n : Nat⦄, ∀ ⦃s1 s2 : Nat⦄,
       rewrite [neb_step_elt h3] at h1
       rewrite [neb_step_elt h3] at h2
         --h1 : 1 ≤ s1 ∧ num_elts_below A n (s1 - 1)
-        --h2 : 1 ≤ s1 ∧ num_elts_below A n (s1 - 1)
+        --h2 : 1 ≤ s2 ∧ num_elts_below A n (s2 - 1)
       have h4 : s1 - 1 = s2 - 1 := ih h1.right h2.right
       show s1 = s2 from
         calc s1
@@ -548,7 +548,7 @@ lemma enum_fcnl_of_unbdd {A : Set Nat} (h1 : ∀ (m : Nat), ∃ n ∈ A, n ≥ m
     assume h2 : 0 ∈ Univ Nat
     exists_unique
     · -- Existence
-      obtain (n : Nat) (h3 : n ∈ A ∧ n ≥0) from h1 0
+      obtain (n : Nat) (h3 : n ∈ A ∧ n ≥ 0) from h1 0
       obtain (s : Nat) (h4 : num_elts_below A (n + 1) s) from neb_exists A (n + 1)
       have h5 : ∀ (t : Nat), t < s → ∃ (n : Nat), enum A t n := enum_not_skip h4
       rewrite [neb_step_elt h3.left] at h4
@@ -852,7 +852,7 @@ lemma fqn_one_one : one_to_one fqn := by
   have h3 : fzn q1.num = fzn q2.num ∧ q1.den = q2.den :=
     Prod.mk.inj h2
   have h4 : q1.num = q2.num := fzn_one_one _ _ h3.left
-  show q1 = q2 from Rat.ext q1 q2 h4 h3.right
+  show q1 = q2 from Rat.ext h4 h3.right
   done
 
 lemma image_fqn_unbdd :

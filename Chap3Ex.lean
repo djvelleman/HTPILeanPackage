@@ -136,7 +136,7 @@ theorem Exercise_3_5_18 (U : Type) (F G H : Set (Set U))
 
 -- 7.
 theorem Exercise_3_5_24a (U : Type) (A B C : Set U) :
-    (A ∪ B) △ C ⊆ (A △ C) ∪ (B △ C) := sorry
+    (A ∪ B) ∆ C ⊆ (A ∆ C) ∪ (B ∆ C) := sorry
 
 /- Section 3.6 -/
 -- 1.
@@ -149,6 +149,7 @@ theorem Exercise_3_5_9 (U : Type) (A B : Set U)
     (h1 : 𝒫 (A ∪ B) = 𝒫 A ∪ 𝒫 B) : A ⊆ B ∨ B ⊆ A := by
   --Hint:  Start like this:
   have h2 : A ∪ B ∈ 𝒫 (A ∪ B) := sorry
+
   done
 
 -- 3.

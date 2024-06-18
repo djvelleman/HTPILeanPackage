@@ -5,49 +5,25 @@ import Mathlib.Tactic
 import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Rel
-import Mathlib.Data.Nat.Basic
-import Mathlib.Data.Int.Basic
-import Mathlib.Data.Rat.Basic
+import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Int.Defs
+import Mathlib.Data.Rat.Defs
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.ZMod.Defs
 
 def Iff.ltr {p q : Prop} (h : p ↔ q) := h.mp
 def Iff.rtl {p q : Prop} (h : p ↔ q) := h.mpr
 
---New set theory notation.
---Lower priority than all other set theory notation
---Will be in Mathlib v4.4.0
-macro (priority := low-1) "{" pat:term " : " t:term " | " p:term "}" : term =>
-  `({ x : $t | match x with | $pat => $p })
-
-macro (priority := low-1) "{" pat:term " | " p:term "}" : term =>
-  `({ x | match x with | $pat => $p })
-
-@[app_unexpander setOf]
-def setOf.unexpander : Lean.PrettyPrinter.Unexpander
-  | `($_ fun $x:ident => match $y:ident with | $pat => $p) =>
-      if x == y then
-        `({ $pat:term | $p:term })
-      else
-        throw ()
-  | `($_ fun ($x:ident : $ty:term) => match $y:ident with | $pat => $p) =>
-      if x == y then
-        `({ $pat:term : $ty:term | $p:term })
-      else
-        throw ()
-  | _ => throw ()
-
 --Make sure Lean understands {x} and ∅ as Sets, not Finsets
 attribute [default_instance] Set.instSingletonSet
-attribute [default_instance] Set.instEmptyCollectionSet
+attribute [default_instance] Set.instEmptyCollection
 
--- Set theory notation that should be in library.
--- Copying similar in:  Mathlib/Init/Set.lean, lean4/Init/Notation.lean, std4/Std/Classes/SetNotation.lean
+-- Used in one exercise in Chapter 3.
 notation:50 a:50 " ⊈ " b:50 => ¬ (a ⊆ b)
 
---Note:  Mathlib.Order.SymmDiff.lean defines this with ∆ (\increment) instead of △ (\bigtriangleup).
---But display of symmDiff seems to use △.
-infixl:100 " △ " => symmDiff
+--Note:  Mathlib.Order.SymmDiff.lean defines this, but it is scoped[symmDiff] there.
+-- Use in one exercise in Chapter 3.
+infixl:100 " ∆ " => symmDiff
 
 namespace HTPI
 --Some theorems not in library
@@ -64,10 +40,10 @@ theorem not_or_not_distrib {p q : Prop} : ¬(p ∨ ¬ q) ↔ (¬ p ∧ q) := by
   rw [not_or, Classical.not_not]
 
 theorem not_imp_not_iff_and {p q : Prop} : ¬ (p → ¬ q) ↔ p ∧ q := by
-  rw [not_imp, Classical.not_not]
+  rw [Classical.not_imp, Classical.not_not]
 
 theorem not_imp_iff_not_and {p q : Prop} : ¬ (q → p) ↔ ¬ p ∧ q := by
-  rw [not_imp]
+  rw [Classical.not_imp]
   exact And.comm
 
 theorem not_not_iff {p q : Prop} : ¬(¬p ↔ q) ↔ (p ↔ q) := by
@@ -278,7 +254,7 @@ def fixElt (e : Expr) (doFix : Bool) : TacticM Expr := do
             return (mkApp5 (mkConst ``Membership.mem [lev, lev])
               t
               (mkApp (mkConst ``Set [lev]) t)
-              (mkApp (mkConst ``Set.instMembershipSet [lev]) t)
+              (mkApp (mkConst ``Set.instMembership [lev]) t)
               elt
               st)
           | _ => return e

@@ -390,10 +390,9 @@ theorem Example_6_3_2 : ∀ (a : Real) (m n : Nat),
     show a ^ (m + (n + 1)) = a ^ m * a ^ (n + 1) from
       calc a ^ (m + (n + 1))
         _ = a ^ ((m + n) + 1) := by rw [add_assoc]
-        _ = a * a ^ (m + n) := by rfl
-        _ = a * (a ^ m * a ^ n) := by rw [ih]
-        _ = a ^ m * (a * a ^ n) := by
-              rw [←mul_assoc, mul_comm a, mul_assoc]
+        _ = a ^ (m + n) * a := by rfl
+        _ = (a ^ m * a ^ n) * a := by rw [ih]
+        _ = a ^ m * (a ^ n * a) := by rw [mul_assoc]
         _ = a ^ m * (a ^ (n + 1)) := by rfl
     done
   done
@@ -419,10 +418,10 @@ theorem Example_6_3_4 : ∀ (x : Real), x > -1 →
         _ = 0 := by ring
     show (1 + x) ^ (n + 1) ≥ 1 + (n + 1) * x from
       calc (1 + x) ^ (n + 1)
-        _ = (1 + x) * (1 + x) ^ n := by rfl
-        _ ≥ (1 + x) * (1 + n * x) := by rel [ih]
-        _ = 1 + x + n * x + n * x ^ 2 := by ring
-        _ ≥ 1 + x + n * x + 0 := by rel [h4]
+        _ = (1 + x) ^ n * (1 + x) := by rfl
+        _ ≥ (1 + n * x) * (1 + x) := by rel [ih]
+        _ = 1 + n * x + x + n * x ^ 2 := by ring
+        _ ≥ 1 + n * x + x + 0 := by rel [h4]
         _ = 1 + (n + 1) * x := by ring
     done
   done
