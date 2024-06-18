@@ -1,5 +1,7 @@
 import HTPILib.Chap8Part2
 namespace HTPI.Exercises
+set_option linter.unusedVariables false
+set_option pp.funBinderTypes true
 
 /- Section 8.1 -/
 -- 1.
