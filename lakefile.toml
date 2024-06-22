@@ -1,9 +1,7 @@
 name = "htpi"
 defaultTargets = ["HTPILib"]
 
-[leanOptions]
-linter.unusedVariables = false
-pp.funBinderTypes = true
+moreGlobalServerArgs = ["-Dlinter.unusedVariables=false", "-Dpp.funBinderTypes=true"]
 
 [[require]]
 name = "mathlib"
