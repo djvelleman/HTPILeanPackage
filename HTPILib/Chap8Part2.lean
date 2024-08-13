@@ -1345,7 +1345,7 @@ lemma sbl_base {U : Type} (A : Set U) : seq_by_length A 0 = {[]} := by
   apply Iff.intro
   · -- (→)
     assume h1 : l ∈ seq_by_length A 0
-    define at h1   --h1 : l ∈ seq A ∧ List.length l = 0
+    define at h1   --h1 : l ∈ seq A ∧ l.length = 0
     rewrite [List.length_eq_zero] at h1
     define
     show l = [] from h1.right
@@ -1353,7 +1353,7 @@ lemma sbl_base {U : Type} (A : Set U) : seq_by_length A 0 = {[]} := by
   · -- (←)
     assume h1 : l ∈ {[]}
     define at h1     --h1 : l = []
-    define           --Goal : l ∈ seq A ∧ List.length l = 0
+    define           --Goal : l ∈ seq A ∧ l.length = 0
     apply And.intro _ (List.length_eq_zero.rtl h1)
     define           --Goal : ∀ x ∈ l, x ∈ A
     fix x : U

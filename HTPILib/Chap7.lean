@@ -9,6 +9,7 @@ lemma mod_succ_lt (a n : Nat) : a % (n + 1) < n + 1 := by
   show a % (n + 1) < n + 1 from Nat.mod_lt a h
   done
 
+@[semireducible]
 def gcd (a b : Nat) : Nat :=
   match b with
     | 0 => a
@@ -18,6 +19,7 @@ def gcd (a b : Nat) : Nat :=
   termination_by b
 
 mutual
+  @[semireducible]
   def gcd_c1 (a b : Nat) : Int :=
     match b with
       | 0 => 1
@@ -27,6 +29,7 @@ mutual
           --Corresponds to s = t'
     termination_by b
 
+  @[semireducible]
   def gcd_c2 (a b : Nat) : Int :=
     match b with
       | 0 => 0
@@ -395,7 +398,7 @@ lemma list_elt_dvd_prod_by_length (a : Nat) : ∀ (n : Nat),
     done
   · -- Induction Step
     fix n : Nat
-    assume ih : ∀ (l : List Nat), List.length l = n → a ∈ l → a ∣ prod l
+    assume ih : ∀ (l : List Nat), l.length = n → a ∈ l → a ∣ prod l
     fix l : List Nat
     assume h1 : l.length = n + 1            --Goal : a ∈ l → a ∣ prod l
     obtain (b : Nat) (h2 : ∃ (L : List Nat),

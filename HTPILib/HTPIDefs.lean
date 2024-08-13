@@ -244,6 +244,8 @@ Let whnfCore handle everything except unfolding of constants.
 Do all normalization up to first unfolding of a definition; on next call do that unfolding
 -/
 
+-- *** If arguments of `Membership.mem` get reversed, need to reverse them here.
+-- Any other changes?  Can't think of any ...
 def fixElt (e : Expr) (doFix : Bool) : TacticM Expr := do
   if doFix then
     match e with  --if e is "set elt", change to "elt ∈ set"
