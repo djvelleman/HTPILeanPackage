@@ -13,6 +13,8 @@ rev = "v4.11.0-rc1"
 
 [[lean_lib]]
 name = "HTPILib"
+moreLeanArgs = ["-Dlinter.unusedVariables=false",
+  "-Dlinter.unusedTactic=false", "-Dpp.funBinderTypes=true"]
 
 [[lean_lib]]
 name = "StudentWork"

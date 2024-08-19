@@ -901,7 +901,14 @@ def doIntroOption (tac : Name) (i : Term) (t : Option Term) : TacticM Unit := wi
         let fv := mkFVar fvid
         let fvt ← Meta.inferType fv
         if (← Meta.isDefEq et fvt) then
-          replaceMainGoal [← goal2.replaceLocalDeclDefEq fvid et]
+          -- Was: replaceMainGoal [← goal2.replaceLocalDeclDefEq fvid et]
+          -- But it didn't do replacement in cases where it thought difference wasn't significant.
+          -- Copied code from replaceMainGoal to make it always do replacement.
+          let mvarDecl ← goal2.getDecl
+          let lctxNew := (← getLCtx).modifyLocalDecl fvid (·.setType et)
+          let mvarNew ← Meta.mkFreshExprMVarAt lctxNew (← Meta.getLocalInstances) mvarDecl.type mvarDecl.kind mvarDecl.userName
+          goal2.assign mvarNew
+          replaceMainGoal [mvarNew.mvarId!]
           evalTactic (← `(tactic| match @$hid with | ($i : _) => ?_; try clear $hid))
         else
           Meta.throwTacticEx tac goal m!"type mismatch: {i} {← mkDeclaredTypeButIsExpectedMsg et fvt}"
