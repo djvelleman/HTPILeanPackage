@@ -133,6 +133,7 @@ elab "traceExpr" t:(colonTerm)? l:(oneLoc)? : tactic =>
         let e ← formFromLoc l
         traceThisExpr e
 
+-- This is stronger than e1 == e2: names of bound variables must match.
 def identical (e1 e2 : Expr) : Bool :=
   let e2c := consumeMData e2
   match e1 with
