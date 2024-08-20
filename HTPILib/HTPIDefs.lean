@@ -133,6 +133,27 @@ elab "traceExpr" t:(colonTerm)? l:(oneLoc)? : tactic =>
         let e ← formFromLoc l
         traceThisExpr e
 
+def identical (e1 e2 : Expr) : Bool :=
+  let e2c := consumeMData e2
+  match e1 with
+    | .app a1 b1 => match e2c with
+      | .app a2 b2 => (identical a1 a2) && (identical b1 b2)
+      | _ => false
+    | .lam n1 t1 b1 bi1 => match e2c with
+      | .lam n2 t2 b2 bi2 => (n1 == n2) && (identical t1 t2) && (identical b1 b2) && (bi1 == bi2)
+      | _ => false
+    | .forallE n1 t1 b1 bi1 => match e2c with
+      | .forallE n2 t2 b2 bi2 => (n1 == n2) && (identical t1 t2) && (identical b1 b2) && (bi1 == bi2)
+      | _ => false
+    | .letE n1 t1 v1 b1 nd1 => match e2c with
+      | .letE n2 t2 v2 b2 nd2 => (n1 == n2) && (identical t1 t2) && (identical v1 v2) && (identical b1 b2) && (nd1 == nd2)
+      | _ => false
+    | .proj t1 i1 c1 => match e2c with
+      | .proj t2 i2 c2 => (t1 == t2) && (i1 == i2) && (identical c1 c2)
+      | _ => false
+    | .mdata _ e => identical e e2c
+    | _ => e1 == e2c
+
 -- Get head and arg list
 def getHeadData (e : Expr) : Expr × List Expr :=
   match e with
@@ -903,12 +924,13 @@ def doIntroOption (tac : Name) (i : Term) (t : Option Term) : TacticM Unit := wi
         if (← Meta.isDefEq et fvt) then
           -- Was: replaceMainGoal [← goal2.replaceLocalDeclDefEq fvid et]
           -- But it didn't do replacement in cases where it thought difference wasn't significant.
-          -- Copied code from replaceMainGoal to make it always do replacement.
-          let mvarDecl ← goal2.getDecl
-          let lctxNew := (← getLCtx).modifyLocalDecl fvid (·.setType et)
-          let mvarNew ← Meta.mkFreshExprMVarAt lctxNew (← Meta.getLocalInstances) mvarDecl.type mvarDecl.kind mvarDecl.userName
-          goal2.assign mvarNew
-          replaceMainGoal [mvarNew.mvarId!]
+          -- Copied code from replaceMainGoal to make it do replacement if terms not identical.
+          if !(identical et fvt) then
+            let mvarDecl ← goal2.getDecl
+            let lctxNew := (← getLCtx).modifyLocalDecl fvid (·.setType et)
+            let mvarNew ← Meta.mkFreshExprMVarAt lctxNew (← Meta.getLocalInstances) mvarDecl.type mvarDecl.kind mvarDecl.userName
+            goal2.assign mvarNew
+            replaceMainGoal [mvarNew.mvarId!]
           evalTactic (← `(tactic| match @$hid with | ($i : _) => ?_; try clear $hid))
         else
           Meta.throwTacticEx tac goal m!"type mismatch: {i} {← mkDeclaredTypeButIsExpectedMsg et fvt}"
