@@ -1,6 +1,7 @@
 /- Copyright 2023 Daniel J. Velleman -/
 
 import HTPILib.Chap6
+set_option linter.style.longFile 0
 namespace HTPI
 
 /- Definitions -/
