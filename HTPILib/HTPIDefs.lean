@@ -481,17 +481,17 @@ def dmRule (form : Expr) : TacticM ruleType := do
     | PropForm.not a => match (← getPropForm a) with
       | PropForm.and l r =>
         dmRuleFromInfo l r mkOr false
-          #[`or_iff_not_and_not.symm, `HTPI.not_not_and_distrib, `not_and_not_distrib, `not_and_or]
+          #[`or_iff_not_and_not.symm, `HTPI.not_not_and_distrib, `HTPI.not_and_not_distrib, `not_and_or]
       | PropForm.or l r =>
         dmRuleFromInfo l r mkAnd false
-          #[`and_iff_not_or_not.symm, `not_not_or_distrib, `not_or_not_distrib, `not_or]
+          #[`and_iff_not_or_not.symm, `HTPI.not_not_or_distrib, `HTPI.not_or_not_distrib, `not_or]
       | _ => myFail `demorgan "De Morgan's laws don't apply"
     | PropForm.and l r =>
         dmRuleFromInfo l r mkOr true
-          #[`not_or.symm, `not_or_not_distrib.symm, `not_not_or_distrib.symm, `and_iff_not_or_not]
+          #[`not_or.symm, `HTPI.not_or_not_distrib.symm, `HTPI.not_not_or_distrib.symm, `and_iff_not_or_not]
     | PropForm.or l r =>
       dmRuleFromInfo l r mkAnd true
-        #[`not_and_or.symm, `not_and_not_distrib.symm, `HTPI.not_not_and_distrib.symm, `or_iff_not_and_not]
+        #[`not_and_or.symm, `HTPI.not_and_not_distrib.symm, `HTPI.not_not_and_distrib.symm, `or_iff_not_and_not]
     | _ => myFail `demorgan "De Morgan's laws don't apply"
 
 elab "demorgan" f:(colonTerm)? l:(oneLoc)? : tactic => doEquivTac f l `demorgan dmRule
@@ -543,7 +543,7 @@ def cdlRule (form : Expr) : TacticM ruleType := do
   match (← getPropForm form) with
     | PropForm.not p => match (← getPropForm p) with
       | PropForm.implies l r => match (← getPropForm r) with
-        | PropForm.not nr => return (`not_imp_not_iff_and, mkAnd l nr)
+        | PropForm.not nr => return (`HTPI.not_imp_not_iff_and, mkAnd l nr)
         | _ => return (`Classical.not_imp, mkAnd l (mkNot r))
       | _ => myFail `conditional "conditional laws don't apply"
     | PropForm.implies l r => match (← getPropForm l) with
@@ -552,8 +552,8 @@ def cdlRule (form : Expr) : TacticM ruleType := do
     | PropForm.and l r => match (← getPropForm r) with
       | PropForm.not nr => return (`Classical.not_imp.symm, mkNot (← mkArrow l nr))
       | _ => match (← getPropForm l) with
-        | PropForm.not nl => return (`not_imp_iff_not_and.symm, mkNot (← mkArrow r nl))
-        | _ => return (`not_imp_not_iff_and.symm, mkNot (← mkArrow l (mkNot r)))
+        | PropForm.not nl => return (`HTPI.not_imp_iff_not_and.symm, mkNot (← mkArrow r nl))
+        | _ => return (`HTPI.not_imp_not_iff_and.symm, mkNot (← mkArrow l (mkNot r)))
     | PropForm.or l r => match (← getPropForm l) with
       | PropForm.not nl => return (`imp_iff_not_or.symm, (← mkArrow nl r))
       | _ => match (← getPropForm r) with
@@ -580,12 +580,12 @@ def binegRule (form : Expr) : TacticM ruleType := do
   match (← getPropForm form) with
     | PropForm.not p => match (← getPropForm p) with
       | PropForm.iff l r => match (← getPropForm l) with
-        | PropForm.not nl => return (`not_not_iff, mkIff nl r)
+        | PropForm.not nl => return (`HTPI.not_not_iff, mkIff nl r)
         | _ => return (`not_iff, mkIff (mkNot l) r)
       | _ => myFail `bicond_neg "biconditional negation law doesn't apply"
     | PropForm.iff l r => match (← getPropForm l) with
       | PropForm.not nl => return (`not_iff.symm, mkNot (mkIff nl r))
-      | _ => return (`not_not_iff.symm, mkNot (mkIff (mkNot l) r))
+      | _ => return (`HTPI.not_not_iff.symm, mkNot (mkIff (mkNot l) r))
     | _ => myFail `bicond_neg "biconditional negation law doesn't apply"
 
 elab "bicond_neg" f:(colonTerm)? l:(oneLoc)? : tactic => doEquivTac f l `bicond_neg binegRule
@@ -972,7 +972,7 @@ def doObtainExUn (itw ith1 ith2 : IdOrTerm?Type) (tm : Term) : TacticM Unit :=
         let exun := mkForall v BinderInfo.default t (← mkArrow b (← mkArrow un tar))
         let h ← mkFreshUserName `h
         let hid := mkIdent h
-        doHave h (← mkArrow exun tar) (← `(exun_elim $tm))
+        doHave h (← mkArrow exun tar) (← `(HTPI.exun_elim $tm))
         evalTactic (← `(tactic| refine $hid ?_; clear $hid))
         doIntroOption `obtain wi wt
         doIntroOption `obtain h1i h1t
@@ -1082,7 +1082,7 @@ def doInduc (strong : Bool) : TacticM Unit := do
                     let base := replaceFVar Qv fv min
                     let ind ← Meta.mkForallFVars fvs (← mkArrow cond Qimp)
                     let m' ← Meta.mkLambdaFVars fvs Qv
-                    pure (base, ind, mkApp2 (const ``induc_from []) m' min)
+                    pure (base, ind, mkApp2 (const ``HTPI.induc_from []) m' min)
                   | none =>
                     let base := replaceFVar Qv fv (Expr.lit (.natVal 0))
                     let ind ← Meta.mkForallFVars fvs Qimp
