@@ -481,7 +481,7 @@ def dmRule (form : Expr) : TacticM ruleType := do
     | PropForm.not a => match (← getPropForm a) with
       | PropForm.and l r =>
         dmRuleFromInfo l r mkOr false
-          #[`or_iff_not_and_not.symm, `not_not_and_distrib, `not_and_not_distrib, `not_and_or]
+          #[`or_iff_not_and_not.symm, `HTPI.not_not_and_distrib, `not_and_not_distrib, `not_and_or]
       | PropForm.or l r =>
         dmRuleFromInfo l r mkAnd false
           #[`and_iff_not_or_not.symm, `not_not_or_distrib, `not_or_not_distrib, `not_or]
@@ -491,7 +491,7 @@ def dmRule (form : Expr) : TacticM ruleType := do
           #[`not_or.symm, `not_or_not_distrib.symm, `not_not_or_distrib.symm, `and_iff_not_or_not]
     | PropForm.or l r =>
       dmRuleFromInfo l r mkAnd true
-        #[`not_and_or.symm, `not_and_not_distrib.symm, `not_not_and_distrib.symm, `or_iff_not_and_not]
+        #[`not_and_or.symm, `not_and_not_distrib.symm, `HTPI.not_not_and_distrib.symm, `or_iff_not_and_not]
     | _ => myFail `demorgan "De Morgan's laws don't apply"
 
 elab "demorgan" f:(colonTerm)? l:(oneLoc)? : tactic => doEquivTac f l `demorgan dmRule
