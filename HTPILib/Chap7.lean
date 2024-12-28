@@ -927,7 +927,7 @@ lemma cc_nat_zero_iff_dvd (m k : Nat) : [k]_m = [0]_m ↔ m ∣ k :=
     | n + 1 => by
       rewrite [cc_eq_iff_val_eq, val_nat_eq_mod, val_zero]
       show k % (n + 1) = 0 ↔ n + 1 ∣ k from
-        (Nat.dvd_iff_mod_eq_zero (n + 1) k).symm
+        Nat.dvd_iff_mod_eq_zero.symm
       done
 
 lemma cc_zero_iff_dvd (m : Nat) (a : Int) : [a]_m = [0]_m ↔ ↑m ∣ a := by

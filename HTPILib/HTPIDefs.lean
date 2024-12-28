@@ -1,5 +1,5 @@
 /- Copyright 2023 Daniel J. Velleman -/
-
+-- *** Might want to use set_option pp.mathlib.binderPredicates false to prevent display of bounded quantifiers.
 import Lean.Elab.Tactic
 import Mathlib.Tactic
 import Mathlib.Data.Set.Basic
@@ -89,7 +89,7 @@ def myTrace (msg : String) : TacticM Unit := do
 partial def SyntaxToString (s : Syntax) : String :=
 match s with
   | .missing => "(missing)"
-  | .node _ k as => "(node " ++ toString k ++ (SyntaxListToString as.data) ++ ")"
+  | .node _ k as => "(node " ++ toString k ++ (SyntaxListToString as.toList) ++ ")"
   | .atom _ v => "(atom " ++ toString v ++ ")"
   | .ident _ rv v _ => "(ident " ++ (toString rv) ++ " " ++ (toString v) ++ ")"
 where SyntaxListToString (ss : List Syntax) : String :=
@@ -266,8 +266,6 @@ Let whnfCore handle everything except unfolding of constants.
 Do all normalization up to first unfolding of a definition; on next call do that unfolding
 -/
 
--- *** If arguments of `Membership.mem` get reversed, need to reverse them here.
--- Any other changes?  Can't think of any ...
 def fixElt (e : Expr) (doFix : Bool) : TacticM Expr := do
   if doFix then
     match e with  --if e is "set elt", change to "elt ∈ set"
@@ -279,8 +277,8 @@ def fixElt (e : Expr) (doFix : Bool) : TacticM Expr := do
               t
               (mkApp (mkConst ``Set [lev]) t)
               (mkApp (mkConst ``Set.instMembership [lev]) t)
-              elt
-              st)
+              st
+              elt)
           | _ => return e
       | _ => return e
   else
@@ -910,10 +908,14 @@ def mkDeclaredTypeButIsExpectedMsg (decType expectedType : Expr) : MetaM Message
     let (decType, expectedType) ← Meta.addPPExplicitToExposeDiff decType expectedType
     return m!"is declared to have type{indentExpr decType}\nbut is expected to have type{indentExpr expectedType}"
 
-def doIntroOption (tac : Name) (i : Term) (t : Option Term) : TacticM Unit := withMainContext do
+def doIntroOption (tac : Name) (i : Term) (t : Option Term) (isProp : Bool) : TacticM Unit := withMainContext do
   match t with
     | some tt =>
-      let et ← elabTerm tt none
+      let et ← if isProp then
+                  let ett ← elabTerm tt (mkSort levelZero)
+                  withRef tt <| Term.ensureType ett
+                else
+                  Term.elabType tt
       let goal ← getMainGoal
       let h ← mkFreshUserName `h
       let hid := mkIdent h
@@ -945,8 +947,8 @@ def doObtain (itw ith : IdOrTerm?Type) (tm : Term) : TacticM Unit :=
         let (wi, wt) ← parseIdOrTerm?Type `obtain itw
         let (hi, ht) ← parseIdOrTerm?Type `obtain ith
         evalTactic (← `(tactic| refine Exists.elim $tm ?_))
-        doIntroOption `obtain wi wt
-        doIntroOption `obtain hi ht
+        doIntroOption `obtain wi wt false
+        doIntroOption `obtain hi ht true
       | _ => myFail `obtain "hypothesis is not an existence statement"
 
 theorem exun_elim {α : Sort u} {p : α → Prop} {b : Prop}
@@ -974,9 +976,9 @@ def doObtainExUn (itw ith1 ith2 : IdOrTerm?Type) (tm : Term) : TacticM Unit :=
         let hid := mkIdent h
         doHave h (← mkArrow exun tar) (← `(HTPI.exun_elim $tm))
         evalTactic (← `(tactic| refine $hid ?_; clear $hid))
-        doIntroOption `obtain wi wt
-        doIntroOption `obtain h1i h1t
-        doIntroOption `obtain h2i h2t
+        doIntroOption `obtain wi wt false
+        doIntroOption `obtain h1i h1t true
+        doIntroOption `obtain h2i h2t true
       | _ => myFail `obtain "hypothesis is not a unique existence statement"
 
 --Make 1 assertion for existential, 2 for unique existential
@@ -990,7 +992,7 @@ def doAssume (w : Term) (t : Option Term) : TacticM Unit :=
   withMainContext do
     checkIdUsed `assume w
     match (← getPropForm (← Meta.whnf (← getMainTarget))) with
-      | PropForm.implies _ _ => doIntroOption `assume w t
+      | PropForm.implies _ _ => doIntroOption `assume w t true
       --| PropForm.not _ => doIntroOption w t  --Not necessary--whnf will have changed to implies
       | _ => myFail `assume "goal is not a conditional statement"
 
@@ -998,7 +1000,7 @@ def doFix (w : Term) (t : Option Term) : TacticM Unit :=
   withMainContext do
     checkIdUsed `fix w
     match (← getPropForm (← Meta.whnf (← getMainTarget))) with
-      | PropForm.all _ _ _ _ => doIntroOption `fix w t
+      | PropForm.all _ _ _ _ => doIntroOption `fix w t false
       | _ => myFail `fix "goal is not a universally quantified statement"
 
 elab "assume" w:term : tactic => doAssume w none
