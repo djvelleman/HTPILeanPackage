@@ -1,0 +1,19 @@
+{
+  "name": "HTPI Lean Package",
+
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+
+  "onCreateCommand": "lake exe cache get! && lake build",
+
+  "hostRequirements": {
+     "cpus": 4
+  },
+
+  "customizations": {
+    "vscode" : {
+      "extensions" : [ "leanprover.lean4" ]
+    }
+  }
+}
