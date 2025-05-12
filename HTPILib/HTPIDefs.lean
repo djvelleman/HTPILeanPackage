@@ -1,15 +1,10 @@
-/- Copyright 2023 Daniel J. Velleman -/
--- *** Might want to use set_option pp.mathlib.binderPredicates false to prevent display of bounded quantifiers.
-import Lean.Elab.Tactic
+/- Copyright 2023-2025 Daniel J. Velleman -/
 import Mathlib.Tactic
-import Mathlib.Data.Set.Basic
-import Mathlib.Data.Set.Lattice
-import Mathlib.Data.Rel
-import Mathlib.Data.Nat.Defs
-import Mathlib.Data.Int.Defs
-import Mathlib.Data.Rat.Defs
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.ZMod.Defs
+
+--Make sure ring tactic doesn't give annoying warning about ring_nf
+@[inherit_doc Mathlib.Tactic.RingNF.ring]
+macro "ring" : tactic =>
+  `(tactic| first | ring1 | ring_nf)
 
 def Iff.ltr {p q : Prop} (h : p ↔ q) := h.mp
 def Iff.rtl {p q : Prop} (h : p ↔ q) := h.mpr
@@ -172,7 +167,7 @@ def mkAppList (h : Expr) (args : List Expr) : Expr :=
 
 --Determine if e is a proposition, in current local context
 def exprIsProp (e : Expr) : TacticM Bool :=
-  return (← Meta.inferType e).isProp
+  return (← instantiateMVars (← Meta.inferType e)).isProp
 
 --Logical form of a proposition.
 inductive PropForm where
@@ -265,20 +260,25 @@ If rep = true, unfold repeatedly.
 Let whnfCore handle everything except unfolding of constants.
 Do all normalization up to first unfolding of a definition; on next call do that unfolding
 -/
-
 def fixElt (e : Expr) (doFix : Bool) : TacticM Expr := do
   if doFix then
     match e with  --if e is "set elt", change to "elt ∈ set"
       | app st elt =>
-        let tp ← Meta.inferType st
+        let tp ← instantiateMVars (← Meta.inferType st)
         match tp with
           | app (const ``Set [lev]) t =>
+            let ststx ← st.toSyntax
+            let eltstx ← elt.toSyntax
+            let tm ← `(term| $eltstx ∈ $ststx)
+            return (← elabTerm tm (mkSort levelZero))
+/-  Previous version, depends on underlying rep. of membership expression
             return (mkApp5 (mkConst ``Membership.mem [lev, lev])
               t
               (mkApp (mkConst ``Set [lev]) t)
               (mkApp (mkConst ``Set.instMembership [lev]) t)
               st
               elt)
+-/
           | _ => return e
       | _ => return e
   else
@@ -579,10 +579,10 @@ def binegRule (form : Expr) : TacticM ruleType := do
     | PropForm.not p => match (← getPropForm p) with
       | PropForm.iff l r => match (← getPropForm l) with
         | PropForm.not nl => return (`HTPI.not_not_iff, mkIff nl r)
-        | _ => return (`not_iff, mkIff (mkNot l) r)
+        | _ => return (`Classical.not_iff, mkIff (mkNot l) r)
       | _ => myFail `bicond_neg "biconditional negation law doesn't apply"
     | PropForm.iff l r => match (← getPropForm l) with
-      | PropForm.not nl => return (`not_iff.symm, mkNot (mkIff nl r))
+      | PropForm.not nl => return (`Classical.not_iff.symm, mkNot (mkIff nl r))
       | _ => return (`HTPI.not_not_iff.symm, mkNot (mkIff (mkNot l) r))
     | _ => myFail `bicond_neg "biconditional negation law doesn't apply"
 
@@ -595,7 +595,7 @@ partial def checkIdUsed (tac : Name) (i : Syntax) : TacticM Unit := do
     | .node _ _ as => for a in as do checkIdUsed tac a
     | .atom _ _ => return ()
     | .ident _ _ v _ =>
-        if (← getLCtx).usesUserName v then
+        if ((← getLCtx).usesUserName v) then
           myFail tac ("identifier " ++ (toString v) ++ " already in use")
         else
           return ()
@@ -866,7 +866,7 @@ elab "exists_unique" : tactic => do
         let hid := mkIdent h
         let hex := (mkForall `a BinderInfo.default ex
           (mkForall `b BinderInfo.default un tar))
-        doHave h hex (← `(exists_unique_of_exists_of_unique))
+        doHave h hex (← `(existsUnique_of_exists_of_unique))
         evalTactic (← `(tactic| refine $hid ?_ ?_; clear $hid))
         setUserName (← getMainGoal) (addToName goalname "Existence")
         doSwap

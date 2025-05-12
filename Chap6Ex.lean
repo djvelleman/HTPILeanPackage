@@ -53,7 +53,7 @@ lemma extendPO_is_antisymm {A : Type} (R : BinRel A) (b : A)
     (h : partial_order R) : antisymmetric (extendPO R b) := sorry
 
 -- 5.
-theorem Exercise_6_2_3 (A : Type) (R : BinRel A)
+theorem Exercise_6_2_3 {A : Type} (R : BinRel A)
     (h : total_order R) : ∀ n ≥ 1, ∀ (B : Set A),
     numElts B n → ∃ (b : A), smallestElt R b B := sorry
 

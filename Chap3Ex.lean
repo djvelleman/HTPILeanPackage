@@ -72,36 +72,42 @@ theorem Exercise_3_4_4 (U : Type) (A B C : Set U)
   done
 
 -- 3.
+theorem Exercise_3_3_12 (U : Type)
+    (F G : Set (Set U)) : F ⊆ G → ⋃₀ F ⊆ ⋃₀ G := by
+
+  done
+
+-- 4.
 theorem Exercise_3_3_16 (U : Type) (B : Set U)
     (F : Set (Set U)) : F ⊆ 𝒫 B → ⋃₀ F ⊆ B := by
 
   done
 
--- 4.
+-- 5.
 theorem Exercise_3_3_17 (U : Type) (F G : Set (Set U))
     (h1 : ∀ (A : Set U), A ∈ F → ∀ (B : Set U), B ∈ G → A ⊆ B) :
     ⋃₀ F ⊆ ⋂₀ G := by
 
   done
 
--- 5.
+-- 6.
 theorem Exercise_3_4_7 (U : Type) (A B : Set U) :
     𝒫 (A ∩ B) = 𝒫 A ∩ 𝒫 B := by
 
   done
 
--- 6.
+-- 7.
 theorem Exercise_3_4_17 (U : Type) (A : Set U) : A = ⋃₀ (𝒫 A) := by
 
   done
 
--- 7.
+-- 8.
 theorem Exercise_3_4_18a (U : Type) (F G : Set (Set U)) :
     ⋃₀ (F ∩ G) ⊆ (⋃₀ F) ∩ (⋃₀ G) := by
 
   done
 
--- 8.
+-- 9.
 theorem Exercise_3_4_19 (U : Type) (F G : Set (Set U)) :
     (⋃₀ F) ∩ (⋃₀ G) ⊆ ⋃₀ (F ∩ G) ↔
       ∀ (A B : Set U), A ∈ F → B ∈ G → A ∩ B ⊆ ⋃₀ (F ∩ G) := by

@@ -1,4 +1,4 @@
-/- Copyright 2023 Daniel J. Velleman -/
+/- Copyright 2023-2025 Daniel J. Velleman -/
 
 import HTPILib.Chap8Part1
 namespace HTPI

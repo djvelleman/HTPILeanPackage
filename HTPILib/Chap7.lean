@@ -1,4 +1,4 @@
-/- Copyright 2023 Daniel J. Velleman -/
+/- Copyright 2023-2025 Daniel J. Velleman -/
 
 import HTPILib.Chap6
 set_option linter.style.longFile 0
@@ -324,7 +324,7 @@ lemma all_prime_nil : all_prime [] := by
   fix p : Nat
   contrapos  --Goal : ¬prime p → p ∉ []
   assume h1 : ¬prime p
-  show p ∉ [] from List.not_mem_nil p
+  show p ∉ [] from List.not_mem_nil
   done
 
 lemma all_prime_cons (n : Nat) (L : List Nat) :
@@ -333,7 +333,7 @@ lemma all_prime_cons (n : Nat) (L : List Nat) :
   · -- (→)
     assume h1 : all_prime (n :: L)  --Goal : prime n ∧ all_prime L
     define at h1  --h1 : ∀ p ∈ n :: L, prime p
-    apply And.intro (h1 n (List.mem_cons_self n L))
+    apply And.intro (h1 n List.mem_cons_self)
     define        --Goal : ∀ p ∈ L, prime p
     fix p : Nat
     assume h2 : p ∈ L
@@ -373,14 +373,14 @@ lemma exists_cons_of_length_eq_succ {A : Type}
     {l : List A} {n : Nat} (h : l.length = n + 1) :
     ∃ (a : A) (L : List A), l = a :: L ∧ L.length = n := by
   have h1 : ¬l.length = 0 := by linarith
-  rewrite [List.length_eq_zero] at h1
+  rewrite [List.length_eq_zero_iff] at h1
   obtain (a : A) (h2 : ∃ (L : List A), l = a :: L) from
     List.exists_cons_of_ne_nil h1
   obtain (L : List A) (h3 : l = a :: L) from h2
   apply Exists.intro a
   apply Exists.intro L
   apply And.intro h3
-  have h4 : (a :: L).length = L.length + 1 := List.length_cons a L
+  have h4 : (a :: L).length = L.length + 1 := List.length_cons
   rewrite [←h3, h] at h4
   show L.length = n from (Nat.add_right_cancel h4).symm
   done
@@ -391,11 +391,11 @@ lemma list_elt_dvd_prod_by_length (a : Nat) : ∀ (n : Nat),
   · --Base Case
     fix l : List Nat
     assume h1 : l.length = 0
-    rewrite [List.length_eq_zero] at h1     --h1 : l = []
+    rewrite [List.length_eq_zero_iff] at h1     --h1 : l = []
     rewrite [h1]                            --Goal : a ∈ [] → a ∣ prod []
     contrapos
     assume h2 : ¬a ∣ prod []
-    show a ∉ [] from List.not_mem_nil a
+    show a ∉ [] from List.not_mem_nil
     done
   · -- Induction Step
     fix n : Nat
@@ -639,7 +639,7 @@ theorem Theorem_7_2_4 {p : Nat} (h1 : prime p) :
     · -- Case 1. h3 : p ∣ b
       apply Exists.intro b
       show b ∈ b :: L ∧ p ∣ b from
-        And.intro (List.mem_cons_self b L) h3
+        And.intro List.mem_cons_self h3
       done
     · -- Case 2. h3 : p ∣ prod L
       obtain (a : Nat) (h4 : a ∈ L ∧ p ∣ a) from ih h3
@@ -1088,26 +1088,10 @@ lemma num_rp_below_base {m : Nat} :
     num_rp_below m 0 = 0 := by rfl
 
 lemma num_rp_below_step_rp {m j : Nat} (h : rel_prime m j) :
-    num_rp_below m (j + 1) = (num_rp_below m j) + 1 := by
-  have h1 : num_rp_below m (j + 1) =
-    if gcd m j = 1 then (num_rp_below m j) + 1
-    else num_rp_below m j := by rfl
-  define at h     --h : gcd m j = 1
-  rewrite [if_pos h] at h1
-                  --h1 : num_rp_below m (j + 1) = num_rp_below m j + 1
-  show num_rp_below m (j + 1) = num_rp_below m j + 1 from h1
-  done
+    num_rp_below m (j + 1) = (num_rp_below m j) + 1 := if_pos h
 
 lemma num_rp_below_step_not_rp {m j : Nat} (h : ¬rel_prime m j) :
-    num_rp_below m (j + 1) = num_rp_below m j := by
-  have h1 : num_rp_below m (j +1) =
-    if gcd m j = 1 then (num_rp_below m j) + 1
-    else num_rp_below m j := by rfl
-  define at h     --h : ¬gcd m j = 1
-  rewrite [if_neg h] at h1
-                  --h1 : num_rp_below m (j + 1) = num_rp_below m j
-  show num_rp_below m (j + 1) = num_rp_below m j from h1
-  done
+    num_rp_below m (j + 1) = num_rp_below m j := if_neg h
 
 lemma phi_def (m : Nat) : phi m = num_rp_below m m := by rfl
 
@@ -1138,20 +1122,10 @@ lemma prod_inv_iff_inv {m : Nat} {X : ZMod m}
   done
 
 lemma F_rp_def {m i : Nat} (h : rel_prime m i) :
-    F m i = [i]_m := by
-  have h1 : F m i = if gcd m i = 1 then [i]_m else [1]_m := by rfl
-  define at h      --h : gcd m i = 1
-  rewrite [if_pos h] at h1
-  show F m i = [i]_m from h1
-  done
+    F m i = [i]_m := if_pos h
 
 lemma F_not_rp_def {m i : Nat} (h : ¬rel_prime m i) :
-    F m i = [1]_m := by
-  have h1 : F m i = if gcd m i = 1 then [i]_m else [1]_m := by rfl
-  define at h
-  rewrite [h1, if_neg h]
-  rfl
-  done
+    F m i = [1]_m := if_neg h
 
 lemma prod_seq_base {m : Nat}
     (k : Nat) (f : Nat → ZMod m) : prod_seq 0 k f = [1]_m := by rfl
