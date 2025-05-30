@@ -155,8 +155,7 @@ theorem Exercise_3_5_9 (U : Type) (A B : Set U)
     (h1 : 𝒫 (A ∪ B) = 𝒫 A ∪ 𝒫 B) : A ⊆ B ∨ B ⊆ A := by
   --Hint:  Start like this:
   have h2 : A ∪ B ∈ 𝒫 (A ∪ B) := sorry
-
-  done
+  sorry
 
 -- 3.
 theorem Exercise_3_6_6b (U : Type) :
@@ -178,8 +177,7 @@ theorem Exercise_3_6_10 (U : Type) (A : Set U)
   set F0 : Set (Set U) := {X : Set U | X ⊆ A ∧ ∃! (x : U), x ∈ X}
   --Now F0 is in the tactic state, with the definition above
   have h2 : ⋃₀ F0 = A := sorry
-
-  done
+  sorry
 
 /- Section 3.7 -/
 -- 1.
