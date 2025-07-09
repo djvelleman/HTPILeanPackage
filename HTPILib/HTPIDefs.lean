@@ -44,8 +44,10 @@ theorem not_imp_iff_not_and {p q : Prop} : ¬ (q → p) ↔ ¬ p ∧ q := by
 theorem not_not_iff {p q : Prop} : ¬(¬p ↔ q) ↔ (p ↔ q) := by
   rw [not_iff, Classical.not_not]
 
-def Pred (t : Type u) : Type u := t → Prop
-def BinRel (t : Type u) : Type u := Rel t t
+--Note: Rel will be redefined in Mathlib, so give def I want to use here.
+def Pred (U : Type) : Type := U → Prop
+def Rel (U V : Type) : Type := U → V → Prop
+def BinRel (U : Type) : Type := Rel U U
 
 --Definitions of tactics
 section tactic_defs
