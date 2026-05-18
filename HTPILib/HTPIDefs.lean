@@ -14,7 +14,7 @@ attribute [default_instance] Set.instSingletonSet
 attribute [default_instance] Set.instEmptyCollection
 
 -- Used in one exercise in Chapter 3.
-notation:50 a:50 " ⊈ " b:50 => ¬ (a ⊆ b)
+notation:50 a:50 " ⊈ " b:50 => ¬(a ⊆ b)
 
 --Note:  Mathlib.Order.SymmDiff.lean defines this, but it is scoped[symmDiff] there.
 -- Use in one exercise in Chapter 3.
@@ -266,11 +266,11 @@ def fixElt (e : Expr) (doFix : Bool) : TacticM Expr := do
       | app st elt =>
         let tp ← instantiateMVars (← Meta.inferType st)
         match tp with
-          | app (const ``Set [lev]) t =>
+          | app (const ``Set _) _ =>
             let ststx ← st.toSyntax
             let eltstx ← elt.toSyntax
             let tm ← `(term| $eltstx ∈ $ststx)
-            return (← elabTerm tm (mkSort levelZero))
+            return (← elabTerm tm (mkSort Level.zero))
 /-  Previous version, depends on underlying rep. of membership expression
             return (mkApp5 (mkConst ``Membership.mem [lev, lev])
               t
@@ -912,7 +912,7 @@ def doIntroOption (tac : Name) (i : Term) (t : Option Term) (isProp : Bool) : Ta
   match t with
     | some tt =>
       let et ← if isProp then
-                  let ett ← elabTerm tt (mkSort levelZero)
+                  let ett ← elabTerm tt (mkSort Level.zero)
                   withRef tt <| Term.ensureType ett
                 else
                   Term.elabType tt
@@ -1034,6 +1034,7 @@ theorem induc_from (P : Nat → Prop) (k : Nat) (h1 : P k) (h2 : (∀ n ≥ k, P
 -- For ordinary induction, uses a different base if appropriate
 def doInduc (strong : Bool) : TacticM Unit := do
   let goal ← getMainGoal
+  let tac_name := if strong then `by_strong_induc else `by_induc
   withContext goal do
     let d ← getDecl goal
     let tag := d.userName
@@ -1093,8 +1094,8 @@ def doInduc (strong : Bool) : TacticM Unit := do
               let indGoal ← Meta.mkFreshExprSyntheticOpaqueMVar ind (addToName tag "Induction_Step")
               assign goal (mkApp2 rule baseGoal indGoal)
               replaceMainGoal [baseGoal.mvarId!, indGoal.mvarId!]
-          | _ => myFail `by_induc "mathematical induction doesn't apply"
-      | _ => myFail `by_induc "mathematical induction doesn't apply"
+          | _ => myFail tac_name "mathematical induction doesn't apply"
+      | _ => myFail tac_name "mathematical induction doesn't apply"
 
 elab "by_induc" : tactic => doInduc false
 elab "by_strong_induc" : tactic => doInduc true
