@@ -14,7 +14,7 @@
 
   "customizations": {
     "vscode" : {
-      "extensions" : [ "leanprover.vscode-lean4" ]
+      "extensions" : [ "leanprover.lean4" ]
     }
   }
 }
