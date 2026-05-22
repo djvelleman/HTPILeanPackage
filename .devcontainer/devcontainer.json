@@ -8,8 +8,7 @@
   "onCreateCommand": "lake exe cache get! && lake build",
 
   "hostRequirements": {
-     "cpus": 4,
-     "memory": "8gb"
+     "cpus": 4
   },
 
   "customizations": {
